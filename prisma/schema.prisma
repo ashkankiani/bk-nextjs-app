@@ -1,0 +1,536 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Reservations {
+  id Int @id @default(autoincrement())
+
+  order   Orders @relation(fields: [orderId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  orderId Int
+
+  payment   Payments @relation(fields: [paymentId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  paymentId Int
+
+  transaction   Transaction? @relation(fields: [transactionId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  transactionId Int?
+
+  service   Services @relation(fields: [serviceId], references: [id])
+  serviceId Int
+
+  provider   Providers @relation(fields: [providerId], references: [id])
+  providerId Int
+
+  user   Users @relation(fields: [userId], references: [id])
+  userId Int
+
+  dateTimeStartEpoch BigInt
+  dateTimeEndEpoch   BigInt
+  date               String
+  time               String
+
+  status ReservationsStatus @default(COMPLETED)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Draft {
+  // id Int @id @default(autoincrement())
+
+  createEpoch BigInt
+
+  service   Services @relation(fields: [serviceId], references: [id])
+  serviceId Int
+
+  provider   Providers @relation(fields: [providerId], references: [id])
+  providerId Int
+
+  user   Users? @relation(fields: [userId], references: [id])
+  userId Int?
+
+  dateTimeStartEpoch BigInt
+  dateTimeEndEpoch   BigInt
+  date               String
+  time               String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@id([serviceId, providerId, date, time])
+}
+
+model Orders {
+  id           Int    @id @default(autoincrement())
+  trackingCode String
+
+  status ReservationsStatus @default(COMPLETED)
+
+  user   Users @relation(fields: [userId], references: [id])
+  userId Int
+
+  service   Services @relation(fields: [serviceId], references: [id])
+  serviceId Int
+
+  provider   Providers @relation(fields: [providerId], references: [id])
+  providerId Int
+
+  payment   Payments @relation(fields: [paymentId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  paymentId Int
+
+  discount   Discounts? @relation(fields: [discountId], references: [id])
+  discountId Int?
+
+  // discountCode  String?
+  // discountType  DiscountsType?
+  price         Int
+  discountPrice Int?
+  totalPrice    Int
+
+  Reservations Reservations[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Payments {
+  id Int @id @default(autoincrement())
+
+  paymentType ReservationsPaymentType
+
+  user   Users @relation(fields: [userId], references: [id])
+  userId Int
+
+  transaction   Transaction? @relation(fields: [transactionId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  transactionId Int?
+
+  description String? @db.Text
+
+  Orders Orders[]
+
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  Reservations Reservations[]
+}
+
+model Transaction {
+  id Int @id @default(autoincrement())
+
+  bankName   ConnectionsBankName
+  trackId    String
+  amount     Int
+  cardNumber String
+  authority  String
+
+  Payments Payments[]
+
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  Reservations Reservations[]
+}
+
+model Services {
+  id Int @id @default(autoincrement())
+
+  user   Users @relation(fields: [userId], references: [id])
+  userId Int
+
+  name       String
+  periodTime Int
+  price      Int
+  capacity   Int
+
+  startDate String?
+  endDate   String?
+
+  gender UsersGender @default(NONE)
+
+  codPayment    Boolean @default(false)
+  onlinePayment Boolean @default(false)
+
+  smsToAdminService  Boolean @default(false)
+  smsToAdminProvider Boolean @default(false)
+  smsToUserService   Boolean @default(false)
+
+  emailToAdminService  Boolean @default(false)
+  emailToAdminProvider Boolean @default(false)
+  emailToUserService   Boolean @default(false)
+
+  description              String? @db.Text
+  descriptionAfterPurchase String? @db.Text
+
+  Providers    Providers[]
+  TimeSheets   TimeSheets[]
+  Orders       Orders[]
+  Reservations Reservations[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  Draft     Draft[]
+}
+
+model Providers {
+  id Int @id @default(autoincrement())
+
+  service   Services @relation(fields: [serviceId], references: [id])
+  serviceId Int
+
+  user   Users @relation(fields: [userId], references: [id])
+  userId Int
+
+  slotTime Int
+
+  startDate String?
+  endDate   String?
+
+  startTime String?
+  endTime   String?
+
+  status       Boolean @default(true)
+  workHolidays Boolean @default(false)
+  description  String? @db.Text
+  // Aks ham daram
+
+  TimeSheets   TimeSheets[]
+  Orders       Orders[]
+  Reservations Reservations[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  Draft     Draft[]
+}
+
+model TimeSheets {
+  id Int @id @default(autoincrement())
+
+  service   Services @relation(fields: [serviceId], references: [id])
+  serviceId Int
+
+  provider   Providers @relation(fields: [providerId], references: [id], onDelete: Cascade)
+  providerId Int
+
+  dayName   String
+  dayIndex  Int
+  startTime String
+  endTime   String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Faqs {
+  id        Int      @id @default(autoincrement())
+  title     String   @db.TinyText
+  content   String   @db.Text
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Holidays {
+  id    Int    @id @default(autoincrement())
+  date  String
+  title String @db.TinyText
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Discounts {
+  id        Int           @id @default(autoincrement())
+  title     String
+  code      String        @unique
+  startDate String?
+  endDate   String?
+  type      DiscountsType @default(CONSTANT)
+  amount    Int
+
+  Orders Orders[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Users {
+  id      Int      @id @default(autoincrement())
+  catalog Catalogs @relation(fields: [catalogId], references: [id])
+
+  catalogId Int     @default(1)
+  // role      UsersRole @default(USER)
+  codeMeli  String  @unique
+  fullName  String
+  mobile    String  @unique
+  email     String? @unique
+  password  String
+
+  gender UsersGender @default(NONE)
+
+  locked Boolean @default(false)
+
+  Providers Providers[]
+  Orders    Orders[]
+
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  Reservations Reservations[]
+  Payments     Payments[]
+  Services     Services[]
+  Draft        Draft[]
+  // Profile      Profile[]
+  // Catalogs     Catalogs[]
+  Session      Sessions[]
+}
+
+model Catalogs {
+  id          Int           @id @default(autoincrement())
+  title       String
+  Users       Users[]
+  Permissions Permissions[]
+}
+
+model Permissions {
+  id                Int      @id @default(autoincrement())
+  catalogs          Catalogs @relation(fields: [catalogId], references: [id], onDelete: Cascade)
+  catalogId         Int      @unique
+  admin             Boolean  @default(false)
+  viewDashboard     Boolean  @default(false)
+  viewReservation   Boolean  @default(false)
+  addReservation    Boolean  @default(false)
+  editReservation   Boolean  @default(false)
+  deleteReservation Boolean  @default(false)
+  viewDraft         Boolean  @default(false)
+  deleteDraft       Boolean  @default(false)
+  viewServices      Boolean  @default(false)
+  addServices       Boolean  @default(false)
+  editServices      Boolean  @default(false)
+  deleteServices    Boolean  @default(false)
+  viewProviders     Boolean  @default(false)
+  addProviders      Boolean  @default(false)
+  editProviders     Boolean  @default(false)
+  deleteProviders   Boolean  @default(false)
+  viewTimesheets    Boolean  @default(false)
+  addTimesheets     Boolean  @default(false)
+  deleteTimesheets  Boolean  @default(false)
+  viewFinancial     Boolean  @default(false)
+  viewHolidays      Boolean  @default(false)
+  addHolidays       Boolean  @default(false)
+  editHolidays      Boolean  @default(false)
+  deleteHolidays    Boolean  @default(false)
+  viewDiscounts     Boolean  @default(false)
+  addDiscounts      Boolean  @default(false)
+  editDiscounts     Boolean  @default(false)
+  deleteDiscounts   Boolean  @default(false)
+  viewUsers         Boolean  @default(false)
+  addUsers          Boolean  @default(false)
+  editUsers         Boolean  @default(false)
+  deleteUsers       Boolean  @default(false)
+  exportUsers       Boolean  @default(false)
+  importUsers       Boolean  @default(false)
+  viewFaqs          Boolean  @default(false)
+  addFaqs           Boolean  @default(false)
+  editFaqs          Boolean  @default(false)
+  deleteFaqs        Boolean  @default(false)
+  viewSettings      Boolean  @default(false)
+  editSettings      Boolean  @default(false)
+  viewConnections   Boolean  @default(false)
+  editConnections   Boolean  @default(false)
+  viewCatalogs      Boolean  @default(false)
+  addCatalogs       Boolean  @default(false)
+  editCatalogs      Boolean  @default(false)
+  deleteCatalogs    Boolean  @default(false)
+  getSms            Boolean  @default(true)
+  getEmail          Boolean  @default(true)
+}
+
+model Sessions {
+  id           Int    @id @default(autoincrement())
+  sessionToken String @db.Text
+  user         Users  @relation(fields: [userId], references: [id])
+  userId       Int    @unique
+  expires      BigInt
+}
+
+// model Profile {
+//   id Int @id @default(autoincrement())
+//
+//   user   Users @relation(fields: [userId], references: [id])
+//   userId Int
+//
+//   gender   ProfileGender @default(UNKNOWN)
+//   avatar   String?
+//   born     String?
+//   province String?
+//   city     String?
+//   address  String?
+//   bio      String?       @db.Text
+//
+//   createdAt DateTime @default(now())
+//   updatedAt DateTime @updatedAt
+// }
+
+// enum ProfileGender {
+//   MAN
+//   FEMALE
+//   UNKNOWN
+// }
+
+model Settings {
+  id      Int           @id @default(autoincrement())
+  name    String
+  url     String        @default("")
+  address String        @default("")
+  phone   String        @default("")
+  theme   SettingsTheme @default(THEME1)
+
+  minReservationDate    Int @default(0) // حداقل زمان شروع رزرو
+  maxReservationDate    Int @default(30) // حداکثر زمان پایان رزرو
+  minReservationTime    Int @default(0) // حداقل دقیقه قبل شروع رزرو
+  cancellationDeadline  Int @default(24) // حداقل دقیقه مورد نیاز قبل از لغو
+  maxReservationDaily   Int @default(10) // حداکثر تعداد رزرو روزانه کاربر
+  maxReservationMonthly Int @default(0) // حداکثر تعداد نوبت در ماه
+
+  automaticConfirmation Boolean @default(true) // وضعیت پیش فرض رزرو
+
+  cancellationReservationUser Boolean @default(true) // امکان لغو رزرو برای کاربر
+  // cancellationReservationProvider Boolean @default(true) // امکان لغو رزرو برای ارائه دهنده
+
+  smsCancellationReservation   SettingsCancellationReservation @default(ADMIN_PROVIDER_USER) // اطلاع رسانی پیامکی لغو رزرو
+  emailCancellationReservation SettingsCancellationReservation @default(ADMIN_PROVIDER_USER) // اطلاع رسانی ایمیل لغو رزرو
+
+  groupReservation Boolean @default(true) // امکان رزرو گروهی
+
+  emailStatus SettingsEmailStatus @default(DELETE) // وضعیت ایمیل در ایجاد کاربر
+
+  shiftWorkStatus           Boolean @default(false) // وضعیت باکس روزهای بدون نوبت کاری
+  permissionSearchShiftWork Boolean @default(true) // اجازه جستجوی نوبت کاری
+
+  registerOTP Boolean @default(false) // ثبت نام کاربر با تایید شماره موبایل
+  loginOTP    Boolean @default(false) // وروود کاربر با کد تایید یکبار مصرف پیامکی
+
+  cart Boolean @default(false) // وضعیت ایجاد سبد خرید
+
+  minReservationLock Int @default(20) // حداقل مدت زمان قفل نوبت انتخاب شده
+
+  guestReservation Boolean @default(false) // رزرو سریع به عنوان مهمان
+
+  // headerCode String? @db.Text
+  footerCode String? @db.Text
+  code       String  @default("")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Connections {
+  id Int @id @default(autoincrement())
+
+  bankName1   ConnectionsBankName @default(NONE)
+  merchantId1 String?
+
+  bankName2   ConnectionsBankName @default(NONE)
+  merchantId2 String?
+
+  smsName ConnectionsSmsName @default(NONE)
+
+  smsURL      String?
+  smsToken    String?
+  smsUserName String?
+  smsPassword String?
+  smsFrom     String?
+
+  smsCodePattern1 String?
+  smsCodePattern2 String?
+  smsCodePattern3 String?
+  smsCodePattern4 String?
+  smsCodePattern5 String?
+  smsCodePattern6 String?
+  smsCodePattern7 String?
+  smsCodePattern8 String?
+
+  smtpURL      String?
+  smtpPort     Int?
+  smtpUserName String?
+  smtpPassword String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model OtpSms {
+  id        Int      @id @default(autoincrement())
+  mobile    String   @unique
+  expires   BigInt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum SettingsTheme {
+  THEME1
+  THEME2
+  THEME3
+}
+
+enum SettingsEmailStatus {
+  OPTIONAL
+  MANDATORY
+  DELETE
+}
+
+enum ConnectionsBankName {
+  NONE
+  ZARINPAL
+  IDPAY
+  ZIBAL
+  AQAYEPARDAKHT
+}
+
+enum ConnectionsSmsName {
+  NONE
+  IPPANEL
+  MELIPAYAMAK
+  KAVENEGAR
+  FARAZSMS
+  SMSIR
+}
+
+enum SettingsCancellationReservation {
+  NONE
+  ADMIN
+  PROVIDER
+  USER
+  ADMIN_PROVIDER
+  ADMIN_USER
+  PROVIDER_USER
+  ADMIN_PROVIDER_USER
+}
+
+enum ReservationsStatus {
+  REVIEW
+  COMPLETED
+  DONE
+  CANCELED
+  REJECTED
+}
+
+enum ReservationsPaymentType {
+  OnlinePayment
+  CashPayment
+  CartByCart
+  CardReader
+  Free
+  UnknownPayment
+}
+
+enum DiscountsType {
+  CONSTANT
+  PERCENT
+}
+
+enum UsersGender {
+  NONE
+  MAN
+  WOMAN
+}

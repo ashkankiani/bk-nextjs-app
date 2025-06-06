@@ -1,0 +1,101 @@
+/**
+*
+*	Name:			Yekan Bakh Fonts
+*	Version:			1.0
+*	Author:			Reza Bakhtiarifard (rbakhtiarifard.ir)
+*	Created on:		May 2022
+*	Updated on:		May 2022
+*	Vendor:			http://fontiran.com
+*	Copyright:		Commercial/Proprietary Software
+--------------------------------------------------------------------------------------
+فونت پیکان یک نرم افزار مالکیتی محسوب می شود. جهت آگاهی از قوانین استفاده از این فونت ها لطفا به وب سایت (فونت ایران دات کام) مراجعه نمایید
+--------------------------------------------------------------------------------------
+Yekan Bakh fonts are considered a proprietary software. To gain information about the laws regarding the use of these fonts, please visit www.fontiran.com
+--------------------------------------------------------------------------------------
+This set of fonts are used in this project under the license: (.....)
+------------------------------------------------------------------------------------- fonts/-
+*
+**/
+
+@font-face {
+  font-family: Yekan Bakh FaNum;
+  font-style: normal;
+  font-weight: 100;
+  src: url('./yekan-bakh/ttf/YekanBakhFaNum-Thin.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: Yekan Bakh FaNum;
+  font-style: normal;
+  font-weight: 300;
+  src: url('./yekan-bakh/ttf/YekanBakhFaNum-Light.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: Yekan Bakh FaNum;
+  font-style: normal;
+  font-weight: normal;
+  src: url('./yekan-bakh/ttf/YekanBakhFaNum-Regular.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: Yekan Bakh FaNum;
+  font-style: normal;
+  font-weight: 600;
+  src: url('./yekan-bakh/ttf/YekanBakhFaNum-SemiBold.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: Yekan Bakh FaNum;
+  font-style: normal;
+  font-weight: bold;
+  src: url('./yekan-bakh/ttf/YekanBakhFaNum-Bold.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: Yekan Bakh FaNum;
+  font-style: normal;
+  font-weight: 800;
+  src: url('./yekan-bakh/ttf/YekanBakhFaNum-ExtraBold.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: Yekan Bakh FaNum;
+  font-style: normal;
+  font-weight: 900;
+  src: url('./yekan-bakh/ttf/YekanBakhFaNum-Black.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: Yekan Bakh FaNum;
+  font-style: normal;
+  font-weight: 950;
+  src: url('./yekan-bakh/ttf/YekanBakhFaNum-ExtraBlack.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Poppins';
+  src: local('Poppins Bold'), local('Poppins-Bold'),
+    url('./poppins/ttf/Poppins-Bold.ttf') format('truetype');
+  font-weight: bold;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Poppins';
+  src: local('Poppins SemiBold'), local('Poppins-SemiBold'),
+    url('./poppins/ttf/Poppins-SemiBold.ttf') format('truetype');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Poppins';
+  src: local('Poppins Regular'), local('Poppins-Regular'),
+    url('./poppins/ttf/Poppins-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
