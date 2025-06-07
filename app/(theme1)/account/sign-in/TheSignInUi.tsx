@@ -8,24 +8,15 @@ import {FiEye, FiEyeOff} from "react-icons/fi";
 import FormErrorMessage from "@/components/back-end/layout/section/FormErrorMessage";
 import TheSpinner from "@/components/layout/TheSpinner";
 import useHook from "@/hooks/controller/useHook";
-import {useLogin, useLoginOtp, useSendCodeOtp} from "@/hooks/user/useAuth";
+import {useSignIn, useSignInOtp, useSendCodeOtp} from "@/hooks/user/useAuth";
 import {setPermissions, setUser} from "@/store/slice/user";
-import {TypeApiLoginRes} from "@/types/typeApi";
+import {TypeApiSignInRes} from "@/types/typeApi";
 
-type TypeTheSignInUiForm = {
-    mobile: string
-    captcha: string
-    password: string
-    passwordRepeat: string
-    codeMeli: string
-    // type: string
-    otp: number
-}
 export default function TheSignInUi() {
 
     const {dispatch, router, setting} = useHook()
-    const {mutateAsync: mutateAsyncLogin, isPending: isPendingLogin} = useLogin()
-    const {mutateAsync: mutateAsyncLoginOtp, isPending: isPendingLoginOtp} = useLoginOtp()
+    const {mutateAsync: mutateAsyncSignIn, isPending: isPendingSignIn} = useSignIn()
+    const {mutateAsync: mutateAsyncSignInOtp, isPending: isPendingSignInOtp} = useSignInOtp()
     const {mutateAsync: mutateAsyncSendCodeOtp, isPending: isPendingSendCodeOtp} = useSendCodeOtp()
 
     const [passwordShown, setPasswordShown] = useState<boolean>(false)
@@ -37,10 +28,20 @@ export default function TheSignInUi() {
     const [showTime, setShowTime] = useState<boolean>(false);
     const [timer, setTimer] = useState<number>(180);
 
-    type TypeFormOutByLoginOtpTheSignInUi = {
+    type TypeFormTheSignInUi = {
+        mobile: string
+        captcha: string
+        password: string
+        passwordRepeat: string
+        codeMeli: string
+        // type: string
+        otp: string
+    }
+
+    type TypeFormOutBySignInOtpTheSignInUi = {
         mobile: string
     }
-    type TypeFormOutByLoginTheSignInUi = {
+    type TypeFormOutBySignInTheSignInUi = {
         password: string
         codeMeli: string
     }
@@ -51,22 +52,24 @@ export default function TheSignInUi() {
         trigger,
         handleSubmit,
         formState: {errors},
-    } = useForm<TypeTheSignInUiForm>({
+    } = useForm<TypeFormTheSignInUi>({
         criteriaMode: 'all',
     })
 
-    const onSubmit = async (data: TypeTheSignInUiForm) => {
+    const onSubmit = async (data: TypeFormTheSignInUi) => {
         setCaptcha(generateCode())
         if (parseInt(data.captcha) === captcha) return bkToast('error', 'کد کپچا صحیح نمی باشد.')
 
         if (setting.loginOTP) {
 
             if (code === Number(data.otp)) {
-                const transformedData: TypeFormOutByLoginOtpTheSignInUi = {
+                const transformedData: TypeFormOutBySignInOtpTheSignInUi = {
                     mobile: data.mobile,
                 }
-                await mutateAsyncLoginOtp(transformedData).then((res) => {
-                    handlerLogin(res)
+                await mutateAsyncSignInOtp(transformedData).then((res) => {
+                    handlerSignIn(res)
+                }).catch(errors => {
+                    bkToast('error', errors.Reason)
                 })
 
             } else {
@@ -75,20 +78,22 @@ export default function TheSignInUi() {
 
         } else {
 
-            const transformedData: TypeFormOutByLoginTheSignInUi = {
+            const transformedData: TypeFormOutBySignInTheSignInUi = {
                 codeMeli: data.codeMeli,
                 password: data.password,
             }
 
-            await mutateAsyncLogin(transformedData).then((res) => {
-                handlerLogin(res)
+            await mutateAsyncSignIn(transformedData).then((res) => {
+                handlerSignIn(res)
+            }).catch(errors => {
+                bkToast('error', errors.Reason)
             })
         }
 
     }
 
 
-    const handlerLogin = (data: TypeApiLoginRes) => {
+    const handlerSignIn = (data: TypeApiSignInRes) => {
         if (data.lock) {
             bkToast('error', data.fullName + ' حساب کاربری شما توسط مدیر غیرفعال شده است.')
         } else {
@@ -114,7 +119,7 @@ export default function TheSignInUi() {
             setTimer(180)
             setText('ارسال شد.')
             setShowTime(true)
-            bkToast('success', res.message)
+            bkToast('success', res.Message)
         }).catch(errors => {
             bkToast('error', errors.Reason)
         })
@@ -188,12 +193,12 @@ export default function TheSignInUi() {
                                         onClick={async () => {
                                             const validateForm = await trigger(['mobile'])
                                             if (validateForm && !isPendingSendCodeOtp && !showTime) {
-                                                handlerSendCodeOTP()
+                                                await handlerSendCodeOTP()
                                             }
                                         }}
-                                        className={"bg-green-800 text-white absolute left-2 top-2 px-2 py-1 rounded-md fa-sbold-18px " + ((isPendingLoginOtp || showTime) ? "disable-action" : "cursor-pointer")}>
+                                        className={"bg-green-800 text-white absolute left-2 top-2 px-2 py-1 rounded-md fa-sbold-18px " + ((isPendingSignInOtp || showTime) ? "disable-action" : "cursor-pointer")}>
                                         {
-                                            isPendingLoginOtp ?
+                                            isPendingSignInOtp ?
                                                 <TheSpinner/>
                                                 :
                                                 showTime ?
@@ -318,9 +323,9 @@ export default function TheSignInUi() {
                     </div>
                     <div className="columns-1 mb-4">
                         <button
-                            className={"bk-button bg-primary-500 dark:bg-primary-900 w-full sm:w-48 mx-auto fa-sbold-18px " + (isPendingLogin || isPendingLoginOtp ? 'disable-action' : '')}>
+                            className={"bk-button bg-primary-500 dark:bg-primary-900 w-full sm:w-48 mx-auto fa-sbold-18px " + (isPendingSignIn || isPendingSignInOtp ? 'disable-action' : '')}>
                             {
-                                isPendingLogin || isPendingLoginOtp ? (
+                                isPendingSignIn || isPendingSignInOtp ? (
                                     <TheSpinner/>
                                 ) : (
                                     'ورود به سیستم'

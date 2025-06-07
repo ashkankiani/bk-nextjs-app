@@ -3,9 +3,13 @@ import {ApiRoutesUser} from '@/api/apiRoutesUser'
 import {
     TypeApiSettings,
     TypeApiServices,
-    TypeApiLoginRes,
+    TypeApiSignInRes,
     TypeApiSendCodeOtpRes,
-    TypeApiGetProvidersForServiceRes
+    TypeApiGetProvidersForServiceRes,
+    TypeApiSignUpRes,
+    TypeApiSignUpReq,
+    TypeApiResetPasswordReq,
+    TypeApiResetPasswordRes
 } from "@/types/typeApi";
 
 
@@ -28,6 +32,8 @@ export const GetProvidersForService = (params: { serviceId: number }) => getRequ
 /*<====================================>*/
 // Auth
 /*<====================================>*/
-export const Login = (params: { codeMeli: string, password: string }) => postRequest<TypeApiLoginRes>(ApiRoutesUser.Auth.Login , params)
-export const LoginOtp = (params: { mobile: string }) => postRequest<TypeApiLoginRes>(ApiRoutesUser.Auth.LoginOtp , params)
+export const SignIn = (params: { codeMeli: string, password: string }) => postRequest<TypeApiSignInRes>(ApiRoutesUser.Auth.SignIn , params)
+export const SignInOtp = (params: { mobile: string }) => postRequest<TypeApiSignInRes>(ApiRoutesUser.Auth.SignInOtp , params)
 export const SendCodeOtp = (params: { mobile: string }) => postRequest<TypeApiSendCodeOtpRes>(ApiRoutesUser.Auth.SendCodeOtp , params)
+export const SignUp = (params: TypeApiSignUpReq) => postRequest<TypeApiSignUpRes>(ApiRoutesUser.Auth.SignUp , params)
+export const ResetPassword = (params: TypeApiResetPasswordReq) => postRequest<TypeApiResetPasswordRes>(ApiRoutesUser.Auth.ResetPassword , params)

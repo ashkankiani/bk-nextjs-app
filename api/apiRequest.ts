@@ -9,8 +9,10 @@ import {TypeApiCustomError} from "@/types/typeConfig";
 /*<====================================>*/
 export const checkRequestGet = <T>(response: AxiosResponse): T => {
     if (response.status === 200) {
-        if (response.data.Success) {
+        if (response.data.Success && response.data.Data) {
             return response.data.Data as T
+        } else if (response.data.Success && !response.data.Data) {
+            return response.data as T
         } else {
             const error: TypeApiCustomError = new Error(response.data.Message) as TypeApiCustomError
             error.Code = response.data.Code
@@ -28,8 +30,10 @@ export const checkRequestGet = <T>(response: AxiosResponse): T => {
 
 export const checkRequestPost = <T>(response: AxiosResponse): T => {
     if (response.status === 200) {
-        if (response.data.Success) {
+        if (response.data.Success && response.data.Data) {
             return response.data.Data as T
+        } else if (response.data.Success && !response.data.Data) {
+            return response.data as T
         } else {
             const error: TypeApiCustomError = new Error(response.data.Message) as TypeApiCustomError
             error.Code = response.data.Code

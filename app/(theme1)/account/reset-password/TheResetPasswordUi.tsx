@@ -8,31 +8,33 @@ import TheSpinner from "@/components/layout/TheSpinner";
 import {useEffect, useState} from "react";
 import {useForm} from "react-hook-form";
 import {bkToast, generateCode, passwordStrength} from "@/libs/utility";
-import {hookResetPasswordUser} from "@/hooks/user/hookAuth";
-import {hookSendSms} from "@/hooks/user/hookSms";
 import useHook from "@/hooks/controller/useHook";
+import {useResetPassword, useSendCodeOtp} from "@/hooks/user/useAuth";
+import {TypeApiResetPasswordReq, TypeApiResetPasswordRes} from "@/types/typeApi";
 
-type TypeTheRegisterUiForm = {
-  mobile: string,
-  password: string,
-  passwordRepeat?: string
-  type?: string
-  otp?: number
-}
+
 export default function TheResetPasswordUi() {
 
   const {router, setting} = useHook()
 
-  const [loading, setLoading] = useState<boolean>(false)
-  const [loadingOTP, setLoadingOTP] = useState<boolean>(false)
+  const {mutateAsync: mutateAsyncResetPassword, isPending: isPendingResetPassword} = useResetPassword()
+  const {mutateAsync: mutateAsyncSendCodeOtp, isPending: isPendingSendCodeOtp} = useSendCodeOtp()
+
   const [passwordShown, setPasswordShown] = useState<boolean>(false)
   const [passwordRepeatShown, setPasswordRepeatShown] = useState<boolean>(false)
 
-  const [text, setText] = useState("ارسال کد")
-  const [code, setCode] = useState(null)
+  const [text, setText] = useState<string>("ارسال کد")
+  const [code, setCode] = useState<number | null>(null)
 
-  const [showTime, setShowTime] = useState(false);
-  const [timer, setTimer] = useState(180);
+  const [showTime, setShowTime] = useState<boolean>(false);
+  const [timer, setTimer] = useState<number>(180);
+
+  type TypeFormTheRegisterUi = {
+    mobile: string,
+    password: string,
+    passwordRepeat: string
+    otp: string
+  }
 
   const {
     register,
@@ -41,35 +43,32 @@ export default function TheResetPasswordUi() {
     handleSubmit,
     watch,
     formState: {errors},
-  } = useForm<TypeTheRegisterUiForm>({
+  } = useForm<TypeFormTheRegisterUi>({
     criteriaMode: 'all',
     defaultValues: {
       password: "",
     },
   })
 
-  const onSubmit = async (data: TypeTheRegisterUiForm) => {
-    data["type"] = "RESET-PASSWORD";
-    delete data.passwordRepeat
+  const onSubmit = async (data: TypeFormTheRegisterUi) => {
     if (code === Number(data.otp)) {
-      delete data.otp
-      handlerResetPassword(data)
+      const transformedData: TypeApiResetPasswordReq = {
+        mobile: data.mobile,
+        password: data.password,
+      }
+      await mutateAsyncResetPassword(transformedData).then((res) => {
+        handlerResetPassword(res)
+      }).catch(errors => {
+        bkToast('error', errors.Reason)
+      })
     } else {
       bkToast('error', 'کد تایید موبایل صحیح نمی باشد.')
     }
   }
 
-  const handlerResetPassword = async data => {
-    setLoading(true)
-    await hookResetPasswordUser(data, (response, message) => {
-      setLoading(false)
-      if (response) {
-        bkToast('success', 'کلمه عبور با موفقیت تغییر یافت.')
-        router.push('/account/sign-in')
-      } else {
-        bkToast('error', message)
-      }
-    })
+  const handlerResetPassword = (data: TypeApiResetPasswordRes) => {
+    bkToast('success', data.Message)
+    router.push('/account/sign-in')
   }
 
   const [meter, setMeter] = useState(false)
@@ -80,35 +79,35 @@ export default function TheResetPasswordUi() {
 
 
   const handlerSendCodeOTP = async () => {
-    setLoadingOTP(true)
-    let code = generateCode()
+    const code: number = generateCode()
     setCode(code)
-    let params = {
-      // type: "OTP",
+    const params = {
       mobile: getValues('mobile'),
       code: code
     }
-    await hookSendSms(params, (response, message) => {
-      setLoadingOTP(false)
-      if (response) {
-        if (message.status) {
-          setTimer(180)
-          setText('ارسال شد.')
-          setShowTime(true)
-        }
-        bkToast('success', message.message)
-      } else {
-        bkToast('error', message.message)
-      }
+
+    await mutateAsyncSendCodeOtp(params).then((res) => {
+      setTimer(180)
+      setText('ارسال شد.')
+      setShowTime(true)
+      bkToast('success', res.Message)
+    }).catch(errors => {
+      bkToast('error', errors.Reason)
     })
+
   }
 
   useEffect(() => {
     if (timer === 0) {
-      setShowTime(false)
-      setText('ارسال کد')
+      setShowTime(false);
+      setText('ارسال کد');
+      return; // از اجرای تایمر جلوگیری کن
     }
-    const counter = timer > 0 && setInterval(() => setTimer(timer - 1), 1000);
+
+    const counter = setInterval(() => {
+      setTimer(prev => prev - 1);
+    }, 1000);
+
     return () => clearInterval(counter);
   }, [timer]);
 
@@ -277,13 +276,13 @@ export default function TheResetPasswordUi() {
             <div
               onClick={async () => {
                 const validateForm = await trigger(['mobile'])
-                if (validateForm && !loadingOTP && !showTime) {
+                if (validateForm && !isPendingSendCodeOtp && !showTime) {
                   handlerSendCodeOTP()
                 }
               }}
-              className={"bg-green-800 text-white absolute left-2 top-2 px-2 py-1 rounded-md fa-sbold-18px " + ((loadingOTP || showTime) ? "disable-action" : "cursor-pointer")}>
+              className={"bg-green-800 text-white absolute left-2 top-2 px-2 py-1 rounded-md fa-sbold-18px " + ((isPendingSendCodeOtp || showTime) ? "disable-action" : "cursor-pointer")}>
               {
-                loadingOTP ?
+                isPendingSendCodeOtp ?
                   <TheSpinner/>
                   :
                   showTime ?
@@ -296,9 +295,9 @@ export default function TheResetPasswordUi() {
           </div>
           <div className="columns-1 mb-4">
             <button
-              className={"bk-button bg-primary-500 dark:bg-primary-900 w-full sm:w-48 mx-auto fa-sbold-18px " + (loading ? '' : 'disable-action')}>
+              className={"bk-button bg-primary-500 dark:bg-primary-900 w-full sm:w-48 mx-auto fa-sbold-18px " + (isPendingResetPassword ? 'disable-action' : '')}>
               {
-                loading ?
+                isPendingResetPassword ?
                   <TheSpinner/>
                   :
                   'ثبت کلمه عبور جدید'

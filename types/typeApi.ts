@@ -428,7 +428,7 @@ export interface TypeOtpSms {
 }
 
 
-export interface TypeApiLoginRes {
+export interface TypeApiSignInRes {
     id: number;
     catalogId: number;
     codeMeli: string;
@@ -448,7 +448,33 @@ export type TypeApiGetProvidersForServiceRes = TypeApiProviders & {
 
 
 export interface TypeApiSendCodeOtpRes {
-    message: string
+    Message: string
+}
+
+
+
+export interface TypeApiSignUpReq {
+    codeMeli: string
+    fullName: string
+    email: string
+    mobile: string
+    password: string
+}
+export interface TypeApiSignUpRes {
+    Message: string
+}
+
+
+
+
+
+
+export interface TypeApiResetPasswordReq {
+    mobile: string
+    password: string
+}
+export interface TypeApiResetPasswordRes {
+    Message: string
 }
 
 

@@ -11,8 +11,10 @@ export const ApiRoutesUser: TypeApiRoutesClient = {
         GetProvidersForService: '/user/provider/getProvidersForService?',
     },
     Auth: {
-        Login: '/user/auth/login',
-        LoginOtp: '/user/auth/loginOtp',
+        SignIn: '/user/auth/signIn',
+        SignInOtp: '/user/auth/signInOtp',
         SendCodeOtp: '/user/auth/sendCodeOtp',
+        SignUp: '/user/auth/signUp',
+        ResetPassword: '/user/auth/resetPassword',
     },
 }

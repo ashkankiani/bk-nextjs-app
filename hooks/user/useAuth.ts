@@ -1,10 +1,11 @@
 import {useMutation} from '@tanstack/react-query'
-import {Login, LoginOtp, SendCodeOtp} from "@/api/apisClient";
+import {SignIn, SignInOtp, SendCodeOtp, SignUp, ResetPassword} from "@/api/apisClient";
+import {TypeApiResetPasswordReq, TypeApiSignUpReq} from "@/types/typeApi";
 
 
-function useLogin(Optional?: object) {
+function useSignIn(Optional?: object) {
     const {mutateAsync, isPending} = useMutation({
-        mutationFn: (data: { codeMeli: string, password: string }) => Login(data),
+        mutationFn: (data: { codeMeli: string, password: string }) => SignIn(data),
         ...Optional,
     })
     return {
@@ -13,9 +14,9 @@ function useLogin(Optional?: object) {
     }
 }
 
-function useLoginOtp(Optional?: object) {
+function useSignInOtp(Optional?: object) {
     const {mutateAsync, isPending} = useMutation({
-        mutationFn: (data: { mobile: string }) => LoginOtp(data),
+        mutationFn: (data: { mobile: string }) => SignInOtp(data),
         ...Optional,
     })
     return {
@@ -36,4 +37,27 @@ function useSendCodeOtp(Optional?: object) {
 }
 
 
-export {useLogin, useLoginOtp, useSendCodeOtp}
+function useSignUp(Optional?: object) {
+    const {mutateAsync, isPending} = useMutation({
+        mutationFn: (data: TypeApiSignUpReq) => SignUp(data),
+        ...Optional,
+    })
+    return {
+        mutateAsync,
+        isPending,
+    }
+}
+
+function useResetPassword(Optional?: object) {
+    const {mutateAsync, isPending} = useMutation({
+        mutationFn: (data: TypeApiResetPasswordReq) => ResetPassword(data),
+        ...Optional,
+    })
+    return {
+        mutateAsync,
+        isPending,
+    }
+}
+
+
+export {useSignIn, useSignInOtp, useSendCodeOtp, useSignUp, useResetPassword}

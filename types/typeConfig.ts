@@ -1,3 +1,4 @@
+import {ReactNode} from "react";
 
 /*<====================================>*/
 // Api Config
@@ -41,7 +42,6 @@ export type TypeApiResponse = {
 }
 
 
-import {ReactNode} from "react";
 
 export type TypeGender = 'NONE' | 'WOMAN' | 'MAN'
 export type TypeDiscountsType = 'CONSTANT' | 'PERCENT'
