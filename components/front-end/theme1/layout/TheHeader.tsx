@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import imageLogo from "@/public/images/logo.png"
-import SelectTheme from "@/components/front-end/layout/SelectTheme";
+import SelectTheme from "@/components/front-end/theme1/components/SelectTheme";
 import {BiExit} from "react-icons/bi";
 import {RiSettings4Line} from "react-icons/ri";
 import {CgProfile} from "react-icons/cg";

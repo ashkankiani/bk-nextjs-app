@@ -1,3 +1,4 @@
+"use client"
 import {ReactNode, useState} from "react";
 import useHook from "@/hooks/controller/useHook";
 import {RxHamburgerMenu} from "react-icons/rx";
@@ -10,6 +11,7 @@ import {IoMdClose} from "react-icons/io";
 export default function LayoutPanel({children}:{ children: ReactNode }) {
   const {user, permissions, router} = useHook()
   const [toggleSidebar, setToggleSidebar] = useState(true)
+
   if ((user === null) || !permissions.admin) router.push('/account/sign-in')
 
   const [menuInMobile, setMenuInMobile] = useState(false)

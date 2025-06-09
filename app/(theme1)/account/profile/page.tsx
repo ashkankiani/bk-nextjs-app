@@ -1,5 +1,5 @@
-import TheSignOutUi from "@/app/(theme1)/account/sign-out/TheSignOutUi";
+import TheProfileUi from "@/app/(theme1)/account/profile/TheProfileUi";
 
 export default function TheProfilePage() {
-    return <TheSignOutUi/>
+    return <TheProfileUi/>
 }

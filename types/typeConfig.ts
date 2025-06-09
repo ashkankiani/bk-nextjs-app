@@ -22,14 +22,12 @@ interface EndpointApiRoutes {
     [key: string]: string
 }
 
-export type TypeApiRoutesPersonnel = {
-    Setting: EndpointApiRoutes
-    Service: EndpointApiRoutes
-    Provider: EndpointApiRoutes
-    Auth: EndpointApiRoutes
+export type TypeApiRoutesAdmin = {
+    Faq: EndpointApiRoutes
+
 }
 
-export type TypeApiRoutesClient = {
+export type TypeApiRoutesUser = {
     Setting: EndpointApiRoutes
     Service: EndpointApiRoutes
     Provider: EndpointApiRoutes

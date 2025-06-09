@@ -49,7 +49,7 @@ export async function POST(request: Request) {
             where: {mobile},
         });
 
-        return createSuccessResponseWithMessage('لمه عبور با موفقیت تغییر یافت.');
+        return createSuccessResponseWithMessage('کلمه عبور با موفقیت تغییر یافت.');
     } catch (error: unknown) {
         return handlerRequestError(error);
     }

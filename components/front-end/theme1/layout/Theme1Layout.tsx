@@ -18,7 +18,7 @@ export default function Theme1Layout({children}: { children: ReactNode }) {
     return (
         <>
             <div>
-                <div className={" " + (theme === "light" ? 'bg-home-theme1 bg-cover bg-center ' : '')}>
+                <div className={" " + (theme === "light" ? 'bg-home-theme1 bg-cover bg-center ' : 'bg-darkNavy1')}>
                     <div className="container min-h-screen flex-center-center flex-col py-4">
                         {children}
                     </div>

@@ -10,16 +10,21 @@ export const metadata: Metadata = {
 
 export default function NotFound() {
   return (
-    <div className="relative flex min-h-screen items-center justify-center overflow-hidden">
-      <div className="px-6 py-16 text-center font-medium before:container before:absolute before:left-1/2 before:aspect-square before:-translate-x-1/2 before:rounded-full before:bg-[linear-gradient(180deg,#4361EE_0%,rgba(67,97,238,0)_50.73%)] before:opacity-10 md:py-20">
-        <div className="relative">
-          <Image src={Image404} alt="PAGE_NOT_FOUND" />
-          <p className="my-5 ">صفحه یافت نشد</p>
-          <Link href="/" className="bk-button bg-green-700 mx-auto max-w-52">
-            بازگشت به صفحه اصلی
-          </Link>
+      <div className="bg-black/80 rounded-lg shadow-lg p-8 mx-auto block w-full md:w-4/12">
+        <Image src={Image404} className="mx-auto" alt="صفحه 404" />
+        <div className="wrapper-text mt-6 text-center text-white mx-auto">
+          <h1 className="mb-2 fa-bold-24px">خطای 404 - صفحه یافت نشد</h1>
+          <p className="mb-4 fa-regular-18px">صفحه درخواست شده وجود ندارد.</p>
+          {/*<p className="mb-4 fa-regular-18px">اگر بیشتر از حد مجاز تلاش کنید، IP شما مسدود می شود.</p>*/}
+          <div>
+            <Link
+                href="/"
+                className="bk-button bg-green-400 fa-sbold-20px mx-auto w-72 "
+            >
+              ورود به صفحه اصلی
+            </Link>
+          </div>
         </div>
       </div>
-    </div>
   )
 }

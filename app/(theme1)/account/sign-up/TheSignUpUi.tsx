@@ -6,7 +6,7 @@ import {useEffect, useState} from "react";
 import {bkToast, generateCode, passwordStrength} from "@/libs/utility";
 import {FiEye, FiEyeOff} from "react-icons/fi";
 import imageLogo from "@/public/images/logo.png";
-import FormErrorMessage from "@/components/back-end/layout/section/FormErrorMessage";
+import FormErrorMessage from "@/components/back-end/section/FormErrorMessage";
 import TheSpinner from "@/components/layout/TheSpinner";
 import useHook from "@/hooks/controller/useHook";
 import {useSendCodeOtp, useSignUp} from "@/hooks/user/useAuth";

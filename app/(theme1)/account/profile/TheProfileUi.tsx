@@ -4,69 +4,74 @@ import {useForm} from "react-hook-form";
 import {useState} from "react";
 import {bkToast, passwordStrength} from "@/libs/utility";
 import {FiEye, FiEyeOff} from "react-icons/fi";
-import {hookUpdateUser} from "@/hooks/user/hookAuth";
 import imageLogo from "@/public/images/logo.png";
 import {setUser} from "@/store/slice/user";
-import FormErrorMessage from "@/components/back-end/layout/section/FormErrorMessage";
+import FormErrorMessage from "@/components/back-end/section/FormErrorMessage";
 import TheSpinner from "@/components/layout/TheSpinner";
 import useHook from "@/hooks/controller/useHook";
+import {TypeGender} from "@/types/typeConfig";
+import {TypeApiUpdateUserReq, TypeApiUsers} from "@/types/typeApi";
+import {useUpdateUser} from "@/hooks/user/useAuth";
 
-type TypeTheProfileUiForm = {
-    id: number
-    gender: "male" | "female"
-    fullName:  string
-    codeMeli: string
-    mobile: string
-    email: string
-    password?: string
-    passwordRepeat?: string
-    type?: string
-}
 export default function TheProfileUi() {
-    const {dispatch , user} = useHook()
-    const [loading, setLoading] = useState<boolean>(false)
+    const {dispatch, user, setting} = useHook()
+
+    const {mutateAsync: mutateAsyncUpdateUser, isPending: isPendingUpdateUser} = useUpdateUser()
+
     const [passwordShown, setPasswordShown] = useState<boolean>(false)
     const [passwordRepeatShown, setPasswordRepeatShown] = useState<boolean>(false)
+
+    const hasEmail = setting.emailStatus === "MANDATORY" // ? true : setting.emailStatus === "OPTIONAL" ? false : false
+
+
+    type TypeFormTheProfileUi = {
+        gender: TypeGender
+        fullName: string
+        codeMeli: string
+        mobile: string
+        email: string | null
+        password: string
+        passwordRepeat: string
+    }
 
     const {
         register,
         handleSubmit,
         watch,
         formState: {errors},
-    } = useForm<TypeTheProfileUiForm>({
+    } = useForm<TypeFormTheProfileUi>({
         criteriaMode: 'all',
         defaultValues: {
-            id: user.id,
-            gender: user.gender === "NONE" ? "" : user.gender,
+            gender: user.gender,
             fullName: user.fullName,
             codeMeli: user.codeMeli,
             mobile: user.mobile,
             email: user.email,
             password: '',
-            // passwordRepeat: user.password,
         },
     })
 
-    const onSubmit = async (data: TypeTheProfileUiForm) => {
-        delete data.passwordRepeat
-        data["type"] = "UPDATE";
-        if (watch('password').length === 0) {
-            delete data.password
+    const onSubmit = async (data: TypeFormTheProfileUi) => {
+        const transformedData: TypeApiUpdateUserReq = {
+            mobile: data.mobile,
+            gender: data.gender,
+            fullName: data.fullName,
+            codeMeli: data.codeMeli,
+            ...(data.email && {email: data.email}),
+            ...(watch('password').length !== 0 && {password: data.password})
         }
-        handlerUpdateUser(data)
+        await mutateAsyncUpdateUser(transformedData).then((res) => {
+            handlerUpdateUser(res)
+        }).catch(errors => {
+            bkToast('error', errors.Reason)
+        })
+
     }
 
-    const handlerUpdateUser = async (data: TypeTheProfileUiForm) => {
-        setLoading(true)
-        await hookUpdateUser(data, (response, message) => {
-            setLoading(false)
-            if (response) {
-                dispatch(setUser(message))
-                bkToast('success', 'بروزرسانی با موفقیت انجام شد.')
-            } else {
-                bkToast('error', message)
-            }
-        })
+    const handlerUpdateUser = async (data: TypeApiUsers) => {
+        console.log(data)
+        dispatch(setUser(data))
+        bkToast('success', 'بروزرسانی با موفقیت انجام شد.')
     }
 
     const [meter, setMeter] = useState(false)
@@ -115,8 +120,10 @@ export default function TheProfileUi() {
                                     message: 'جنسیت ضروری است.',
                                 },
                             })}
+                            defaultValue=""
                             className="bk-input">
                             <option value="" disabled hidden={user.gender !== "NONE"}>جنسیت</option>
+                            <option value="NONE" disabled hidden={user.gender !== "NONE"}>تعیین نشده</option>
                             <option value="MAN">مرد</option>
                             <option value="WOMAN">زن</option>
                         </select>
@@ -168,6 +175,10 @@ export default function TheProfileUi() {
                     <div className="columns-1 mb-4">
                         <input
                             {...register('email', {
+                                required: {
+                                    value: hasEmail,
+                                    message: 'ایمیل ضروری است',
+                                },
                                 pattern: {
                                     value: /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$/,
                                     message: 'ایمیل شما استاندارد نیست.',
@@ -227,22 +238,22 @@ export default function TheProfileUi() {
                               </span>
                         <style jsx>
                             {`
-                    .password-strength-meter::before {
-                        content: '';
-                        background-color: ${[
-                                'red',
-                                'orange',
-                                '#03a2cc',
-                                '#03a2cc',
-                                '#0ce052',
-                            ][passwordStrengthLength - 1] || ''};
-                        height: 100%;
-                        width: ${(passwordStrengthLength / 5) * 100}%;
-                        display: block;
-                        border-radius: 3px;
-                        transition: width 0.2s;
-                    }
-                `}
+                                .password-strength-meter::before {
+                                    content: '';
+                                    background-color: ${[
+                                        'red',
+                                        'orange',
+                                        '#03a2cc',
+                                        '#03a2cc',
+                                        '#0ce052',
+                                    ][passwordStrengthLength - 1] || ''};
+                                    height: 100%;
+                                    width: ${(passwordStrengthLength / 5) * 100}%;
+                                    display: block;
+                                    border-radius: 3px;
+                                    transition: width 0.2s;
+                                }
+                            `}
                         </style>
                         {meter && <div className="password-strength-meter"></div>}
                         <FormErrorMessage errors={errors} name="password"/>
@@ -298,9 +309,9 @@ export default function TheProfileUi() {
                     </div>
                     <div className="columns-1 mb-4">
                         <button
-                            className={"bk-button bg-primary-500 dark:bg-primary-900 w-full sm:w-48 mx-auto fa-sbold-18px " + (loading ? 'disable-action' : '')}>
+                            className={"bk-button bg-primary-500 dark:bg-primary-900 w-full sm:w-48 mx-auto fa-sbold-18px " + (isPendingUpdateUser ? 'disable-action' : '')}>
                             {
-                                loading ? (
+                                isPendingUpdateUser ? (
                                     <TheSpinner/>
                                 ) : (
                                     'ویرایش پروفایل'

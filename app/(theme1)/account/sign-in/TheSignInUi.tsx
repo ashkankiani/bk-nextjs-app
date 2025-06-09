@@ -5,11 +5,11 @@ import {useEffect, useState} from "react";
 import {useForm} from "react-hook-form";
 import {bkToast, generateCode, onlyTypeNumber} from "@/libs/utility";
 import {FiEye, FiEyeOff} from "react-icons/fi";
-import FormErrorMessage from "@/components/back-end/layout/section/FormErrorMessage";
+import FormErrorMessage from "@/components/back-end/section/FormErrorMessage";
 import TheSpinner from "@/components/layout/TheSpinner";
 import useHook from "@/hooks/controller/useHook";
 import {useSignIn, useSignInOtp, useSendCodeOtp} from "@/hooks/user/useAuth";
-import {setPermissions, setUser} from "@/store/slice/user";
+import {setIsLogin, setPermissions, setUser} from "@/store/slice/user";
 import {TypeApiSignInRes} from "@/types/typeApi";
 
 export default function TheSignInUi() {
@@ -30,7 +30,7 @@ export default function TheSignInUi() {
 
     type TypeFormTheSignInUi = {
         mobile: string
-        captcha: string
+        captcha: number
         password: string
         passwordRepeat: string
         codeMeli: string
@@ -57,8 +57,7 @@ export default function TheSignInUi() {
     })
 
     const onSubmit = async (data: TypeFormTheSignInUi) => {
-        setCaptcha(generateCode())
-        if (parseInt(data.captcha) === captcha) return bkToast('error', 'کد کپچا صحیح نمی باشد.')
+        if (data.captcha !== captcha) return bkToast('error', 'کد کپچا صحیح نمی باشد.')
 
         if (setting.loginOTP) {
 
@@ -89,6 +88,7 @@ export default function TheSignInUi() {
                 bkToast('error', errors.Reason)
             })
         }
+        setCaptcha(generateCode())
 
     }
 
@@ -98,6 +98,7 @@ export default function TheSignInUi() {
             bkToast('error', data.fullName + ' حساب کاربری شما توسط مدیر غیرفعال شده است.')
         } else {
             const {permissions, ...dataWithoutPermissions} = data;
+            dispatch(setIsLogin(true ))
             dispatch(setPermissions(permissions))
             dispatch(setUser(dataWithoutPermissions))
 
@@ -300,6 +301,7 @@ export default function TheSignInUi() {
                     <div className="columns-1 mb-4 relative">
                         <input
                             {...register('captcha', {
+                                valueAsNumber: true,
                                 required: {
                                     value: true,
                                     message: 'کپچا مورد نیاز است.',

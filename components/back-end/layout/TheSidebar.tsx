@@ -4,8 +4,8 @@ import {AiOutlineEye} from "react-icons/ai";
 import imageLogo from "@/public/images/logo.png";
 import imageLogoIcon from "@/public/images/logo-icon.png";
 import {BsQrCodeScan} from "react-icons/bs";
-import SelectThemeAdmin from "@/components/back-end/layout/section/SelectTheme";
-import ItemMenuSidebar from "@/components/back-end/layout/section/ItemMenuSidebar";
+import SelectThemeAdmin from "@/components/back-end/section/SelectTheme";
+import ItemMenuSidebar from "@/components/back-end/section/ItemMenuSidebar";
 import {IoExitOutline} from "react-icons/io5";
 import React from "react";
 
@@ -65,7 +65,7 @@ export default function TheSidebar({toggleSidebar, setToggleSidebar, menuInMobil
         <div className="transition-all whitespace-nowrap ">خروج</div>
       </Link>
 
-      <Link href="/admin/settings#licence"
+      <Link href="/admin/settings#license"
             className={"my-2 p-2 fa-sbold-18px bg-red-500 text-white rounded-md " + (toggleSidebar ? "flex-center-start gap-2" : "flex-center-center")}>
         <BsQrCodeScan className="text-primary-900 dark:text-primary-700" size="24px"/>
         <div className={"transition-all whitespace-nowrap " + (toggleSidebar ? "" : "hidden")}>محصول شما هنوز

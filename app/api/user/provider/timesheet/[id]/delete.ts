@@ -1,7 +1,7 @@
 import prisma from '@/prisma/client';
 import {
     checkMethodAllowed,
-    createErrorResponse,
+    createErrorResponseWithMessage,
     createSuccessResponseWithMessage,
     getQueryStringByUrl, handlerRequestError,
 } from "@/app/api/_utils/handleRequest";
@@ -24,7 +24,7 @@ export async function DELETE(request: Request) {
 
     // بررسی وجود ID
     if (!id) {
-        return createErrorResponse("ID Is Required");
+        return createErrorResponseWithMessage("آیدی پست ضروری است.");
     }
 
     try {

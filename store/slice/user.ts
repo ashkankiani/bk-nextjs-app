@@ -24,9 +24,9 @@ export const sliceUser = createSlice({
   initialState: initialState(),
   reducers: {
     reducerUserReset: () => initialState(),
-    // setIsLogin: (state, action) => {
-    //   state.isLogin = action.payload
-    // },
+    setIsLogin: (state, action) => {
+      state.isLogin = action.payload
+    },
     setUser: (state, action) => {
       state.user = action.payload
     },
@@ -51,7 +51,7 @@ export const sliceUser = createSlice({
 
 export const {
   reducerUserReset,
-  // setIsLogin,
+  setIsLogin,
   setUser,
   setPermissions,
   setSearchQuery,

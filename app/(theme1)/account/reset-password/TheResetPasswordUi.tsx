@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import imageLogo from "@/public/images/logo.png";
-import FormErrorMessage from "@/components/back-end/layout/section/FormErrorMessage";
+import FormErrorMessage from "@/components/back-end/section/FormErrorMessage";
 import {FiEye, FiEyeOff} from "react-icons/fi";
 import TheSpinner from "@/components/layout/TheSpinner";
 import {useEffect, useState} from "react";

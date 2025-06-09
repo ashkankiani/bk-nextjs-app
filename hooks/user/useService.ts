@@ -1,5 +1,5 @@
 import {useQuery} from '@tanstack/react-query'
-import {GetServices} from "@/api/apisClient";
+import {GetServices} from "@/api/apisUser";
 
 function useGetServices(Optional?: object) {
     const {data, isLoading, isFetched} = useQuery({

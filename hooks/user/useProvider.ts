@@ -1,5 +1,5 @@
 import {useQuery} from '@tanstack/react-query'
-import {GetProvidersForService} from "@/api/apisClient";
+import {GetProvidersForService} from "@/api/apisUser";
 
 function useGetProvidersForService(params: { serviceId: number }, Optional?: object) {
     const {data, isLoading, isFetched} = useQuery({

@@ -196,18 +196,6 @@ export interface TypeTimeSheetRes {
     updatedAt: Date;
 }
 
-export interface TypeFaqReq {
-    title: string;
-    content: string;
-}
-
-export interface TypeFaqRes {
-    id: number;
-    title: string;
-    content: string;
-    createdAt: Date;
-    updatedAt: Date;
-}
 
 export interface TypeHolidayReq {
     date: string;
@@ -410,10 +398,10 @@ export interface TypeApiConnections {
     smsCodePattern7: string | null;
     smsCodePattern8: string | null;
 
-    smtpURL: string| null;
-    smtpPort: number| null;
-    smtpUserName: string| null;
-    smtpPassword: string| null;
+    smtpURL: string | null;
+    smtpPort: number | null;
+    smtpUserName: string | null;
+    smtpPassword: string | null;
 
     createdAt: Date;
     updatedAt: Date;
@@ -446,11 +434,9 @@ export type TypeApiGetProvidersForServiceRes = TypeApiProviders & {
 };
 
 
-
 export interface TypeApiSendCodeOtpRes {
     Message: string
 }
-
 
 
 export interface TypeApiSignUpReq {
@@ -460,28 +446,72 @@ export interface TypeApiSignUpReq {
     mobile: string
     password: string
 }
+
 export interface TypeApiSignUpRes {
     Message: string
 }
-
-
-
-
 
 
 export interface TypeApiResetPasswordReq {
     mobile: string
     password: string
 }
+
 export interface TypeApiResetPasswordRes {
     Message: string
 }
 
 
+export interface TypeApiUpdateUserReq {
+    codeMeli: string
+    fullName: string
+    email?: string
+    mobile: string
+    password?: string
+    gender: TypeGender
+}
 
 
+// Faq
+export interface TypeApiFaq {
+    id: number
+    title: string
+    content: string
+    createdAt: string
+    updatedAt: string
+}
 
 
+export interface TypeApiAddFaqReq {
+    title: string;
+    content: string;
+}
 
+export interface TypeApiAddFaqRes {
+    Message: string
+}
 
+export interface TypeApiDeleteFaqReq {
+    id: number;
+}
 
+export interface TypeApiDeleteFaqRes {
+    Message: string
+}
+
+export type TypeApiGetFaqsRes = TypeApiFaq[]
+
+export type TypeApiShowFaqReq = {
+    id: number
+}
+export type TypeApiShowFaqRes = TypeApiFaq
+
+export type TypeApiUpdateFaqReq = {
+    id: number;
+    title: string;
+    content: string;
+}
+
+export interface TypeApiUpdateFaqRes {
+    Message: string
+}

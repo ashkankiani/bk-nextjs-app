@@ -1,21 +1,18 @@
 "use client"
-import {useDispatch} from "react-redux";
-import {useRouter} from "next/router";
-import {hookDeleteSession} from "@/hooks/user/hookSession";
 import {reducerUserReset} from "@/store/slice/user";
 import {deleteCookie} from "cookies-next";
 import {useEffect} from "react";
+import useHook from "@/hooks/controller/useHook";
 
 export default function TheSignOutUi() {
 
-    const dispatch = useDispatch()
-    const router = useRouter()
+    const {dispatch, router} = useHook()
 
     const handlerDeleteSession = async () => {
-        await hookDeleteSession()
         await handlerLogout()
     }
 
+    // حذف سشن از طریق سرور
     const handlerLogout = () => {
         dispatch(reducerUserReset())
         deleteCookie("bk-session")

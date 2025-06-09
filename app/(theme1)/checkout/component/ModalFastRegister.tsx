@@ -2,7 +2,7 @@ import {IoClose} from "react-icons/io5";
 import {useForm} from "react-hook-form";
 import {bkToast} from "@/libs/utility";
 import {hookLogin, hookRegister} from "@/hooks/user/hookAuth";
-import FormErrorMessage from "@/components/back-end/layout/section/FormErrorMessage";
+import FormErrorMessage from "@/components/back-end/section/FormErrorMessage";
 import TheSpinner from "@/components/layout/TheSpinner";
 import {useState} from "react";
 import {useDispatch} from "react-redux";

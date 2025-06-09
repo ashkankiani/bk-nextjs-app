@@ -1,6 +1,7 @@
 import prisma from '@/prisma/client';
 import {
-    checkMethodAllowed, createErrorResponse,
+    checkMethodAllowed,
+    createErrorResponseWithMessage,
     createSuccessResponseWithData,
     getQueryStringByUrl,
     handlerRequestError
@@ -26,7 +27,7 @@ export async function GET(request: Request) {
 
     // بررسی وجود ID
     if (!id) {
-        return createErrorResponse("ID Is Required");
+        return createErrorResponseWithMessage("آیدی پست ضروری است.");
     }
 
     try {

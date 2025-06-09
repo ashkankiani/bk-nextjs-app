@@ -1,6 +1,6 @@
-import {TypeApiRoutesClient} from "@/types/typeConfig";
+import {TypeApiRoutesUser} from "@/types/typeConfig";
 
-export const ApiRoutesUser: TypeApiRoutesClient = {
+export const ApiRoutesUser: TypeApiRoutesUser = {
     Setting: {
         GetSettings: '/user/setting/getSettings',
     },
@@ -16,5 +16,6 @@ export const ApiRoutesUser: TypeApiRoutesClient = {
         SendCodeOtp: '/user/auth/sendCodeOtp',
         SignUp: '/user/auth/signUp',
         ResetPassword: '/user/auth/resetPassword',
+        UpdateUser: '/user/auth/updateUser',
     },
 }

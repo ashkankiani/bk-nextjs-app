@@ -1,6 +1,6 @@
 import {useMutation} from '@tanstack/react-query'
-import {SignIn, SignInOtp, SendCodeOtp, SignUp, ResetPassword} from "@/api/apisClient";
-import {TypeApiResetPasswordReq, TypeApiSignUpReq} from "@/types/typeApi";
+import {SignIn, SignInOtp, SendCodeOtp, SignUp, ResetPassword, UpdateUser} from "@/api/apisUser";
+import {TypeApiResetPasswordReq, TypeApiSignUpReq, TypeApiUpdateUserReq} from "@/types/typeApi";
 
 
 function useSignIn(Optional?: object) {
@@ -59,5 +59,23 @@ function useResetPassword(Optional?: object) {
     }
 }
 
+function useUpdateUser(Optional?: object) {
+    const {mutateAsync, isPending} = useMutation({
+        mutationFn: (data: TypeApiUpdateUserReq) => UpdateUser(data),
+        ...Optional,
+    })
+    return {
+        mutateAsync,
+        isPending,
+    }
+}
 
-export {useSignIn, useSignInOtp, useSendCodeOtp, useSignUp, useResetPassword}
+
+export {
+    useSignIn,
+    useSignInOtp,
+    useSendCodeOtp,
+    useSignUp,
+    useResetPassword,
+    useUpdateUser
+}
