@@ -1,52 +1,42 @@
+"use client"
 import HeadPage from "@/components/layout/HeadPage";
 import Link from "next/link";
 import {MdOutlineKeyboardBackspace} from "react-icons/md";
 import {AiOutlineSave} from "react-icons/ai";
-import {useRouter} from "next/router";
 import {Controller, useForm} from "react-hook-form";
 import {bkToast, PNtoEN} from "@/libs/utility";
-import {hookAddHoliday} from "@/hooks/admin/hookHoliday";
 import TheSpinner from "@/components/layout/TheSpinner";
 import DatePicker from "react-multi-date-picker"
-import {useState} from "react";
 import persian from "react-date-object/calendars/persian";
 import persian_fa from "react-date-object/locales/persian_fa";
-import {useSelector} from "react-redux";
 import FormErrorMessage from "@/components/back-end/section/FormErrorMessage";
 import HeaderPage from "@/components/back-end/section/HeaderPage";
+import useHook from "@/hooks/controller/useHook";
+import {useAddHoliday} from "@/hooks/admin/useHoliday";
+import {TypeApiAddHolidayReq} from "@/types/typeApi";
 
-export default function AddHoliday() {
+export default function TheAddHolidayUi() {
 
-    const router = useRouter()
+    const {router, theme} = useHook()
 
-    const theme = useSelector(state => state.app.initTheme)
-
-    const [loading, setLoading] = useState(false)
-
+    const {mutateAsync: mutateAsyncAddHoliday, isPending: isPendingAddHoliday} = useAddHoliday()
 
     const {
         register,
         control,
         handleSubmit,
         formState: {errors},
-    } = useForm({
+    } = useForm<TypeApiAddHolidayReq>({
         criteriaMode: 'all',
     })
 
-    const onSubmit = data => {
-        addHoliday(data)
-    }
-
-    const addHoliday = async data => {
-        setLoading(true)
-        await hookAddHoliday(data, (response, message) => {
-            setLoading(false)
-            if (response) {
-                bkToast('success', message)
-                router.push('/admin/holidays')
-            } else {
-                bkToast('error', message)
-            }
+    const onSubmit = async (data: TypeApiAddHolidayReq) => {
+        await mutateAsyncAddHoliday(data).then((res) => {
+            bkToast('success', res.Message)
+        }).catch(errors => {
+            bkToast('error', errors.Reason)
+        }).finally(() => {
+            router.push('/admin/holidays')
         })
     }
 
@@ -74,7 +64,7 @@ export default function AddHoliday() {
                                     },
                                 }}
                                 render={({
-                                             field: {onChange,  value},
+                                             field: {onChange, value},
                                              // fieldState: {invalid, isDirty}, //optional
                                              // formState: {errors}, //optional, but necessary if you want to show an error message
                                          }) => (
@@ -114,10 +104,10 @@ export default function AddHoliday() {
                             <button
                                 className={
                                     'panel-form-submit ' +
-                                    (loading ? 'disable-action' : '')
+                                    (isPendingAddHoliday ? 'disable-action' : '')
                                 }
                                 type="submit">
-                                {loading ? (
+                                {isPendingAddHoliday ? (
                                     <TheSpinner/>
                                 ) : (
                                     <span><AiOutlineSave size="24px" className="inline-flex align-middle ml-2"/>ثبت تعطیلی جدید</span>

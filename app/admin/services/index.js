@@ -80,7 +80,7 @@ export default function Services() {
               <th>ایمیل</th>
               <th>جنسیت</th>
               <th>ارائه دهنده متصل</th>
-              <th width="100">عملیات</th>
+              <th className="w-[100px]">عملیات</th>
             </tr>
             </thead>
             <tbody>

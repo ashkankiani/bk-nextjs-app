@@ -197,33 +197,9 @@ export interface TypeTimeSheetRes {
 }
 
 
-export interface TypeHolidayReq {
-    date: string;
-    title: string;
-}
 
-export interface TypeHolidayRes {
-    id: number;
-    date: string;
-    title: string;
-    createdAt: Date;
-    updatedAt: Date;
-}
 
-export interface TypeDiscountsRes {
-    id: number;
-    title: string;
-    code: string;
-    startDate?: string;
-    endDate?: string;
-    type: TypeDiscountsType;
-    amount: number;
 
-    Orders?: TypeOrderRes[];
-
-    createdAt: Date;
-    updatedAt: Date;
-}
 
 export interface TypeApiUsers {
     id: number;
@@ -513,5 +489,121 @@ export type TypeApiUpdateFaqReq = {
 }
 
 export interface TypeApiUpdateFaqRes {
+    Message: string
+}
+
+
+
+
+
+
+// Holiday
+export interface TypeApiHoliday {
+    id: number
+    title: string
+    date: string
+    createdAt: string
+    updatedAt: string
+}
+
+export interface TypeApiAddHolidayReq {
+    date: string;
+    title: string;
+}
+
+export interface TypeApiAddHolidayRes {
+    Message: string
+}
+
+export interface TypeApiDeleteHolidayReq {
+    id: number;
+}
+
+export interface TypeApiDeleteHolidayRes {
+    Message: string
+}
+
+export type TypeApiGetHolidaysRes = TypeApiHoliday[]
+
+export type TypeApiShowHolidayReq = {
+    id: number
+}
+export type TypeApiShowHolidayRes = TypeApiHoliday
+
+export type TypeApiUpdateHolidayReq = {
+    id: number;
+    date: string;
+    title: string;
+}
+
+export interface TypeApiUpdateHolidayRes {
+    Message: string
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// Discount
+export interface TypeApiDiscount {
+    id: number;
+    title: string;
+    code: string;
+    startDate: string | null
+    endDate: string | null
+    type: TypeDiscountsType;
+    amount: number;
+    createdAt: string;
+    updatedAt: string;
+}
+
+export interface TypeApiAddDiscountReq {
+    title: string;
+    code: string;
+    startDate?: string | null
+    endDate?: string | null
+    type: TypeDiscountsType;
+    amount: number;
+}
+
+export interface TypeApiAddDiscountRes {
+    Message: string
+}
+
+export interface TypeApiDeleteDiscountReq {
+    id: number;
+}
+
+export interface TypeApiDeleteDiscountRes {
+    Message: string
+}
+
+export type TypeApiGetDiscountsRes = TypeApiDiscount[]
+
+export type TypeApiShowDiscountReq = {
+    id: number
+}
+export type TypeApiShowDiscountRes = TypeApiDiscount
+
+export type TypeApiUpdateDiscountReq = {
+    id: number;
+    title: string;
+    code: string;
+    startDate?: string | null
+    endDate?: string | null
+    type: TypeDiscountsType;
+    amount: number;
+}
+
+export interface TypeApiUpdateDiscountRes {
     Message: string
 }

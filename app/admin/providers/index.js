@@ -79,7 +79,7 @@ export default function Providers() {
               <th>بازه استراحت</th>
               <th>وضعیت</th>
               <th>تقویم کاری</th>
-              <th width="100">عملیات</th>
+              <th className="w-[100px]">عملیات</th>
             </tr>
             </thead>
             <tbody>

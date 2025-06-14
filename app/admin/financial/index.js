@@ -95,13 +95,13 @@ export default function Financial() {
           <table>
             <thead>
             <tr>
-              <th width="50">ردیف</th>
+              <th className="w-[50px]">ردیف</th>
               <th>کد پیگیری</th>
               <th>خریدار</th>
               <th>نوبت برای</th>
               <th>پرداخت</th>
               <th>وضعیت</th>
-              {/*<th width="100">عملیات</th>*/}
+              {/*<th className="w-[100px]">عملیات</th>*/}
             </tr>
             </thead>
             <tbody>

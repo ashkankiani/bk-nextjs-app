@@ -1,14 +1,16 @@
-import prisma from '@/prisma/client';
+import prisma from "@/prisma/client";
 import {
+  createSuccessResponseWithData,
+  handlerRequestError,
   checkMethodAllowed,
-  createErrorResponseWithMessage, createSuccessResponseWithData,
-  getQueryStringByUrl, handlerRequestError,
+  getQueryStringByUrl, createErrorResponseWithMessage
 } from "@/app/api/_utils/handleRequest";
 
-const allowedMethods = ["PATCH" , "PUT"];
+const allowedMethods = ["GET"];
 
-export async function DELETE(request: Request) {
+export async function GET(request: Request) {
 
+  // بررسی مجاز بودن درخواست
   const methodCheckResponse = checkMethodAllowed(request, allowedMethods);
   if (methodCheckResponse) return methodCheckResponse;
 
@@ -19,9 +21,9 @@ export async function DELETE(request: Request) {
   //     return createErrorResponse(authResponse?.message);
   // }
 
-  const body = await request.json();
-
+  // دریافت Id درخواست
   const id = getQueryStringByUrl(request.url);
+
 
   // بررسی وجود ID
   if (!id) {
@@ -30,12 +32,12 @@ export async function DELETE(request: Request) {
 
   try {
 
-    const updateTimeSheet = await prisma.timeSheets.update({
-      data: body,
+    // دریافت کد تخفیف
+    const discount = await prisma.discounts.findUnique({
       where: { id: parseInt(id) },
     });
 
-    return createSuccessResponseWithData(updateTimeSheet);
+    return createSuccessResponseWithData(discount);
   } catch (error) {
     return handlerRequestError(error);
   }

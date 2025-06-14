@@ -1,14 +1,16 @@
-import prisma from '@/prisma/client';
+import prisma from "@/prisma/client";
 import {
+  createSuccessResponseWithData,
+  handlerRequestError,
   checkMethodAllowed,
-  createErrorResponseWithMessage, createSuccessResponseWithData,
-  getQueryStringByUrl, handlerRequestError,
+  getQueryStringByUrl, createErrorResponseWithMessage
 } from "@/app/api/_utils/handleRequest";
 
-const allowedMethods = ["PATCH" , "PUT"];
+const allowedMethods = ["GET"];
 
-export async function DELETE(request: Request) {
+export async function GET(request: Request) {
 
+  // بررسی مجاز بودن درخواست
   const methodCheckResponse = checkMethodAllowed(request, allowedMethods);
   if (methodCheckResponse) return methodCheckResponse;
 
@@ -19,8 +21,7 @@ export async function DELETE(request: Request) {
   //     return createErrorResponse(authResponse?.message);
   // }
 
-  const body = await request.json();
-
+  // دریافت Id درخواست
   const id = getQueryStringByUrl(request.url);
 
   // بررسی وجود ID
@@ -30,12 +31,12 @@ export async function DELETE(request: Request) {
 
   try {
 
-    const updateTimeSheet = await prisma.timeSheets.update({
-      data: body,
+    // دریافت تعطیلی
+    const holiday = await prisma.holidays.findUnique({
       where: { id: parseInt(id) },
     });
 
-    return createSuccessResponseWithData(updateTimeSheet);
+    return createSuccessResponseWithData(holiday);
   } catch (error) {
     return handlerRequestError(error);
   }

@@ -68,9 +68,9 @@ export default function Catalogs() {
           <table>
             <thead>
             <tr>
-              <th width="50">ردیف</th>
+              <th className="w-[50px]">ردیف</th>
               <th>عنوان</th>
-              <th width="100">عملیات</th>
+              <th className="w-[100px]">عملیات</th>
             </tr>
             </thead>
             <tbody>

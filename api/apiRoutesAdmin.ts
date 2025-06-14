@@ -8,5 +8,19 @@ export const ApiRoutesAdmin: TypeApiRoutesAdmin = {
         ShowFaq: '/admin/faq/showFaq?',
         UpdateFaq: '/admin/faq/updateFaq',
     },
+    Holiday: {
+        AddHoliday: '/admin/holiday/addHoliday',
+        DeleteHoliday: '/admin/holiday/deleteHoliday?',
+        GetHolidays: '/admin/holiday/getHolidays',
+        ShowHoliday: '/admin/holiday/showHoliday?',
+        UpdateHoliday: '/admin/holiday/updateHoliday',
+    },
+    Discount: {
+        AddDiscount: '/admin/discount/addDiscount',
+        DeleteDiscount: '/admin/discount/deleteDiscount?',
+        GetDiscounts: '/admin/discount/getDiscounts',
+        ShowDiscount: '/admin/discount/showDiscount?',
+        UpdateDiscount: '/admin/discount/updateDiscount',
+    },
 
 }

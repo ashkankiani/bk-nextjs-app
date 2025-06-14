@@ -97,7 +97,7 @@ export function minuteMaker(minute) {
 /*<====================================>*/
 // Convert Persian number to English number
 /*<====================================>*/
-export function PNtoEN(str: number | string) {
+export function PNtoEN(str: number | string) : string {
   const persianNumbers = [/۰/g, /۱/g, /۲/g, /۳/g, /۴/g, /۵/g, /۶/g, /۷/g, /۸/g, /۹/g]
   const arabicNumbers = [/٠/g, /١/g, /٢/g, /٣/g, /٤/g, /٥/g, /٦/g, /٧/g, /٨/g, /٩/g]
 
@@ -106,7 +106,7 @@ export function PNtoEN(str: number | string) {
       str = str.replace(persianNumbers[i], String(i)).replace(arabicNumbers[i], String(i))
     }
   }
-  return str
+  return str.toString()
 }
 
 

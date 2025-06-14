@@ -1,8 +1,8 @@
+"use client"
 import HeadPage from "@/components/layout/HeadPage";
 import Link from "next/link";
 import {MdOutlineKeyboardBackspace} from "react-icons/md";
 import {AiOutlineSave} from "react-icons/ai";
-import {useRouter} from "next/router";
 import {bkToast, onlyTypeNumber, PNtoEN} from "@/libs/utility";
 import {useEffect, useRef, useState} from "react";
 import {Controller, useForm} from "react-hook-form";
@@ -10,33 +10,43 @@ import TheSpinner from "@/components/layout/TheSpinner";
 import DatePicker, {DateObject} from "react-multi-date-picker";
 import persian from "react-date-object/calendars/persian";
 import persian_fa from "react-date-object/locales/persian_fa";
-import {useSelector} from "react-redux";
-import {hookGetDiscount, hookUpdateDiscount} from "@/hooks/admin/hookDiscount";
-import {dateNowP, stringToDateObjectP} from "@/libs/convertor";
+import {dateNowP, fullStringToDateObjectP} from "@/libs/convertor";
 import FormErrorMessage from "@/components/back-end/section/FormErrorMessage";
 import HeaderPage from "@/components/back-end/section/HeaderPage";
+import {useParams} from "next/navigation";
+import useHook from "@/hooks/controller/useHook";
+import {useShowDiscount, useUpdateDiscount} from "@/hooks/admin/useDiscount";
+import {TypeDiscountsType} from "@/types/typeConfig";
+import {TypeApiUpdateDiscountReq} from "@/types/typeApi";
 
-export default function EditDiscount({id}) {
-    const router = useRouter()
+export default function TheIdDiscountUi() {
 
-    const theme = useSelector(state => state.app.initTheme)
+    const params = useParams()
+    const id = Number(params.id)
+
+    const {theme, router} = useHook()
+
+    const {data: dataDiscount, isLoading: isLoadingDiscount, isFetched: isFetchedDiscount} = useShowDiscount(id)
+    const {mutateAsync: mutateAsyncUpdateDiscount, isPending: isPendingUpdateDiscount} = useUpdateDiscount()
+
 
     const refStartDate = useRef()
     const refEndDate = useRef()
 
-    const [loadingPage, setLoadingPage] = useState(false)
-    const [loading, setLoading] = useState(false)
     const [statusRequiredStartDate, setStatusRequiredStartDate] = useState(false)
     const [statusRequiredEndDate, setStatusRequiredEndDate] = useState(false)
-    const [minDate, setMinDate] = useState(null)
-    const [maxDate, setMaxDate] = useState(null)
+    const [minDate, setMinDate] = useState(dateNowP())
+    const [maxDate, setMaxDate] = useState(dateNowP().add(1, "year"))
 
-    const items = [
-        "title",
-        "code",
-        "type",
-        "amount",
-    ];
+    type TypeFormTheIdDiscountUi = {
+        id: number;
+        title: string;
+        code: string;
+        startDate: DateObject | null
+        endDate: DateObject | null
+        type: TypeDiscountsType;
+        amount: string;
+    }
 
     const {
         register,
@@ -45,66 +55,102 @@ export default function EditDiscount({id}) {
         handleSubmit,
         setValue,
         formState: {errors},
-    } = useForm({
+    } = useForm<TypeFormTheIdDiscountUi>({
         criteriaMode: 'all',
     })
 
 
-    const onSubmit = data => {
-        data.amount = parseInt(data.amount)
-        if (data.startDate instanceof DateObject || data.endDate instanceof DateObject) {
-            data.startDate = PNtoEN(data.startDate.format())
-            data.endDate = PNtoEN(data.endDate.format())
+    const onSubmit = async (data: TypeFormTheIdDiscountUi) => {
+
+        const transformedData: TypeApiUpdateDiscountReq = {
+            id: data.id,
+            title: data.title,
+            code: data.code,
+            type: data.type,
+            amount: parseInt(data.amount),
         }
-        handlerUpdateDiscount(data)
-    }
 
-    const getDiscount = async () => {
+        if (data.startDate && data.endDate) {
+            transformedData.startDate = PNtoEN(data.startDate.format())
+            transformedData.endDate = PNtoEN(data.endDate.format())
+        } else {
+            transformedData.startDate = null
+            transformedData.endDate = null
+        }
 
-        await hookGetDiscount(id, (response, message) => {
-            if (response) {
-                setLoadingPage(true)
-
-                items.forEach(item => {
-                    setValue(item, message[item])
-                })
-
-                message.startDate !== null && setValue('startDate', stringToDateObjectP(message.startDate))
-                message.endDate !== null && setValue('endDate', stringToDateObjectP(message.endDate))
-
-                message.startDate !== null ? setMinDate(stringToDateObjectP(message.startDate)): setMinDate(new Date())
-                message.endDate !== null ? setMaxDate(stringToDateObjectP(message.endDate)): setMinDate({})
-            } else {
-                bkToast('error', message)
-            }
+        await mutateAsyncUpdateDiscount(transformedData).then((res) => {
+            bkToast('success', res.Message)
+        }).catch(errors => {
+            bkToast('error', errors.Reason)
+        }).finally(() => {
+            router.push('/admin/discounts')
         })
     }
-    const handlerUpdateDiscount = async data => {
-        setLoading(true)
-        await hookUpdateDiscount(data, id, (response, message) => {
-            setLoading(false)
-            if (response) {
-                bkToast('success', message)
-                router.push('/admin/discounts')
-            } else {
-                bkToast('error', message)
-            }
-        })
-    }
+
+
     useEffect(() => {
-        getDiscount()
-    }, [])
+        if (isFetchedDiscount && dataDiscount) {
+            setValue("id", dataDiscount?.id);
+            setValue("title", dataDiscount?.title);
+            setValue("code", dataDiscount?.code);
+            setValue("type", dataDiscount?.type);
+            setValue("amount", dataDiscount?.amount.toString());
+
+            if (dataDiscount.startDate !== null && dataDiscount.startDate !== undefined) {
+                setValue('startDate', fullStringToDateObjectP(dataDiscount.startDate))
+                setMinDate(fullStringToDateObjectP(dataDiscount.startDate))
+            }
+            if (dataDiscount.endDate !== null && dataDiscount.endDate !== undefined) {
+                setValue('endDate', fullStringToDateObjectP(dataDiscount.endDate))
+                setMaxDate(fullStringToDateObjectP(dataDiscount.endDate))
+            }
+        }
+    }, [isFetchedDiscount])
+
+    // const getDiscount = async () => {
+    //
+    //     await hookGetDiscount(id, (response, message) => {
+    //         if (response) {
+    //             setLoadingPage(true)
+    //
+    //             items.forEach(item => {
+    //                 setValue(item, message[item])
+    //             })
+    //
+    //             message.startDate !== null && setValue('startDate', stringToDateObjectP(message.startDate))
+    //             message.endDate !== null && setValue('endDate', stringToDateObjectP(message.endDate))
+    //
+    //             message.startDate !== null ? setMinDate(stringToDateObjectP(message.startDate)): setMinDate(new Date())
+    //             message.endDate !== null ? setMaxDate(stringToDateObjectP(message.endDate)): setMinDate({})
+    //         } else {
+    //             bkToast('error', message)
+    //         }
+    //     })
+    // }
+
+    // const handlerUpdateDiscount = async data => {
+    //     setLoading(true)
+    //     await hookUpdateDiscount(data, id, (response, message) => {
+    //         setLoading(false)
+    //         if (response) {
+    //             bkToast('success', message)
+    //             router.push('/admin/discounts')
+    //         } else {
+    //             bkToast('error', message)
+    //         }
+    //     })
+    // }
+
 
     useEffect(() => {
         if ((watch('startDate') === undefined && watch('endDate') === undefined) || (watch('startDate') === null && watch('endDate') === null)) {
             setStatusRequiredStartDate(false)
             setStatusRequiredEndDate(false)
-        }else{
+        } else {
             setStatusRequiredStartDate(true)
             setStatusRequiredEndDate(true)
         }
     })
-
 
 
     return (
@@ -118,7 +164,9 @@ export default function EditDiscount({id}) {
             </HeaderPage>
             <div className="panel-main">
                 {
-                    loadingPage ?
+                    isLoadingDiscount ?
+                        <TheSpinner/>
+                        :
                         <form className="panel-boxed" onSubmit={handleSubmit(onSubmit)}>
                             <div className="flex-center-start flex-wrap">
                                 <div className="panel-col-33">
@@ -158,7 +206,7 @@ export default function EditDiscount({id}) {
                                             },
                                         }}
                                         render={({
-                                                     field: {onChange,  value},
+                                                     field: {onChange, value},
                                                      // fieldState: {invalid, isDirty}, //optional
                                                      // formState: {errors}, //optional, but necessary if you want to show an error message
                                                  }) => (
@@ -168,8 +216,10 @@ export default function EditDiscount({id}) {
                                                     editable={false}
                                                     value={value}
                                                     onChange={(date) => {
-                                                        onChange(date?.isValid ? date : undefined);
-                                                        date?.isValid && setMinDate(date)
+                                                        if (date?.isValid) {
+                                                            onChange(date)
+                                                            setMinDate(date)
+                                                        }
                                                     }}
                                                     containerClassName="w-full"
                                                     className={"green " + (theme !== "light" ? "bg-dark" : "")}
@@ -210,7 +260,7 @@ export default function EditDiscount({id}) {
                                             },
                                         }}
                                         render={({
-                                                     field: {onChange,  value},
+                                                     field: {onChange, value},
                                                      // fieldState: {invalid, isDirty}, //optional
                                                      // formState: {errors}, //optional, but necessary if you want to show an error message
                                                  }) => (
@@ -220,8 +270,10 @@ export default function EditDiscount({id}) {
                                                     editable={false}
                                                     value={value}
                                                     onChange={(date) => {
-                                                        onChange(date?.isValid ? date : undefined);
-                                                        date?.isValid && setMaxDate(date)
+                                                        if (date?.isValid) {
+                                                            onChange(date)
+                                                            setMaxDate(date)
+                                                        }
                                                     }}
                                                     containerClassName="w-full"
                                                     className={"green " + (theme !== "light" ? "bg-dark" : "")}
@@ -259,7 +311,7 @@ export default function EditDiscount({id}) {
                                         })}
                                         // defaultValue=""
                                         className="bk-input">
-                                        <option value="" disabled selected>انتخاب کنید</option>
+                                        <option value="" disabled>انتخاب کنید</option>
                                         <option value="CONSTANT">تخفیف ثابت روی کل سبد خرید</option>
                                         <option value="PERCENT">درصد تخفیف روی کل سبد خرید</option>
                                     </select>
@@ -279,7 +331,7 @@ export default function EditDiscount({id}) {
                                             },
                                             max: {
                                                 value: watch('type') === 'PERCENT' ? 100 : 100000000,
-                                                message: " نباید از 100 بیشتر باشد."
+                                                message: watch('type') === 'PERCENT' ? "نباید از 100 بیشتر باشد." : "نباید از 100000000 بیشتر باشد."
                                             },
                                             pattern: {
                                                 value: /^[0-9]+$/,
@@ -295,10 +347,10 @@ export default function EditDiscount({id}) {
                                     <button
                                         className={
                                             'panel-form-submit ' +
-                                            (loading ? 'disable-action' : '')
+                                            (isPendingUpdateDiscount ? 'disable-action' : '')
                                         }
                                         type="submit">
-                                        {loading ? (
+                                        {isPendingUpdateDiscount ? (
                                             <TheSpinner/>
                                         ) : (
                                             <span><AiOutlineSave size="24px" className="inline-flex align-middle ml-2"/>ثبت کد تخفیف</span>
@@ -307,15 +359,8 @@ export default function EditDiscount({id}) {
                                 </div>
                             </div>
                         </form>
-                        :
-                        <TheSpinner/>
                 }
             </div>
         </>
     )
-}
-
-export const getServerSideProps = ({query}) => {
-    const id = query.id
-    return {props: {id}}
 }

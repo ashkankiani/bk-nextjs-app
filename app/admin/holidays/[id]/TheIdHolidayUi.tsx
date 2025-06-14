@@ -1,28 +1,31 @@
+"use client"
 import HeadPage from "@/components/layout/HeadPage";
 import Link from "next/link";
 import {MdOutlineKeyboardBackspace} from "react-icons/md";
 import {AiOutlineSave} from "react-icons/ai";
-import {useRouter} from "next/router";
 import {bkToast, PNtoEN} from "@/libs/utility";
-import {useEffect, useState} from "react";
+import {useEffect} from "react";
 import {Controller, useForm} from "react-hook-form";
 import TheSpinner from "@/components/layout/TheSpinner";
-import {hookGetHoliday, hookUpdateHoliday} from "@/hooks/admin/hookHoliday";
 import DatePicker from "react-multi-date-picker";
 import persian from "react-date-object/calendars/persian";
 import persian_fa from "react-date-object/locales/persian_fa";
-import {useSelector} from "react-redux";
 import FormErrorMessage from "@/components/back-end/section/FormErrorMessage";
 import HeaderPage from "@/components/back-end/section/HeaderPage";
+import {useParams} from "next/navigation";
+import useHook from "@/hooks/controller/useHook";
+import {useShowHoliday, useUpdateHoliday} from "@/hooks/admin/useHoliday";
+import {TypeApiUpdateHolidayReq} from "@/types/typeApi";
 
-export default function EditHoliday({id}) {
-    const router = useRouter()
+export default function TheIdHolidayUi() {
 
-    const theme = useSelector(state => state.app.initTheme)
+    const params = useParams()
+    const id = Number(params.id)
 
-    const [loadingPage, setLoadingPage] = useState(false)
-    const [loading, setLoading] = useState(false)
+    const {theme, router} = useHook()
 
+    const {data: dataHoliday, isLoading: isLoadingHoliday, isFetched: isFetchedHoliday} = useShowHoliday(id)
+    const {mutateAsync: mutateAsyncUpdateHoliday, isPending: isPendingUpdateHoliday} = useUpdateHoliday()
 
     const {
         register,
@@ -30,41 +33,38 @@ export default function EditHoliday({id}) {
         handleSubmit,
         setValue,
         formState: {errors},
-    } = useForm({
+    } = useForm<TypeApiUpdateHolidayReq>({
         criteriaMode: 'all',
     })
 
 
-    const onSubmit = data => {
-        handlerUpdateHoliday(data)
+    const onSubmit = async (data: TypeApiUpdateHolidayReq) => {
+
+        const transformedData: TypeApiUpdateHolidayReq = {
+            id: data.id,
+            date: data.date,
+            title: data.title,
+        }
+
+        await mutateAsyncUpdateHoliday(transformedData).then((res) => {
+            bkToast('success', res.Message)
+        }).catch(errors => {
+            bkToast('error', errors.Reason)
+        }).finally(() => {
+            router.push('/admin/holidays')
+        })
+
+
     }
 
-    const getHoliday = async () => {
-        await hookGetHoliday(id, (response, message) => {
-            if (response) {
-                setLoadingPage(true)
-                setValue('date', message.date)
-                setValue('title', message.title)
-            } else {
-                bkToast('error', message)
-            }
-        })
-    }
-    const handlerUpdateHoliday = async data => {
-        setLoading(true)
-        await hookUpdateHoliday(data, id, (response, message) => {
-            setLoading(false)
-            if (response) {
-                bkToast('success', message)
-                router.push('/admin/holidays')
-            } else {
-                bkToast('error', message)
-            }
-        })
-    }
     useEffect(() => {
-        getHoliday()
-    }, [])
+        if (isFetchedHoliday && dataHoliday) {
+            setValue('id', dataHoliday.id)
+            setValue('date', dataHoliday.date)
+            setValue('title', dataHoliday.title)
+        }
+    }, [isFetchedHoliday])
+
 
     return (
         <>
@@ -77,7 +77,10 @@ export default function EditHoliday({id}) {
             </HeaderPage>
             <div className="panel-main">
                 {
-                    loadingPage ?
+                    isLoadingHoliday ?
+                        <TheSpinner/>
+
+                        :
                         <form className="panel-boxed" onSubmit={handleSubmit(onSubmit)}>
                             <div className="flex-center-start flex-wrap">
                                 <div className="panel-col-25">
@@ -92,7 +95,7 @@ export default function EditHoliday({id}) {
                                             },
                                         }}
                                         render={({
-                                                     field: {onChange,  value},
+                                                     field: {onChange, value},
                                                      // fieldState: {invalid, isDirty}, //optional
                                                      // formState: {errors}, //optional, but necessary if you want to show an error message
                                                  }) => (
@@ -132,10 +135,10 @@ export default function EditHoliday({id}) {
                                     <button
                                         className={
                                             'panel-form-submit ' +
-                                            (loading ? 'disable-action' : '')
+                                            (isPendingUpdateHoliday ? 'disable-action' : '')
                                         }
                                         type="submit">
-                                        {loading ? (
+                                        {isPendingUpdateHoliday ? (
                                             <TheSpinner/>
                                         ) : (
                                             <span><AiOutlineSave size="24px" className="inline-flex align-middle ml-2"/>ویرایش روز تعطیل</span>
@@ -144,15 +147,8 @@ export default function EditHoliday({id}) {
                                 </div>
                             </div>
                         </form>
-                        :
-                        <TheSpinner/>
                 }
             </div>
         </>
     )
-}
-
-export const getServerSideProps = ({query}) => {
-    const id = query.id
-    return {props: {id}}
 }

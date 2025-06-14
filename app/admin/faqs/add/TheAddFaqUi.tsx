@@ -33,7 +33,6 @@ export default function TheAddFaqUi() {
         }).finally(() => {
             router.push('/admin/faqs')
         })
-
     }
 
 

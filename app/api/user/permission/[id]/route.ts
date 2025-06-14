@@ -27,7 +27,7 @@ export async function GET(request: Request) {
 
     // بررسی وجود ID
     if (!id) {
-        return createErrorResponseWithMessage("آیدی پست ضروری است.");
+        return createErrorResponseWithMessage("آیدی ضروری است.");
     }
 
     try {

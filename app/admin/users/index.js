@@ -134,7 +134,7 @@ export default function Users() {
           <table>
             <thead>
             <tr>
-              <th width="50">ردیف</th>
+              <th className="w-[50px]">ردیف</th>
               <th>کدملی</th>
               <th>نام و نام خانوادگی</th>
               <th>موبایل</th>
@@ -142,7 +142,7 @@ export default function Users() {
               <th>جنسیت</th>
               <th>نقش</th>
               <th>رزروها</th>
-              <th width="100">عملیات</th>
+              <th className="w-[100px]">عملیات</th>
             </tr>
             </thead>
             <tbody>

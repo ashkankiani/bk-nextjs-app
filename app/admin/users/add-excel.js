@@ -167,7 +167,7 @@ export default function AddExcel() {
             <table>
               <thead>
               <tr>
-                <th width="50">ردیف</th>
+                <th className="w-[50px]">ردیف</th>
                 <th>کدملی</th>
                 <th>نام و نام خانوادگی</th>
                 <th>موبایل</th>

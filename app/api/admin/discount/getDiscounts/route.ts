@@ -1,10 +1,5 @@
 import prisma from "@/prisma/client";
-import {
-  createSuccessResponseWithData,
-  handlerRequestError,
-  checkMethodAllowed,
-  getQueryStringByUrl, createErrorResponseWithMessage
-} from "@/app/api/_utils/handleRequest";
+import {createSuccessResponseWithData, handlerRequestError, checkMethodAllowed} from "@/app/api/_utils/handleRequest";
 
 const allowedMethods = ["GET"];
 
@@ -21,23 +16,12 @@ export async function GET(request: Request) {
   //     return createErrorResponse(authResponse?.message);
   // }
 
-  // دریافت Id درخواست
-  const id = getQueryStringByUrl(request.url);
-
-
-  // بررسی وجود ID
-  if (!id) {
-    return createErrorResponseWithMessage("آیدی ضروری است.");
-  }
-
   try {
 
-    // دریافت سوال متداول
-    const faq = await prisma.faqs.findUnique({
-      where: { id: parseInt(id) },
-    });
+    // دریافت لیست کد تخفیف
+    const discounts = await prisma.discounts.findMany();
 
-    return createSuccessResponseWithData(faq);
+    return createSuccessResponseWithData(discounts);
   } catch (error) {
     return handlerRequestError(error);
   }
