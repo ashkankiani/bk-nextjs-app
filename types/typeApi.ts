@@ -607,3 +607,101 @@ export type TypeApiUpdateDiscountReq = {
 export interface TypeApiUpdateDiscountRes {
     Message: string
 }
+
+
+
+
+
+// Catalog
+export interface TypeApiCatalog {
+    id: number;
+    title: string;
+}
+
+export interface TypeApiAddCatalogReq {
+    title: string;
+}
+
+export interface TypeApiAddCatalogRes {
+    Message: string
+}
+
+export interface TypeApiDeleteCatalogReq {
+    id: number;
+}
+
+export interface TypeApiDeleteCatalogRes {
+    Message: string
+}
+
+export type TypeApiGetCatalogsRes = TypeApiCatalog[]
+
+
+// Permission
+
+export type TypeApiPermission = {
+    id: number
+    catalogId : number
+    admin: boolean
+    viewDashboard: boolean
+    viewReservation: boolean
+    addReservation: boolean
+    editReservation: boolean
+    deleteReservation: boolean
+    viewDraft: boolean
+    deleteDraft: boolean
+    viewServices: boolean
+    addServices: boolean
+    editServices: boolean
+    deleteServices: boolean
+    viewProviders: boolean
+    addProviders: boolean
+    editProviders: boolean
+    deleteProviders: boolean
+    viewTimesheets: boolean
+    addTimesheets: boolean
+    deleteTimesheets: boolean
+    viewFinancial: boolean
+    viewHolidays: boolean
+    addHolidays: boolean
+    editHolidays: boolean
+    deleteHolidays: boolean
+    viewDiscounts: boolean
+    addDiscounts: boolean
+    editDiscounts: boolean
+    deleteDiscounts: boolean
+    viewUsers: boolean
+    addUsers: boolean
+    editUsers: boolean
+    deleteUsers: boolean
+    exportUsers: boolean
+    importUsers: boolean
+    viewFaqs: boolean
+    addFaqs: boolean
+    editFaqs: boolean
+    deleteFaqs: boolean
+    viewSettings: boolean
+    editSettings: boolean
+    viewConnections: boolean
+    editConnections: boolean
+    viewCatalogs: boolean
+    addCatalogs: boolean
+    editCatalogs: boolean
+    deleteCatalogs: boolean
+    getSms: boolean
+    getEmail: boolean
+}
+
+export type TypeApiShowPermissionReq = {
+    id: number
+}
+export type TypeApiShowPermissionRes = TypeApiPermission
+
+export type TypeApiUpdatePermissionReq = TypeApiPermission
+
+export interface TypeApiUpdatePermissionRes {
+    Message: string
+}
+
+
+

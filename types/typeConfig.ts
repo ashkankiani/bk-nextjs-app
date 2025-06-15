@@ -26,6 +26,8 @@ export type TypeApiRoutesAdmin = {
     Faq: EndpointApiRoutes
     Holiday: EndpointApiRoutes
     Discount: EndpointApiRoutes
+    Catalog: EndpointApiRoutes
+    Permission: EndpointApiRoutes
 
 }
 

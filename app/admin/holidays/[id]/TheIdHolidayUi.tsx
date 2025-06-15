@@ -39,14 +39,7 @@ export default function TheIdHolidayUi() {
 
 
     const onSubmit = async (data: TypeApiUpdateHolidayReq) => {
-
-        const transformedData: TypeApiUpdateHolidayReq = {
-            id: data.id,
-            date: data.date,
-            title: data.title,
-        }
-
-        await mutateAsyncUpdateHoliday(transformedData).then((res) => {
+        await mutateAsyncUpdateHoliday(data).then((res) => {
             bkToast('success', res.Message)
         }).catch(errors => {
             bkToast('error', errors.Reason)

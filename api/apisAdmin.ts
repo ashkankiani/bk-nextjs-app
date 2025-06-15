@@ -24,7 +24,15 @@ import {
     TypeApiDeleteDiscountReq,
     TypeApiShowDiscountReq,
     TypeApiUpdateDiscountReq,
-    TypeApiUpdateDiscountRes, TypeApiShowDiscountRes, TypeApiGetDiscountsRes
+    TypeApiUpdateDiscountRes,
+    TypeApiShowDiscountRes,
+    TypeApiGetDiscountsRes,
+    TypeApiAddCatalogReq,
+    TypeApiDeleteCatalogReq,
+    TypeApiAddCatalogRes,
+    TypeApiDeleteCatalogRes,
+    TypeApiGetCatalogsRes,
+    TypeApiShowPermissionReq, TypeApiUpdatePermissionReq, TypeApiShowPermissionRes, TypeApiUpdatePermissionRes
 } from "@/types/typeApi";
 import {ApiRoutesAdmin} from "@/api/apiRoutesAdmin";
 
@@ -57,3 +65,19 @@ export const DeleteDiscount = (params: TypeApiDeleteDiscountReq) => deleteReques
 export const GetDiscounts = () => getRequest<TypeApiGetDiscountsRes>(ApiRoutesAdmin.Discount.GetDiscounts)
 export const ShowDiscount = (params: TypeApiShowDiscountReq) => getRequest<TypeApiShowDiscountRes>(ApiRoutesAdmin.Discount.ShowDiscount , params)
 export const UpdateDiscount = (params: TypeApiUpdateDiscountReq) => putRequest<TypeApiUpdateDiscountRes>(ApiRoutesAdmin.Discount.UpdateDiscount, params)
+
+
+
+/*<====================================>*/
+// Catalog
+/*<====================================>*/
+export const AddCatalog = (params: TypeApiAddCatalogReq) => postRequest<TypeApiAddCatalogRes>(ApiRoutesAdmin.Catalog.AddCatalog, params)
+export const DeleteCatalog = (params: TypeApiDeleteCatalogReq) => deleteRequest<TypeApiDeleteCatalogRes>(ApiRoutesAdmin.Catalog.DeleteCatalog, params)
+export const GetCatalogs = () => getRequest<TypeApiGetCatalogsRes>(ApiRoutesAdmin.Catalog.GetCatalogs)
+
+/*<====================================>*/
+// Permission
+/*<====================================>*/
+export const ShowPermission = (params: TypeApiShowPermissionReq) => getRequest<TypeApiShowPermissionRes>(ApiRoutesAdmin.Permission.ShowPermission , params)
+export const UpdatePermission = (params: TypeApiUpdatePermissionReq) => putRequest<TypeApiUpdatePermissionRes>(ApiRoutesAdmin.Permission.UpdatePermission, params)
+

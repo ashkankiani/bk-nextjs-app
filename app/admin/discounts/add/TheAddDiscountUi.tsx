@@ -41,7 +41,6 @@ export default function TheAddDiscountUi() {
         amount: string;
     }
 
-
     const {
         register,
         control,

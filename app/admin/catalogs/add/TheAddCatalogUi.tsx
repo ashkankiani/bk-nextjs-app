@@ -1,51 +1,45 @@
-import HeadPage from "@/components/layout/HeadPage";
+"use client"
+
 import Link from "next/link";
 import {MdOutlineKeyboardBackspace} from "react-icons/md";
 import {AiOutlineSave} from "react-icons/ai";
 import {useForm} from 'react-hook-form'
 import {bkToast} from "@/libs/utility";
-import {useState} from "react";
 import TheSpinner from "@/components/layout/TheSpinner";
-import {useRouter} from "next/router";
 import FormErrorMessage from "@/components/back-end/section/FormErrorMessage";
 import HeaderPage from "@/components/back-end/section/HeaderPage";
-import {hookAddCatalog} from "@/hooks/admin/hookCatalogs";
+import useHook from "@/hooks/controller/useHook";
+import {useAddCatalog} from "@/hooks/admin/useCatalog";
+import {TypeApiAddCatalogReq} from "@/types/typeApi";
 
-export default function AddCatalog() {
+export default function TheAddCatalogUi() {
 
-  const router = useRouter()
+  const {router} = useHook()
 
-  const [loading, setLoading] = useState(false)
-
+  const {mutateAsync: mutateAsyncAddCatalog, isPending: isPendingAddCatalog} = useAddCatalog()
 
   const {
     register,
     handleSubmit,
     formState: {errors},
-  } = useForm({
+  } = useForm<TypeApiAddCatalogReq>({
     criteriaMode: 'all',
   })
 
-  const onSubmit = data => {
-    addCatalog(data)
-  }
+  const onSubmit = async (data: TypeApiAddCatalogReq) => {
 
-  const addCatalog = async data => {
-    setLoading(true)
-    await hookAddCatalog(data, (response, message) => {
-      setLoading(false)
-      if (response) {
-        bkToast('success', message)
-        router.push('/admin/catalogs')
-      } else {
-        bkToast('error', message)
-      }
+    await mutateAsyncAddCatalog(data).then((res) => {
+      bkToast('success', res.Message)
+    }).catch(errors => {
+      bkToast('error', errors.Reason)
+    }).finally(() => {
+      router.push('/admin/catalogs')
     })
   }
 
+
   return (
     <>
-      <HeadPage title="افزودن سطح دسترسی جدید"/>
       <HeaderPage title="افزودن سطح دسترسی جدید" description="یک سطح دسترسی جدید ایجاد کنید.">
         <Link href="/admin/catalogs" className="back">
           <MdOutlineKeyboardBackspace size="24px" className="inline-flex align-middle ml-2"/>
@@ -80,10 +74,10 @@ export default function AddCatalog() {
               <button
                 className={
                   'panel-form-submit ' +
-                  (loading ? 'disable-action' : '')
+                  (isPendingAddCatalog ? 'disable-action' : '')
                 }
                 type="submit">
-                {loading ? (
+                {isPendingAddCatalog ? (
                   <TheSpinner/>
                 ) : (
                   <span><AiOutlineSave size="24px" className="inline-flex align-middle ml-2"/>ثبت سطح جدید</span>

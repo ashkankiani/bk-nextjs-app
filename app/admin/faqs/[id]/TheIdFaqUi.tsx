@@ -35,13 +35,7 @@ export default function TheIdFaqUi() {
 
     const onSubmit = async (data: TypeApiUpdateFaqReq) => {
 
-        const transformedData: TypeApiUpdateFaqReq = {
-            id: data.id,
-            title: data.title,
-            content: data.content,
-        }
-
-        await mutateAsyncUpdateFaq(transformedData).then((res) => {
+        await mutateAsyncUpdateFaq(data).then((res) => {
             bkToast('success', res.Message)
         }).catch(errors => {
             bkToast('error', errors.Reason)

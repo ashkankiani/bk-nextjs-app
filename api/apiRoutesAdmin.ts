@@ -23,4 +23,15 @@ export const ApiRoutesAdmin: TypeApiRoutesAdmin = {
         UpdateDiscount: '/admin/discount/updateDiscount',
     },
 
+    Catalog: {
+        AddCatalog: '/admin/catalog/addCatalog',
+        DeleteCatalog: '/admin/catalog/deleteCatalog?',
+        GetCatalogs: '/admin/catalog/getCatalogs',
+    },
+
+    Permission: {
+        ShowPermission: '/admin/permission/showPermission?',
+        UpdatePermission: '/admin/permission/updatePermission',
+    },
+
 }
