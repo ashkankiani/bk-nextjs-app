@@ -1,6 +1,6 @@
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
 import {GetSettings, UpdateSetting} from "@/api/apisAdmin";
-import {TypeApiUpdateSettingReq} from "@/types/typeApi";
+import {TypeApiUpdateSettingReq} from "@/types/typeApiAdmin";
 
 
 function useGetSettings(Optional?: object) {

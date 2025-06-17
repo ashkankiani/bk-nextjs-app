@@ -10,7 +10,7 @@ import {useForm} from "react-hook-form";
 import {bkToast, generateCode, passwordStrength} from "@/libs/utility";
 import useHook from "@/hooks/controller/useHook";
 import {useResetPassword, useSendCodeOtp} from "@/hooks/user/useAuth";
-import {TypeApiResetPasswordReq, TypeApiResetPasswordRes} from "@/types/typeApi";
+import {TypeApiResetPasswordReq, TypeApiResetPasswordRes} from "@/types/typeApiAdmin";
 
 
 export default function TheResetPasswordUi() {

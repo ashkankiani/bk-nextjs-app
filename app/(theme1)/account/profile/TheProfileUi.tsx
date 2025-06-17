@@ -10,7 +10,7 @@ import FormErrorMessage from "@/components/back-end/section/FormErrorMessage";
 import TheSpinner from "@/components/layout/TheSpinner";
 import useHook from "@/hooks/controller/useHook";
 import {TypeGender} from "@/types/typeConfig";
-import {TypeApiUpdateUserReq, TypeApiUsers} from "@/types/typeApi";
+import {TypeApiUpdateUserReq, TypeApiUser} from "@/types/typeApiAdmin";
 import {useUpdateUser} from "@/hooks/user/useAuth";
 
 export default function TheProfileUi() {
@@ -68,7 +68,7 @@ export default function TheProfileUi() {
 
     }
 
-    const handlerUpdateUser = async (data: TypeApiUsers) => {
+    const handlerUpdateUser = async (data: TypeApiUser) => {
         console.log(data)
         dispatch(setUser(data))
         bkToast('success', 'بروزرسانی با موفقیت انجام شد.')

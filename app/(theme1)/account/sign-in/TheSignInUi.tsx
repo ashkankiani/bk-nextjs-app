@@ -10,7 +10,7 @@ import TheSpinner from "@/components/layout/TheSpinner";
 import useHook from "@/hooks/controller/useHook";
 import {useSignIn, useSignInOtp, useSendCodeOtp} from "@/hooks/user/useAuth";
 import {setIsLogin, setPermissions, setUser} from "@/store/slice/user";
-import {TypeApiSignInRes} from "@/types/typeApi";
+import {TypeApiSignInRes} from "@/types/typeApiAdmin";
 
 export default function TheSignInUi() {
 

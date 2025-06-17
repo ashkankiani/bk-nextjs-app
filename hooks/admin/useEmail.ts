@@ -1,6 +1,6 @@
 import {useMutation} from '@tanstack/react-query'
 import {SendEmail} from "@/api/apisAdmin";
-import {TypeApiSendEmailReq} from "@/types/typeApi";
+import {TypeApiSendEmailReq} from "@/types/typeApiAdmin";
 
 function useSendEmail(Optional?: object) {
     const {mutateAsync, isPending} = useMutation({

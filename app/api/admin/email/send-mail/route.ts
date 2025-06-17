@@ -5,7 +5,7 @@ import {
 } from "@/app/api/_utils/handleRequest";
 import prisma from "@/prisma/client";
 import nodemailer from "nodemailer";
-import {TypeApiConnection} from "@/types/typeApi";
+import {TypeApiConnection} from "@/types/typeApiAdmin";
 
 const allowedMethods = ["POST"];
 

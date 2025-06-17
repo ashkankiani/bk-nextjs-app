@@ -10,7 +10,7 @@ import Link from "next/link";
 import {TbPlugConnected} from "react-icons/tb";
 import useHook from "@/hooks/controller/useHook";
 import {useGetSettings, useUpdateSetting} from "@/hooks/admin/useSetting";
-import {TypeApiSetting} from "@/types/typeApi";
+import {TypeApiSetting} from "@/types/typeApiAdmin";
 import LicenceManagement from "@/app/admin/settings/components/LicenceManagement";
 
 export default function TheSettingsUi() {

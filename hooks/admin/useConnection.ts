@@ -1,6 +1,6 @@
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
 import {GetConnections, UpdateConnection} from "@/api/apisAdmin";
-import {TypeApiUpdateConnectionReq} from "@/types/typeApi";
+import {TypeApiUpdateConnectionReq} from "@/types/typeApiAdmin";
 
 
 function useGetConnections(Optional?: object) {

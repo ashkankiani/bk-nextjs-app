@@ -1,9 +1,9 @@
 import {createSlice} from '@reduxjs/toolkit'
-import {TypeApiUsers, TypeApiPermissions} from "@/types/typeApi";
+import {TypeApiUser, TypeApiPermissions} from "@/types/typeApiAdmin";
 
 interface TypeInitialState {
   isLogin: boolean
-  user: null | TypeApiUsers
+  user: null | TypeApiUser
   permissions: TypeApiPermissions | null
   searchQuery: any
   cart: any

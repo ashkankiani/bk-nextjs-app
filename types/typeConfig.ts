@@ -32,6 +32,7 @@ export type TypeApiRoutesAdmin = {
     Email: EndpointApiRoutes
     Sms: EndpointApiRoutes
     Setting: EndpointApiRoutes
+    User: EndpointApiRoutes
 
 }
 

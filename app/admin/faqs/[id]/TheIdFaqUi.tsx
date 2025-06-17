@@ -10,7 +10,7 @@ import HeaderPage from "@/components/back-end/section/HeaderPage";
 import {useParams} from "next/navigation";
 import useHook from "@/hooks/controller/useHook";
 import {useShowFaq, useUpdateFaq} from "@/hooks/admin/useFaq";
-import {TypeApiUpdateFaqReq} from "@/types/typeApi";
+import {TypeApiUpdateFaqReq} from "@/types/typeApiAdmin";
 import {useEffect} from "react";
 
 export default function TheIdFaqUi() {

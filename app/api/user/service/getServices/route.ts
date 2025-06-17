@@ -1,9 +1,9 @@
 import prisma from '@/prisma/client';
 import {checkMethodAllowed, createSuccessResponseWithData, handlerRequestError} from "@/app/api/_utils/handleRequest";
-import {TypeApiServices, TypeApiUsers} from "@/types/typeApi";
+import {TypeApiService, TypeApiUser} from "@/types/typeApiAdmin";
 
-type TypeApiServicesWithInfo = TypeApiServices & {
-    user: Partial<TypeApiUsers>;
+type TypeApiServiceWithInfo = TypeApiService & {
+    user: Partial<TypeApiUser>;
 };
 
 
@@ -23,7 +23,7 @@ export async function GET(request: Request) {
     // }
 
     try {
-        const services: TypeApiServicesWithInfo[] = await prisma.services.findMany({
+        const services: TypeApiServiceWithInfo[] = await prisma.services.findMany({
             include: {
                 user: {
                     select: {

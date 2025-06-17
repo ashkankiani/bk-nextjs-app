@@ -13,7 +13,7 @@ import FormErrorMessage from "@/components/back-end/section/FormErrorMessage";
 import HeaderPage from "@/components/back-end/section/HeaderPage";
 import useHook from "@/hooks/controller/useHook";
 import {useAddHoliday} from "@/hooks/admin/useHoliday";
-import {TypeApiAddHolidayReq} from "@/types/typeApi";
+import {TypeApiAddHolidayReq} from "@/types/typeApiAdmin";
 
 export default function TheAddHolidayUi() {
 

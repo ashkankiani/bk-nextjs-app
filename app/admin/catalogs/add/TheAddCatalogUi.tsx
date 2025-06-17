@@ -10,7 +10,7 @@ import FormErrorMessage from "@/components/back-end/section/FormErrorMessage";
 import HeaderPage from "@/components/back-end/section/HeaderPage";
 import useHook from "@/hooks/controller/useHook";
 import {useAddCatalog} from "@/hooks/admin/useCatalog";
-import {TypeApiAddCatalogReq} from "@/types/typeApi";
+import {TypeApiAddCatalogReq} from "@/types/typeApiAdmin";
 
 export default function TheAddCatalogUi() {
 

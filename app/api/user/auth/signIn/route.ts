@@ -6,7 +6,7 @@ import {
 import prisma from "@/prisma/client";
 import {encodeJwt} from "@/libs/authentication";
 import bcrypt from "bcrypt";
-import {TypeApiProviders} from "@/types/typeApi";
+import {TypeApiProviders} from "@/types/typeApiAdmin";
 import {findPermissions, findUserByCodeMeli, upsertSession} from "@/app/api/_utils/helperPrisma";
 
 const allowedMethods = ["POST"];

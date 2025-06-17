@@ -7,7 +7,7 @@ import {
     handlerRequestError,
 } from "@/app/api/_utils/handleRequest";
 import prisma from "@/prisma/client";
-import {TypeProviderRes} from "@/types/typeApi";
+import {TypeProviderRes} from "@/types/typeApiAdmin";
 import {encodeJwt} from "@/libs/authentication";
 import bcrypt from "bcrypt";
 
@@ -198,6 +198,7 @@ async function createUser(body: TypeBody) {
 
 async function handleRegister(codeMeli: string, email: string, mobile: string, body: TypeBody) {
     try {
+
         const hasUser = await checkUserExistence(codeMeli, email, mobile);
         if (hasUser !== 0) {
             return createErrorResponse("کاربر با این کد ملی یا ایمیل یا موبایل وجود دارد. ورود کنید.");
@@ -254,7 +255,7 @@ async function updateUserByCodeMeli(codeMeli: string, data: TypeBody) {
 
 async function handleUpdate(email: string, mobile: string, codeMeli: string, body: TypeBody) {
     try {
-        const hasUser = await checkUserExistenceForUpdate(email, mobile, codeMeli);
+        const hasUser = await checkUserExistenceForUpdate(codeMeli, email, mobile);
         if (hasUser !== 0) {
             return createErrorResponse("کاربر با این ایمیل یا موبایل وجود دارد.");
         }

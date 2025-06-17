@@ -1,12 +1,12 @@
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
-import {AddFaq, DeleteFaq, GetFaqs, ShowFaq, UpdateFaq} from "@/api/apisAdmin";
-import {TypeApiAddFaqReq, TypeApiDeleteFaqReq, TypeApiUpdateFaqReq} from "@/types/typeApiAdmin";
+import {AddUser, DeleteUser, GetUsers, ShowUser, UpdateUser} from "@/api/apisAdmin";
+import {TypeApiAddUserReq, TypeApiDeleteUserReq, TypeApiUpdateUserReq} from "@/types/typeApiAdmin";
 
 
-function useGetFaqs(Optional?: object) {
+function useGetUsers(Optional?: object) {
     const {data, isLoading, isFetched} = useQuery({
-        queryKey: ['GetFaqs'],
-        queryFn: () => GetFaqs(),
+        queryKey: ['GetUsers'],
+        queryFn: () => GetUsers(),
         ...Optional,
     })
     return {
@@ -16,10 +16,10 @@ function useGetFaqs(Optional?: object) {
     }
 }
 
-function useShowFaq(id: number, Optional?: object) {
+function useShowUser(id: number, Optional?: object) {
     const {data, isLoading, isFetched} = useQuery({
-        queryKey: ['ShowFaq' , id],
-        queryFn: () => ShowFaq({id}),
+        queryKey: ['ShowUser' , id],
+        queryFn: () => ShowUser({id}),
         ...Optional,
     })
     return {
@@ -29,12 +29,12 @@ function useShowFaq(id: number, Optional?: object) {
     }
 }
 
-function useAddFaq(Optional?: object) {
+function useAddUser(Optional?: object) {
     const client = useQueryClient()
     const {mutateAsync, isPending} = useMutation({
-        mutationFn: (data: TypeApiAddFaqReq) => AddFaq(data),
+        mutationFn: (data: TypeApiAddUserReq) => AddUser(data),
         onSuccess: () => {
-            client.invalidateQueries({queryKey: ['GetFaqs']})
+            client.invalidateQueries({queryKey: ['GetUsers']})
         },
         ...Optional,
     })
@@ -44,12 +44,12 @@ function useAddFaq(Optional?: object) {
     }
 }
 
-function useDeleteFaq(Optional?: object) {
+function useDeleteUser(Optional?: object) {
     const client = useQueryClient()
     const {mutateAsync, isPending} = useMutation({
-        mutationFn: (data: TypeApiDeleteFaqReq) => DeleteFaq(data),
+        mutationFn: (data: TypeApiDeleteUserReq) => DeleteUser(data),
         onSuccess: () => {
-            client.invalidateQueries({queryKey: ['GetFaqs']})
+            client.invalidateQueries({queryKey: ['GetUsers']})
         },
         ...Optional,
     })
@@ -59,12 +59,12 @@ function useDeleteFaq(Optional?: object) {
     }
 }
 
-function useUpdateFaq(Optional?: object) {
+function useUpdateUser(Optional?: object) {
     const client = useQueryClient()
     const {mutateAsync, isPending} = useMutation({
-        mutationFn: (data: TypeApiUpdateFaqReq) => UpdateFaq(data),
+        mutationFn: (data: TypeApiUpdateUserReq) => UpdateUser(data),
         onSuccess: (data, variables, context) => {
-            client.invalidateQueries({queryKey: ['ShowFaq' , variables.id]})
+            client.invalidateQueries({queryKey: ['ShowUser' , variables.id]})
         },
         ...Optional,
     })
@@ -76,9 +76,9 @@ function useUpdateFaq(Optional?: object) {
 
 
 export {
-    useGetFaqs,
-    useShowFaq,
-    useAddFaq,
-    useDeleteFaq,
-    useUpdateFaq
+    useGetUsers,
+    useShowUser,
+    useAddUser,
+    useDeleteUser,
+    useUpdateUser
 }

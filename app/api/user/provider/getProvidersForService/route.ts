@@ -1,6 +1,6 @@
 import prisma from "@/prisma/client";
 import {createSuccessResponseWithData, handlerRequestError, checkMethodAllowed} from "@/app/api/_utils/handleRequest";
-import {TypeApiGetProvidersForServiceRes} from "@/types/typeApi";
+import {TypeApiGetProvidersForServiceRes} from "@/types/typeApiAdmin";
 
 
 

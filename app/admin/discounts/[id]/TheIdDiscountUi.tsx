@@ -17,7 +17,7 @@ import {useParams} from "next/navigation";
 import useHook from "@/hooks/controller/useHook";
 import {useShowDiscount, useUpdateDiscount} from "@/hooks/admin/useDiscount";
 import {TypeDiscountsType} from "@/types/typeConfig";
-import {TypeApiUpdateDiscountReq} from "@/types/typeApi";
+import {TypeApiUpdateDiscountReq} from "@/types/typeApiAdmin";
 
 export default function TheIdDiscountUi() {
 

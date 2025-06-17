@@ -1,6 +1,6 @@
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
 import { ShowPermission, UpdatePermission} from "@/api/apisAdmin";
-import {TypeApiUpdatePermissionReq} from "@/types/typeApi";
+import {TypeApiUpdatePermissionReq} from "@/types/typeApiAdmin";
 
 
 function useShowPermission(id: number, Optional?: object) {

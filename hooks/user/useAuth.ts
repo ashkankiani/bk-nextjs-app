@@ -1,6 +1,6 @@
 import {useMutation} from '@tanstack/react-query'
 import {SignIn, SignInOtp, SendCodeOtp, SignUp, ResetPassword, UpdateUser} from "@/api/apisUser";
-import {TypeApiResetPasswordReq, TypeApiSignUpReq, TypeApiUpdateUserReq} from "@/types/typeApi";
+import {TypeApiResetPasswordReq, TypeApiSignUpReq, TypeApiUpdateUserReq} from "@/types/typeApiUser";
 
 
 function useSignIn(Optional?: object) {

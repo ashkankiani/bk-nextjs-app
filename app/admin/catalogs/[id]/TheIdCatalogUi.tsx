@@ -10,7 +10,7 @@ import {useParams} from "next/navigation";
 import useHook from "@/hooks/controller/useHook";
 import {useShowPermission} from "@/hooks/admin/usePermission";
 import {useUpdatePermission} from "@/hooks/admin/usePermission";
-import {TypeApiUpdatePermissionReq} from "@/types/typeApi";
+import {TypeApiUpdatePermissionReq} from "@/types/typeApiAdmin";
 import {useEffect} from "react";
 
 export default function TheIdCatalogUi() {

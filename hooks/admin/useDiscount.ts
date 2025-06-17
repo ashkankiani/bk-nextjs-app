@@ -1,6 +1,6 @@
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
 import {AddDiscount, DeleteDiscount, GetDiscounts, ShowDiscount, UpdateDiscount} from "@/api/apisAdmin";
-import {TypeApiAddDiscountReq, TypeApiDeleteDiscountReq, TypeApiUpdateDiscountReq} from "@/types/typeApi";
+import {TypeApiAddDiscountReq, TypeApiDeleteDiscountReq, TypeApiUpdateDiscountReq} from "@/types/typeApiAdmin";
 
 
 function useGetDiscounts(Optional?: object) {

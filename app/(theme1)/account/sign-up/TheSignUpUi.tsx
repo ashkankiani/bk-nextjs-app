@@ -10,7 +10,7 @@ import FormErrorMessage from "@/components/back-end/section/FormErrorMessage";
 import TheSpinner from "@/components/layout/TheSpinner";
 import useHook from "@/hooks/controller/useHook";
 import {useSendCodeOtp, useSignUp} from "@/hooks/user/useAuth";
-import {TypeApiSignUpReq, TypeApiSignUpRes} from "@/types/typeApi";
+import {TypeApiSignUpReq, TypeApiSignUpRes} from "@/types/typeApiAdmin";
 
 export default function TheSignUpUi() {
     const {router, setting} = useHook()

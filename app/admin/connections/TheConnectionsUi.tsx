@@ -10,7 +10,7 @@ import HeaderPage from "@/components/back-end/section/HeaderPage";
 import Link from "next/link";
 import useHook from "@/hooks/controller/useHook";
 import {useGetConnections, useUpdateConnection} from "@/hooks/admin/useConnection";
-import {TypeApiConnection} from "@/types/typeApi";
+import {TypeApiConnection} from "@/types/typeApiAdmin";
 import DocumentWebServiceSms from "@/app/admin/connections/components/DocumentWebServiceSms";
 import ConnectionTest from "@/app/admin/connections/components/ConnectionTest";
 

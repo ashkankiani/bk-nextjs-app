@@ -3,7 +3,7 @@ import {GetProvidersForService} from "@/api/apisUser";
 
 function useGetProvidersForService(params: { serviceId: number }, Optional?: object) {
     const {data, isLoading, isFetched} = useQuery({
-        queryKey: ['GetProviders', params?.serviceId],
+        queryKey: ['GetProvidersForService', params.serviceId],
         queryFn: () => GetProvidersForService(params),
         ...Optional,
     })

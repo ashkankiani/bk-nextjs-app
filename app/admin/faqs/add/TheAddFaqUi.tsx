@@ -9,7 +9,7 @@ import FormErrorMessage from "@/components/back-end/section/FormErrorMessage";
 import HeaderPage from "@/components/back-end/section/HeaderPage";
 import useHook from "@/hooks/controller/useHook";
 import {useAddFaq} from "@/hooks/admin/useFaq";
-import {TypeApiAddFaqReq} from "@/types/typeApi";
+import {TypeApiAddFaqReq} from "@/types/typeApiAdmin";
 
 export default function TheAddFaqUi() {
 

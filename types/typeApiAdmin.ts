@@ -1,11 +1,20 @@
 import {
-    TypeBankName, TypeCancellationReservation,
-    TypeDiscountsType, TypeEmailStatus,
+    TypeBankName,
+    TypeDiscountsType,
     TypeGender,
     TypePaymentType,
-    TypeReservationsStatus, TypeSmsName,
-    TypeTheme
+    TypeReservationsStatus,
 } from "@/types/typeConfig";
+import {
+    TypeApiCatalog,
+    TypeApiConnection,
+    TypeApiDiscount,
+    TypeApiFaq,
+    TypeApiHoliday,
+    TypeApiPermission,
+    TypeApiSetting,
+    TypeApiUser,
+} from "@/types/typeApiEntity";
 
 export interface TypeReservationRes {
     id: number;
@@ -112,7 +121,7 @@ export interface TypeTransactionRes {
     updatedAt: Date;
 }
 
-export interface TypeApiServices {
+export interface TypeApiService {
     id: number;
 
     userId: number;
@@ -197,104 +206,14 @@ export interface TypeTimeSheetRes {
 }
 
 
-
-
-
-
-export interface TypeApiUsers {
-    id: number;
-
-    catalogId: number;
-
-    codeMeli: string;
-    fullName: string;
-    mobile: string;
-    email: string | null;
-    password: string;
-
-    gender: TypeGender;
-
-    locked: boolean;
-
-    // Providers?: TypeProviderRes[];
-    // Orders?: TypeOrderRes[];
-
-    createdAt: Date;
-    updatedAt: Date;
-
-    // Reservations?: TypeReservationRes[];
-    // Payments?: TypePaymentRes[];
-    // Services?: TypeApiServices[];
-    // Draft?: TypeDraftRes[];
-
-    // Profile?: Profile[]; // اگر بخوای فعالش کنی
-    // Catalogs?: Catalogs[]; // اگر بخوای فعالش کنی
-    // Session?: TypeSessions[];
-}
-
 export interface TypeCatalogs {
     id: number;
     title: string;
 
-    Users?: TypeApiUsers[];
+    Users?: TypeApiUser[];
     Permissions?: Permissions[];
 }
 
-
-export interface TypeApiPermissions {
-    id: number;
-
-    catalogId: number;
-
-    admin: boolean;
-    viewDashboard: boolean;
-    viewReservation: boolean;
-    addReservation: boolean;
-    editReservation: boolean;
-    deleteReservation: boolean;
-    viewDraft: boolean;
-    deleteDraft: boolean;
-    viewServices: boolean;
-    addServices: boolean;
-    editServices: boolean;
-    deleteServices: boolean;
-    viewProviders: boolean;
-    addProviders: boolean;
-    editProviders: boolean;
-    deleteProviders: boolean;
-    viewTimesheets: boolean;
-    addTimesheets: boolean;
-    deleteTimesheets: boolean;
-    viewFinancial: boolean;
-    viewHolidays: boolean;
-    addHolidays: boolean;
-    editHolidays: boolean;
-    deleteHolidays: boolean;
-    viewDiscounts: boolean;
-    addDiscounts: boolean;
-    editDiscounts: boolean;
-    deleteDiscounts: boolean;
-    viewUsers: boolean;
-    addUsers: boolean;
-    editUsers: boolean;
-    deleteUsers: boolean;
-    exportUsers: boolean;
-    importUsers: boolean;
-    viewFaqs: boolean;
-    addFaqs: boolean;
-    editFaqs: boolean;
-    deleteFaqs: boolean;
-    viewSettings: boolean;
-    editSettings: boolean;
-    viewConnections: boolean;
-    editConnections: boolean;
-    viewCatalogs: boolean;
-    addCatalogs: boolean;
-    editCatalogs: boolean;
-    deleteCatalogs: boolean;
-    getSms: boolean;
-    getEmail: boolean;
-}
 
 export interface TypeSessions {
     id: number;
@@ -303,9 +222,6 @@ export interface TypeSessions {
 
     expires: bigint; // چون در پرایسما BigInt است، اینجا از bigint استفاده می‌کنیم
 }
-
-
-
 
 
 export interface TypeOtpSms {
@@ -317,82 +233,9 @@ export interface TypeOtpSms {
 }
 
 
-export interface TypeApiSignInRes {
-    id: number;
-    catalogId: number;
-    codeMeli: string;
-    fullName: string;
-    mobile: string;
-    email: string | null;
-    lock: boolean
-    providerIds?: number[];
-    permissions: TypeApiPermissions
-}
-
-export type TypeApiGetProvidersForServiceRes = TypeApiProviders & {
-    service: Partial<TypeApiServices>;
-    user: Partial<TypeApiUsers>;
-};
-
-
-export interface TypeApiSendCodeOtpRes {
-    Message: string
-}
-
-
-export interface TypeApiSignUpReq {
-    codeMeli: string
-    fullName: string
-    email: string
-    mobile: string
-    password: string
-}
-
-export interface TypeApiSignUpRes {
-    Message: string
-}
-
-
-export interface TypeApiResetPasswordReq {
-    mobile: string
-    password: string
-}
-
-export interface TypeApiResetPasswordRes {
-    Message: string
-}
-
-
-export interface TypeApiUpdateUserReq {
-    codeMeli: string
-    fullName: string
-    email?: string
-    mobile: string
-    password?: string
-    gender: TypeGender
-}
-
-
-
-
-
-
-
-
-
-
 /*<====================================>*/
 // Faq
 /*<====================================>*/
-export interface TypeApiFaq {
-    id: number
-    title: string
-    content: string
-    createdAt: Date
-    updatedAt: Date
-}
-
-
 export interface TypeApiAddFaqReq {
     title: string;
     content: string;
@@ -428,19 +271,9 @@ export interface TypeApiUpdateFaqRes {
 }
 
 
-
-
-
 /*<====================================>*/
 // Holiday
 /*<====================================>*/
-export interface TypeApiHoliday {
-    id: number
-    title: string
-    date: string
-    createdAt: Date
-    updatedAt: Date
-}
 
 export interface TypeApiAddHolidayReq {
     date: string;
@@ -477,31 +310,9 @@ export interface TypeApiUpdateHolidayRes {
 }
 
 
-
-
-
-
-
-
-
-
-
-
 /*<====================================>*/
 // Discount
 /*<====================================>*/
-
-export interface TypeApiDiscount {
-    id: number;
-    title: string;
-    code: string;
-    startDate: string | null
-    endDate: string | null
-    type: TypeDiscountsType;
-    amount: number;
-    createdAt: Date;
-    updatedAt: Date;
-}
 
 export interface TypeApiAddDiscountReq {
     title: string;
@@ -546,15 +357,9 @@ export interface TypeApiUpdateDiscountRes {
 }
 
 
-
 /*<====================================>*/
 // Catalog
 /*<====================================>*/
-export interface TypeApiCatalog {
-    id: number;
-    title: string;
-}
-
 export interface TypeApiAddCatalogReq {
     title: string;
 }
@@ -574,63 +379,9 @@ export interface TypeApiDeleteCatalogRes {
 export type TypeApiGetCatalogsRes = TypeApiCatalog[]
 
 
-
 /*<====================================>*/
 // Permission
 /*<====================================>*/
-export type TypeApiPermission = {
-    id: number
-    catalogId : number
-    admin: boolean
-    viewDashboard: boolean
-    viewReservation: boolean
-    addReservation: boolean
-    editReservation: boolean
-    deleteReservation: boolean
-    viewDraft: boolean
-    deleteDraft: boolean
-    viewServices: boolean
-    addServices: boolean
-    editServices: boolean
-    deleteServices: boolean
-    viewProviders: boolean
-    addProviders: boolean
-    editProviders: boolean
-    deleteProviders: boolean
-    viewTimesheets: boolean
-    addTimesheets: boolean
-    deleteTimesheets: boolean
-    viewFinancial: boolean
-    viewHolidays: boolean
-    addHolidays: boolean
-    editHolidays: boolean
-    deleteHolidays: boolean
-    viewDiscounts: boolean
-    addDiscounts: boolean
-    editDiscounts: boolean
-    deleteDiscounts: boolean
-    viewUsers: boolean
-    addUsers: boolean
-    editUsers: boolean
-    deleteUsers: boolean
-    exportUsers: boolean
-    importUsers: boolean
-    viewFaqs: boolean
-    addFaqs: boolean
-    editFaqs: boolean
-    deleteFaqs: boolean
-    viewSettings: boolean
-    editSettings: boolean
-    viewConnections: boolean
-    editConnections: boolean
-    viewCatalogs: boolean
-    addCatalogs: boolean
-    editCatalogs: boolean
-    deleteCatalogs: boolean
-    getSms: boolean
-    getEmail: boolean
-}
-
 export type TypeApiShowPermissionReq = {
     id: number
 }
@@ -643,46 +394,9 @@ export interface TypeApiUpdatePermissionRes {
 }
 
 
-
-
 /*<====================================>*/
 // Connection
 /*<====================================>*/
-export interface TypeApiConnection {
-    id: number;
-
-    bankName1: TypeBankName;
-    merchantId1: string | null
-
-    bankName2: TypeBankName;
-    merchantId2: string | null
-
-    smsName: TypeSmsName
-
-    smsURL: string | null
-    smsToken: string | null
-    smsUserName: string | null
-    smsPassword: string | null
-    smsFrom: string | null
-
-    smsCodePattern1: string | null;
-    smsCodePattern2: string | null;
-    smsCodePattern3: string | null;
-    smsCodePattern4: string | null;
-    smsCodePattern5: string | null;
-    smsCodePattern6: string | null;
-    smsCodePattern7: string | null;
-    smsCodePattern8: string | null;
-
-    smtpURL: string | null;
-    smtpPort: number | null;
-    smtpUserName: string | null;
-    smtpPassword: string | null;
-
-    createdAt: Date;
-    updatedAt: Date;
-}
-
 export type TypeApiGetConnectionsRes = TypeApiConnection[]
 
 export type TypeApiUpdateConnectionReq = TypeApiConnection
@@ -692,13 +406,9 @@ export interface TypeApiUpdateConnectionRes {
 }
 
 
-
-
 /*<====================================>*/
 // Email
 /*<====================================>*/
-
-
 export interface TypeApiSendEmailReq {
     content?: string
     title: string
@@ -712,6 +422,7 @@ export interface TypeApiSendEmailReq {
     service: string
     provider: string
 }
+
 export interface TypeApiSendEmailRes {
     Message: string
 }
@@ -731,52 +442,57 @@ export interface TypeApiSendSmsRes {
 /*<====================================>*/
 // Setting
 /*<====================================>*/
-export interface TypeApiSetting {
-    id: number;
-    name: string;
-    url: string;
-    address: string;
-    phone: string;
-    theme: TypeTheme;
-
-    minReservationDate: number;
-    maxReservationDate: number;
-    minReservationTime: number;
-    cancellationDeadline: number;
-    maxReservationDaily: number;
-    maxReservationMonthly: number;
-
-    automaticConfirmation: boolean;
-    cancellationReservationUser: boolean;
-
-    smsCancellationReservation: TypeCancellationReservation;
-    emailCancellationReservation: TypeCancellationReservation;
-
-    groupReservation: boolean;
-    emailStatus: TypeEmailStatus;
-
-    shiftWorkStatus: boolean;
-    permissionSearchShiftWork: boolean;
-
-    registerOTP: boolean;
-    loginOTP: boolean;
-
-    cart: boolean;
-    minReservationLock: number;
-    guestReservation: boolean;
-
-    // headerCode?: string;
-    footerCode: string | null;
-    code: string;
-
-    createdAt: Date;
-    updatedAt: Date;
-}
-
 export type TypeApiGetSettingsRes = TypeApiSetting[]
 
 export type TypeApiUpdateSettingReq = TypeApiSetting
 
 export interface TypeApiUpdateSettingRes {
+    Message: string
+}
+
+
+/*<====================================>*/
+// User
+/*<====================================>*/
+export interface TypeApiAddUserReq {
+    title: string;
+    code: string;
+    startDate?: string | null
+    endDate?: string | null
+    amount: number;
+}
+
+export interface TypeApiAddUserRes {
+    Message: string
+}
+
+export interface TypeApiDeleteUserReq {
+    id: number;
+}
+
+export interface TypeApiDeleteUserRes {
+    Message: string
+}
+
+
+export type TypeApiGetUsersRes = TypeApiUser & {
+    catalog: TypeApiCatalog;
+};
+
+export type TypeApiShowUserReq = {
+    id: number
+}
+export type TypeApiShowUserRes = TypeApiUser
+
+export type TypeApiUpdateUserReq = {
+    id: number;
+    title: string;
+    code: string;
+    startDate?: string | null
+    endDate?: string | null
+    amount: number;
+}
+
+export interface TypeApiUpdateUserRes {
     Message: string
 }

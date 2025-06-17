@@ -4,7 +4,7 @@ import {
     handlerRequestError,
 } from "@/app/api/_utils/handleRequest";
 import prisma from "@/prisma/client";
-import {TypeApiConnection} from "@/types/typeApi";
+import {TypeApiConnection} from "@/types/typeApiAdmin";
 import {callExternalApi} from "@/app/api/_utils/callExternalApi";
 
 const allowedMethods = ["POST"];

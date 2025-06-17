@@ -48,4 +48,13 @@ export const ApiRoutesAdmin: TypeApiRoutesAdmin = {
         GetSettings: '/admin/setting/getSettings',
         UpdateSetting: '/admin/setting/updateSetting',
     },
+    User: {
+        AddUser: '/admin/user/addUser',
+        DeleteUser: '/admin/user/deleteUser?',
+        GetUsers: '/admin/user/getUsers',
+        ShowUser: '/admin/user/showUser?',
+        UpdateUser: '/admin/user/updateUser',
+    },
+
+
 }

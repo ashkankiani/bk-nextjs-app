@@ -2,7 +2,7 @@ import {
     checkMethodAllowed,
     checkRequiredFields,
     createErrorResponseWithMessage,
-    createSuccessResponseWithData,
+    createSuccessResponseWithMessage,
     handlerRequestError,
 } from "@/app/api/_utils/handleRequest";
 import prisma from "@/prisma/client";
@@ -40,20 +40,38 @@ export async function POST(request: Request) {
 
     try {
 
+    // catch (error: any) {
+    //         console.error('Error updating user:', error);
+    //         let myError = error?.meta?.target;
+    //         let message = '';
+    //         switch (myError) {
+    //             case 'Users_codeMeli_key':
+    //                 message = 'کاربری با این کدملی وجود دارد.';
+    //                 break;
+    //             case 'Users_mobile_key':
+    //                 message = 'کاربری با این موبایل وجود دارد.';
+    //                 break;
+    //             case 'Users_email_key':
+    //                 message = 'کاربری با این ایمیل وجود دارد.';
+    //                 break;
+    //             default:
+    //                 message = 'Failed to update';
+    //         }
+
         // آیا کاربر قبل تر با این کدملی یا موبایل یا ایمیل ثبت نام کرده یا خیر؟
-        const hasUser = await checkUserExistenceForUpdate(email, mobile, codeMeli);
+        const hasUser = await checkUserExistenceForUpdate(codeMeli, email, mobile);
 
         if (hasUser !== 0) {
             return createErrorResponseWithMessage("کاربر با این ایمیل یا موبایل یا کدملی وجود دارد.");
         }
 
-        // ایجاد عملیات آپدیت
-        const response = await prisma.users.update({
+        // ایجاد عملیات آپدیت کاربر
+        await prisma.users.update({
             data: body,
             where: {codeMeli}, // {id},
         });
 
-        return createSuccessResponseWithData(response);
+        return createSuccessResponseWithMessage("کاربر آپدیت شد.");
 
     } catch (error: unknown) {
         return handlerRequestError(error);

@@ -15,7 +15,7 @@ import {dateNowP} from "@/libs/convertor";
 import HeaderPage from "@/components/back-end/section/HeaderPage";
 import useHook from "@/hooks/controller/useHook";
 import {useAddDiscount} from "@/hooks/admin/useDiscount";
-import {TypeApiAddDiscountReq} from "@/types/typeApi";
+import {TypeApiAddDiscountReq} from "@/types/typeApiAdmin";
 import {TypeDiscountsType} from "@/types/typeConfig";
 
 export default function TheAddDiscountUi() {

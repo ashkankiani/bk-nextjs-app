@@ -33,7 +33,7 @@ export async function checkUserExistence(codeMeli: string, email: string, mobile
 }
 
 
-export async function checkUserExistenceForUpdate(email: string, mobile: string, codeMeli: string) {
+export async function checkUserExistenceForUpdate(codeMeli: string, email: string, mobile: string) {
     return await prisma.users.count({
         where: {
             OR: [

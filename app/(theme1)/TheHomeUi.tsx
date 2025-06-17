@@ -15,7 +15,7 @@ import useController from "@/hooks/controller/useController";
 import useHook from "@/hooks/controller/useHook";
 import {useGetServices} from "@/hooks/user/useService";
 import {useGetProvidersForService} from "@/hooks/user/useProvider";
-import {TypeApiGetProvidersForServiceRes, TypeApiServices} from "@/types/typeApi";
+import {TypeApiGetProvidersForServiceRes, TypeApiService} from "@/types/typeApiAdmin";
 
 export default function TheHomeUi() {
     const {dispatch, router, theme, isLogin, user, setting} = useHook()
@@ -49,7 +49,7 @@ export default function TheHomeUi() {
 
     }
     type TypeFormOutTheHomeUi = {
-        service: TypeApiServices
+        service: TypeApiService
         provider: TypeApiGetProvidersForServiceRes
         startDate: number
         endDate: number

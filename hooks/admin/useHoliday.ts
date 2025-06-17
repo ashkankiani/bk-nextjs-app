@@ -1,6 +1,6 @@
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
 import {AddHoliday, DeleteHoliday, GetHolidays, ShowHoliday, UpdateHoliday} from "@/api/apisAdmin";
-import {TypeApiAddHolidayReq, TypeApiDeleteHolidayReq, TypeApiUpdateHolidayReq} from "@/types/typeApi";
+import {TypeApiAddHolidayReq, TypeApiDeleteHolidayReq, TypeApiUpdateHolidayReq} from "@/types/typeApiAdmin";
 
 
 function useGetHolidays(Optional?: object) {

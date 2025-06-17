@@ -45,8 +45,13 @@ import {
     TypeApiSendSmsRes,
     TypeApiGetSettingsRes,
     TypeApiUpdateSettingReq,
-    TypeApiUpdateSettingRes
-} from "@/types/typeApi";
+    TypeApiUpdateSettingRes,
+    TypeApiAddUserReq,
+    TypeApiAddUserRes,
+    TypeApiDeleteUserReq,
+    TypeApiDeleteUserRes,
+    TypeApiGetUsersRes, TypeApiShowUserReq, TypeApiUpdateUserReq, TypeApiUpdateUserRes, TypeApiShowUserRes
+} from "@/types/typeApiAdmin";
 import {ApiRoutesAdmin} from "@/api/apiRoutesAdmin";
 
 
@@ -117,3 +122,13 @@ export const SendSms = (params: TypeApiSendSmsReq) => postRequest<TypeApiSendSms
 /*<====================================>*/
 export const GetSettings = () => getRequest<TypeApiGetSettingsRes>(ApiRoutesAdmin.Setting.GetSettings)
 export const UpdateSetting = (params: TypeApiUpdateSettingReq) => putRequest<TypeApiUpdateSettingRes>(ApiRoutesAdmin.Setting.UpdateSetting, params)
+
+
+/*<====================================>*/
+// User
+/*<====================================>*/
+export const AddUser = (params: TypeApiAddUserReq) => postRequest<TypeApiAddUserRes>(ApiRoutesAdmin.User.AddUser, params)
+export const DeleteUser = (params: TypeApiDeleteUserReq) => deleteRequest<TypeApiDeleteUserRes>(ApiRoutesAdmin.User.DeleteUser, params)
+export const GetUsers = () => getRequest<TypeApiGetUsersRes[]>(ApiRoutesAdmin.User.GetUsers)
+export const ShowUser = (params: TypeApiShowUserReq) => getRequest<TypeApiShowUserRes>(ApiRoutesAdmin.User.ShowUser , params)
+export const UpdateUser = (params: TypeApiUpdateUserReq) => putRequest<TypeApiUpdateUserRes>(ApiRoutesAdmin.User.UpdateUser, params)

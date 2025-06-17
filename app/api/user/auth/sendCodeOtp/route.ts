@@ -4,7 +4,7 @@ import {
     handlerRequestError,
 } from "@/app/api/_utils/handleRequest";
 import prisma from "@/prisma/client";
-import {TypeApiConnection} from "@/types/typeApi";
+import {TypeApiConnection} from "@/types/typeApiAdmin";
 import {callExternalApi, TypeRequestMethod} from "@/app/api/_utils/callExternalApi";
 import {TypeHeaders} from "@/types/typeConfig";
 import {farazSmsURL, ipPanelURL, kaveNegarURL, meliPayamakURL, smsIrURL} from "@/app/api/admin/sms/send-sms/route";

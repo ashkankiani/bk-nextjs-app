@@ -6,7 +6,7 @@ import {
     createSuccessResponseWithData,
     handlerRequestError,
 } from "@/app/api/_utils/handleRequest";
-import {TypeConnectionsRes} from "@/types/typeApi";
+import {TypeConnectionsRes} from "@/types/typeApiAdmin";
 
 
 const allowedMethods = ["POST"];

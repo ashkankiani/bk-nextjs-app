@@ -1,6 +1,6 @@
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
 import {AddCatalog, DeleteCatalog, GetCatalogs} from "@/api/apisAdmin";
-import {TypeApiAddCatalogReq, TypeApiDeleteCatalogReq} from "@/types/typeApi";
+import {TypeApiAddCatalogReq, TypeApiDeleteCatalogReq} from "@/types/typeApiAdmin";
 
 
 function useGetCatalogs(Optional?: object) {

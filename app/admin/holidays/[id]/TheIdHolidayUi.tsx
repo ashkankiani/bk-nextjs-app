@@ -15,7 +15,7 @@ import HeaderPage from "@/components/back-end/section/HeaderPage";
 import {useParams} from "next/navigation";
 import useHook from "@/hooks/controller/useHook";
 import {useShowHoliday, useUpdateHoliday} from "@/hooks/admin/useHoliday";
-import {TypeApiUpdateHolidayReq} from "@/types/typeApi";
+import {TypeApiUpdateHolidayReq} from "@/types/typeApiAdmin";
 
 export default function TheIdHolidayUi() {
 
