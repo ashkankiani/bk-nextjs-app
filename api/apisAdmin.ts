@@ -32,7 +32,20 @@ import {
     TypeApiAddCatalogRes,
     TypeApiDeleteCatalogRes,
     TypeApiGetCatalogsRes,
-    TypeApiShowPermissionReq, TypeApiUpdatePermissionReq, TypeApiShowPermissionRes, TypeApiUpdatePermissionRes
+    TypeApiShowPermissionReq,
+    TypeApiUpdatePermissionReq,
+    TypeApiShowPermissionRes,
+    TypeApiUpdatePermissionRes,
+    TypeApiGetConnectionsRes,
+    TypeApiUpdateConnectionReq,
+    TypeApiUpdateConnectionRes,
+    TypeApiSendEmailReq,
+    TypeApiSendEmailRes,
+    TypeApiSendSmsReq,
+    TypeApiSendSmsRes,
+    TypeApiGetSettingsRes,
+    TypeApiUpdateSettingReq,
+    TypeApiUpdateSettingRes
 } from "@/types/typeApi";
 import {ApiRoutesAdmin} from "@/api/apiRoutesAdmin";
 
@@ -81,3 +94,26 @@ export const GetCatalogs = () => getRequest<TypeApiGetCatalogsRes>(ApiRoutesAdmi
 export const ShowPermission = (params: TypeApiShowPermissionReq) => getRequest<TypeApiShowPermissionRes>(ApiRoutesAdmin.Permission.ShowPermission , params)
 export const UpdatePermission = (params: TypeApiUpdatePermissionReq) => putRequest<TypeApiUpdatePermissionRes>(ApiRoutesAdmin.Permission.UpdatePermission, params)
 
+
+/*<====================================>*/
+// Connection
+/*<====================================>*/
+export const GetConnections = () => getRequest<TypeApiGetConnectionsRes>(ApiRoutesAdmin.Connection.GetConnections)
+export const UpdateConnection = (params: TypeApiUpdateConnectionReq) => putRequest<TypeApiUpdateConnectionRes>(ApiRoutesAdmin.Connection.UpdateConnection, params)
+
+
+/*<====================================>*/
+// Email
+/*<====================================>*/
+export const SendEmail = (params: TypeApiSendEmailReq) => postRequest<TypeApiSendEmailRes>(ApiRoutesAdmin.Email.SendEmail, params)
+
+/*<====================================>*/
+// Sms
+/*<====================================>*/
+export const SendSms = (params: TypeApiSendSmsReq) => postRequest<TypeApiSendSmsRes>(ApiRoutesAdmin.Sms.SendSms, params)
+
+/*<====================================>*/
+// Setting
+/*<====================================>*/
+export const GetSettings = () => getRequest<TypeApiGetSettingsRes>(ApiRoutesAdmin.Setting.GetSettings)
+export const UpdateSetting = (params: TypeApiUpdateSettingReq) => putRequest<TypeApiUpdateSettingRes>(ApiRoutesAdmin.Setting.UpdateSetting, params)

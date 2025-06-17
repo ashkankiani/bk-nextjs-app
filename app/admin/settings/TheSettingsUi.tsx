@@ -1,22 +1,21 @@
-import HeadPage from "@/components/layout/HeadPage";
+"use client"
 import {AiOutlineSave} from "react-icons/ai";
-import {useEffect, useState} from "react";
+import {useEffect} from "react";
 import {bkToast, onlyTypeNumber} from "@/libs/utility";
-import {hookGetSettings, hookUpdateSettings} from "@/hooks/admin/hookSetting";
 import {useForm} from "react-hook-form";
 import TheSpinner from "@/components/layout/TheSpinner";
 import FormErrorMessage from "@/components/back-end/section/FormErrorMessage";
 import HeaderPage from "@/components/back-end/section/HeaderPage";
-import {useSelector} from "react-redux";
 import Link from "next/link";
 import {TbPlugConnected} from "react-icons/tb";
+import useHook from "@/hooks/controller/useHook";
+import {useGetSettings, useUpdateSetting} from "@/hooks/admin/useSetting";
+import {TypeApiSetting} from "@/types/typeApi";
+import LicenceManagement from "@/app/admin/settings/components/LicenceManagement";
 
-export default function Settings() {
+export default function TheSettingsUi() {
 
-  const permissions = useSelector(state => state.user.permissions)
-
-  const [loadingPage, setLoadingPage] = useState(false)
-  const [loading, setLoading] = useState(false)
+  const {permissions} = useHook()
 
   const items = [
     "name",
@@ -30,7 +29,6 @@ export default function Settings() {
     "smsCancellationReservation",
     "emailCancellationReservation",
   ];
-
   const itemsBoolean = [
     "automaticConfirmation",
     "cancellationReservationUser",
@@ -44,6 +42,7 @@ export default function Settings() {
     "guestReservation",
   ];
   const itemsInteger = [
+    "id",
     "minReservationDate",
     "maxReservationDate",
     "minReservationTime",
@@ -53,29 +52,31 @@ export default function Settings() {
     "minReservationLock",
   ];
 
-  const handlerGetSettings = async () => {
-    await hookGetSettings((response, message) => {
-      setLoadingPage(true)
-      if (response) {
-        items.forEach(item => {
-          setValue(item, message[item])
-        })
-        itemsBoolean.forEach(item => {
-          setValue(item, message[item].toString())
-        })
-        itemsInteger.forEach(item => {
-          setValue(item, parseInt(message[item]))
-        })
-      } else {
-        bkToast('error', message)
-      }
-    })
-  }
+  const {
+    data: dataSettings,
+    isLoading: isLoadingSettings,
+    isFetched: isFetchedSettings
+  } = useGetSettings()
+  const {mutateAsync: mutateAsyncUpdateSetting, isPending: isPendingUpdateSetting} = useUpdateSetting()
+
 
   useEffect(() => {
-    handlerGetSettings()
-  }, [])
+    if (isFetchedSettings && dataSettings && dataSettings[0]) {
 
+      items.forEach(item => {
+        setValue(item, dataSettings[0][item])
+      })
+      itemsBoolean.forEach(item => {
+        setValue(item, dataSettings[0][item].toString())
+      })
+      itemsInteger.forEach(item => {
+        setValue(item, parseInt(dataSettings[0][item]))
+      })
+
+      // setValue('id', dataPermission.id)
+      // setValue('catalogId', dataPermission.catalogId)
+    }
+  }, [isFetchedSettings])
 
   const {
     register,
@@ -83,37 +84,30 @@ export default function Settings() {
     setValue,
     handleSubmit,
     formState: {errors},
-  } = useForm({
+  } = useForm<TypeApiSetting>({
     criteriaMode: 'all',
 
   })
 
-  const onSubmit = data => {
+  const onSubmit = async (data: TypeApiSetting) => {
     itemsBoolean.forEach(item => {
       data[item] = data[item] === 'true'
     })
     itemsInteger.forEach(item => {
       data[item] = parseInt(data[item])
     })
-    handlerUpdateSettings(data)
-  }
 
-  const handlerUpdateSettings = async data => {
-    setLoading(true)
-    await hookUpdateSettings(data, (response, message) => {
-      setLoading(false)
-      if (response) {
-        bkToast('success', message)
-      } else {
-        bkToast('error', message)
-      }
+    await mutateAsyncUpdateSetting(data).then((res) => {
+      bkToast('success', res.Message)
+    }).catch(errors => {
+      bkToast('error', errors.Reason)
     })
+
   }
 
 
   return (
     <>
-      <HeadPage title="تنظیمات"/>
       <HeaderPage title="تنظیمات" description="تنظیمات ظاهری و نمایشی و پیکربندی وب سرویس خود را انجام دهید.">
         {
           permissions.viewConnections &&
@@ -126,7 +120,9 @@ export default function Settings() {
 
       <div className="panel-main">
         {
-          loadingPage ?
+          isLoadingSettings ?
+              <TheSpinner/>
+              :
             <form className="panel-boxed" onSubmit={handleSubmit(onSubmit)}>
               <div className="flex-center-start flex-wrap">
                 <div className="panel-col-33">
@@ -215,8 +211,8 @@ export default function Settings() {
                         message: 'حداکثر زمان پایان رزرو ضروری است',
                       },
                       min: {
-                        value: parseInt(watch('minReservationDate')) > 60 ? 0 : parseInt(watch('minReservationDate')),
-                        message: " برابر یا بزرگتر از " + parseInt(watch('minReservationDate')) + " بیشتر باشد."
+                        value: Number(watch('minReservationDate')) > 60 ? 0 : Number(watch('minReservationDate')),
+                        message: " برابر یا بزرگتر از " + watch('minReservationDate') + " بیشتر باشد."
                       },
                       max: {
                         value: 60,
@@ -599,7 +595,7 @@ export default function Settings() {
                   <textarea
                     {...register('footerCode')}
                     dir="ltr"
-                    rows="5" className="bk-input text-left"/>
+                    rows={5} className="bk-input text-left"/>
                   <FormErrorMessage errors={errors} name="footerCode"/>
                 </div>
                 {
@@ -608,10 +604,10 @@ export default function Settings() {
                     <button
                       className={
                         'panel-form-submit ' +
-                        (loading ? 'disable-action' : '')
+                        (isPendingUpdateSetting ? 'disable-action' : '')
                       }
                       type="submit">
-                      {loading ? (
+                      {isPendingUpdateSetting ? (
                         <TheSpinner/>
                       ) : (
                         <span><AiOutlineSave size="24px" className="inline-flex align-middle ml-2"/>ثبت تنظیمات</span>
@@ -622,17 +618,9 @@ export default function Settings() {
 
               </div>
             </form>
-            :
-            <TheSpinner/>
+
         }
-      <form action="" className="panel-boxed mt-6" id="license">
-        <div className="flex-center-center flex-col max-w-md gap-2 mx-auto bg-gray-100 dark:bg-darkNavy1  rounded-md">
-          <div className="fa-bold-26px mb-2">فعالسازی محصول</div>
-          <p className="mb-2">لایسنس فعال سازی خود را وارد نمایید.</p>
-          <input type="text" className="bk-input" placeholder="کد 36 رقمی دریافتی از ژاکت"/>
-          <button className="bk-button w-full bg-green-500 fa-bold-20px">فعالسازی</button>
-        </div>
-      </form>
+        <LicenceManagement />
       </div>
 
     </>

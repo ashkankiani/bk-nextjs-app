@@ -28,10 +28,24 @@ export const ApiRoutesAdmin: TypeApiRoutesAdmin = {
         DeleteCatalog: '/admin/catalog/deleteCatalog?',
         GetCatalogs: '/admin/catalog/getCatalogs',
     },
-
     Permission: {
         ShowPermission: '/admin/permission/showPermission?',
         UpdatePermission: '/admin/permission/updatePermission',
     },
 
+    Connection: {
+        GetConnections: '/admin/connection/getConnections',
+        UpdateConnection: '/admin/connection/updateConnection',
+    },
+
+    Email: {
+        SendEmail: '/admin/email/SendEmail',
+    },
+    Sms: {
+        SendSms: '/admin/sms/SendSms',
+    },
+    Setting: {
+        GetSettings: '/admin/setting/getSettings',
+        UpdateSetting: '/admin/setting/updateSetting',
+    },
 }

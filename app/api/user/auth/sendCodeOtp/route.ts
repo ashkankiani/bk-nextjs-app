@@ -4,9 +4,10 @@ import {
     handlerRequestError,
 } from "@/app/api/_utils/handleRequest";
 import prisma from "@/prisma/client";
-import {TypeApiConnections} from "@/types/typeApi";
+import {TypeApiConnection} from "@/types/typeApi";
 import {callExternalApi, TypeRequestMethod} from "@/app/api/_utils/callExternalApi";
 import {TypeHeaders} from "@/types/typeConfig";
+import {farazSmsURL, ipPanelURL, kaveNegarURL, meliPayamakURL, smsIrURL} from "@/app/api/admin/sms/send-sms/route";
 
 const allowedMethods = ["POST"];
 
@@ -59,9 +60,9 @@ export async function POST(request: Request) {
         }
 
         // دریافت داده های ارتباطات
-        const connections: TypeApiConnections[] = await prisma.connections.findMany();
+        const connections: TypeApiConnection[] = await prisma.connections.findMany();
 
-        if (!connections || connections[0]) {
+        if (!connections || !connections[0]) {
             return createErrorResponseWithMessage("دسترسی به ارتباطات مویثر نشد.");
         }
 
@@ -72,6 +73,17 @@ export async function POST(request: Request) {
             headers: TypeHeaders
         } = getParams(connections[0], body);
 
+        // بررسی وجود داده های مورد نیاز
+        if (!connections[0].smsName || !connections[0].smsURL) {
+            return createErrorResponseWithMessage("آدرس یا نام وب سرویس پیامک صحیح نیست.");
+        }
+
+        if (connections[0].smsName === "KAVENEGAR" || connections[0].smsName === "MELIPAYAMAK") {
+            if (!connections[0].smsToken) {
+                return createErrorResponseWithMessage("توکن وب سرویس پیامک صحیح نیست.");
+            }
+        }
+
         // ساخت آدرس اینترنتی وب سرویس پیامکی
         const URL = getURL(connections[0]);
 
@@ -81,7 +93,6 @@ export async function POST(request: Request) {
             url: URL, // آدرس سرویس خارجی
             ...(params.data && {data: params.data}),
             headers: {
-                'Content-Type': 'application/json',
                 ...params.headers,
             },
         });
@@ -108,7 +119,7 @@ export async function POST(request: Request) {
     }
 }
 
-const getParams = (connections: TypeApiConnections, body: { mobile: string, code: number }): {
+const getParams = (connections: TypeApiConnection, body: { mobile: string, code: number }): {
     type: TypeRequestMethod;
     data: object | string;
     headers: TypeHeaders;
@@ -177,7 +188,7 @@ const getParams = (connections: TypeApiConnections, body: { mobile: string, code
             throw new Error('سامانه پیامکی در سیستم ثبت نشده است.');
     }
 };
-const getURL = (connections: TypeApiConnections) => {
+const getURL = (connections: TypeApiConnection) => {
     switch (connections.smsName) {
         case "KAVENEGAR":
             return kaveNegarURL(connections.smsURL!, connections.smsToken!);
@@ -193,8 +204,3 @@ const getURL = (connections: TypeApiConnections) => {
             throw new Error('سامانه پیامکی در سیستم ثبت نشده است.');
     }
 };
-const meliPayamakURL = (baseURL: string, token: string) => baseURL + 'shared/' + token;
-const kaveNegarURL = (baseURL: string, token: string) => baseURL + token + '/verify/lookup.json?';
-const farazSmsURL = (baseURL: string) => baseURL + '/sms/pattern/normal/send';
-const ipPanelURL = (baseURL: string) => baseURL;
-const smsIrURL = (baseURL: string) => baseURL + '/send/verify';

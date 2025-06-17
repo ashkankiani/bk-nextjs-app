@@ -5,7 +5,7 @@ import {TypeApiUpdatePermissionReq} from "@/types/typeApi";
 
 function useShowPermission(id: number, Optional?: object) {
     const {data, isLoading, isFetched} = useQuery({
-        queryKey: ['ShowPermission' + id],
+        queryKey: ['ShowPermission' , id],
         queryFn: () => ShowPermission({id}),
         ...Optional,
     })
@@ -21,7 +21,7 @@ function useUpdatePermission(Optional?: object) {
     const {mutateAsync, isPending} = useMutation({
         mutationFn: (data: TypeApiUpdatePermissionReq) => UpdatePermission(data),
         onSuccess: (data, variables, context) => {
-            client.invalidateQueries({queryKey: ['ShowPermission' + variables.id]})
+            client.invalidateQueries({queryKey: ['ShowPermission' , variables.id]})
         },
         ...Optional,
     })

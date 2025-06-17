@@ -8,7 +8,7 @@ interface CallExternalApiOptions {
     method?: TypeRequestMethod;
     url: string;
     data?: object | string;
-    headers: TypeHeaders;
+    headers?: TypeHeaders;
 }
 
 interface CallExternalApiSuccess<T> {
@@ -32,12 +32,28 @@ export async function callExternalApi<T = unknown>({
 
         if (method === 'GET') {
             const queryString = QS.stringify(data);
-            response = await axios.get(`${url}?${queryString}`, {headers});
+            response = await axios.get(`${url}?${queryString}`, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    ...headers,
+                }
+            });
         } else if (method === 'queryString') {
             const queryString = QS.stringify(data);
-            response = await axios.post(`${url}?${queryString}`, {}, {headers});
+            response = await axios.post(`${url}?${queryString}`, {}, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    ...headers,
+                }
+            });
         } else {
-            response = await axios.post(url, data, {headers});
+            response = await axios.post(url, data, {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        ...headers,
+                    }
+                }
+            );
         }
 
         return {

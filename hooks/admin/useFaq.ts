@@ -18,7 +18,7 @@ function useGetFaqs(Optional?: object) {
 
 function useShowFaq(id: number, Optional?: object) {
     const {data, isLoading, isFetched} = useQuery({
-        queryKey: ['ShowFaq' + id],
+        queryKey: ['ShowFaq' , id],
         queryFn: () => ShowFaq({id}),
         ...Optional,
     })
@@ -64,7 +64,7 @@ function useUpdateFaq(Optional?: object) {
     const {mutateAsync, isPending} = useMutation({
         mutationFn: (data: TypeApiUpdateFaqReq) => UpdateFaq(data),
         onSuccess: (data, variables, context) => {
-            client.invalidateQueries({queryKey: ['ShowFaq' + variables.id]})
+            client.invalidateQueries({queryKey: ['ShowFaq' , variables.id]})
         },
         ...Optional,
     })

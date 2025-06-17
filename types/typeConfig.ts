@@ -28,6 +28,10 @@ export type TypeApiRoutesAdmin = {
     Discount: EndpointApiRoutes
     Catalog: EndpointApiRoutes
     Permission: EndpointApiRoutes
+    Connection: EndpointApiRoutes
+    Email: EndpointApiRoutes
+    Sms: EndpointApiRoutes
+    Setting: EndpointApiRoutes
 
 }
 

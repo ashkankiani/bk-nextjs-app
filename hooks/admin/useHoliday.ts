@@ -18,7 +18,7 @@ function useGetHolidays(Optional?: object) {
 
 function useShowHoliday(id: number, Optional?: object) {
     const {data, isLoading, isFetched} = useQuery({
-        queryKey: ['ShowHoliday' + id],
+        queryKey: ['ShowHoliday' , id],
         queryFn: () => ShowHoliday({id}),
         ...Optional,
     })
@@ -64,7 +64,7 @@ function useUpdateHoliday(Optional?: object) {
     const {mutateAsync, isPending} = useMutation({
         mutationFn: (data: TypeApiUpdateHolidayReq) => UpdateHoliday(data),
         onSuccess: (data, variables, context) => {
-            client.invalidateQueries({queryKey: ['ShowHoliday' + variables.id]})
+            client.invalidateQueries({queryKey: ['ShowHoliday' , variables.id]})
         },
         ...Optional,
     })

@@ -18,7 +18,7 @@ function useGetDiscounts(Optional?: object) {
 
 function useShowDiscount(id: number, Optional?: object) {
     const {data, isLoading, isFetched} = useQuery({
-        queryKey: ['ShowDiscount' + id],
+        queryKey: ['ShowDiscount' , id],
         queryFn: () => ShowDiscount({id}),
         ...Optional,
     })
@@ -64,7 +64,7 @@ function useUpdateDiscount(Optional?: object) {
     const {mutateAsync, isPending} = useMutation({
         mutationFn: (data: TypeApiUpdateDiscountReq) => UpdateDiscount(data),
         onSuccess: (data, variables, context) => {
-            client.invalidateQueries({queryKey: ['ShowDiscount' + variables.id]})
+            client.invalidateQueries({queryKey: ['ShowDiscount' , variables.id]})
         },
         ...Optional,
     })

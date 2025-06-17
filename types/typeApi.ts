@@ -304,84 +304,9 @@ export interface TypeSessions {
     expires: bigint; // چون در پرایسما BigInt است، اینجا از bigint استفاده می‌کنیم
 }
 
-export interface TypeApiSettings {
-    id: number;
-    name: string;
-    url: string;
-    address: string;
-    phone: string;
-    theme: TypeTheme;
-
-    minReservationDate: number;    // حداقل زمان شروع رزرو
-    maxReservationDate: number;    // حداکثر زمان پایان رزرو
-    minReservationTime: number;    // حداقل دقیقه قبل شروع رزرو
-    cancellationDeadline: number;  // حداقل دقیقه مورد نیاز قبل از لغو
-    maxReservationDaily: number;   // حداکثر تعداد رزرو روزانه کاربر
-    maxReservationMonthly: number; // حداکثر تعداد نوبت در ماه
-
-    automaticConfirmation: boolean;          // وضعیت پیش فرض رزرو
-    cancellationReservationUser: boolean;    // امکان لغو رزرو برای کاربر
-    // cancellationReservationProvider?: boolean; // اگر بخوای می‌تونی اضافه کنی
-
-    smsCancellationReservation: TypeCancellationReservation;   // اطلاع رسانی پیامکی لغو رزرو
-    emailCancellationReservation: TypeCancellationReservation; // اطلاع رسانی ایمیل لغو رزرو
-
-    groupReservation: boolean;                // امکان رزرو گروهی
-    emailStatus: TypeEmailStatus;        // وضعیت ایمیل در ایجاد کاربر
-
-    shiftWorkStatus: boolean;                 // وضعیت باکس روزهای بدون نوبت کاری
-    permissionSearchShiftWork: boolean;      // اجازه جستجوی نوبت کاری
-
-    registerOTP: boolean; // ثبت نام کاربر با تایید شماره موبایل
-    loginOTP: boolean;    // ورود کاربر با کد تایید یکبار مصرف پیامکی
-
-    cart: boolean;               // وضعیت ایجاد سبد خرید
-    minReservationLock: number;  // حداقل مدت زمان قفل نوبت انتخاب شده
-    guestReservation: boolean;   // رزرو سریع به عنوان مهمان
-
-    // headerCode?: string; // اگر بخوای می‌تونی فعالش کنی
-    footerCode: string | null;
-    code: string;
-
-    createdAt: Date;
-    updatedAt: Date;
-}
 
 
-export interface TypeApiConnections {
-    id: number;
 
-    bankName1: TypeBankName;
-    merchantId1: string | null
-
-    bankName2: TypeBankName;
-    merchantId2: string | null
-
-    smsName: TypeSmsName
-
-    smsURL: string | null
-    smsToken: string | null
-    smsUserName: string | null
-    smsPassword: string | null
-    smsFrom: string | null
-
-    smsCodePattern1: string | null;
-    smsCodePattern2: string | null;
-    smsCodePattern3: string | null;
-    smsCodePattern4: string | null;
-    smsCodePattern5: string | null;
-    smsCodePattern6: string | null;
-    smsCodePattern7: string | null;
-    smsCodePattern8: string | null;
-
-    smtpURL: string | null;
-    smtpPort: number | null;
-    smtpUserName: string | null;
-    smtpPassword: string | null;
-
-    createdAt: Date;
-    updatedAt: Date;
-}
 
 export interface TypeOtpSms {
     id: number;
@@ -448,13 +373,23 @@ export interface TypeApiUpdateUserReq {
 }
 
 
+
+
+
+
+
+
+
+
+/*<====================================>*/
 // Faq
+/*<====================================>*/
 export interface TypeApiFaq {
     id: number
     title: string
     content: string
-    createdAt: string
-    updatedAt: string
+    createdAt: Date
+    updatedAt: Date
 }
 
 
@@ -496,14 +431,15 @@ export interface TypeApiUpdateFaqRes {
 
 
 
-
+/*<====================================>*/
 // Holiday
+/*<====================================>*/
 export interface TypeApiHoliday {
     id: number
     title: string
     date: string
-    createdAt: string
-    updatedAt: string
+    createdAt: Date
+    updatedAt: Date
 }
 
 export interface TypeApiAddHolidayReq {
@@ -551,9 +487,10 @@ export interface TypeApiUpdateHolidayRes {
 
 
 
-
-
+/*<====================================>*/
 // Discount
+/*<====================================>*/
+
 export interface TypeApiDiscount {
     id: number;
     title: string;
@@ -562,8 +499,8 @@ export interface TypeApiDiscount {
     endDate: string | null
     type: TypeDiscountsType;
     amount: number;
-    createdAt: string;
-    updatedAt: string;
+    createdAt: Date;
+    updatedAt: Date;
 }
 
 export interface TypeApiAddDiscountReq {
@@ -610,9 +547,9 @@ export interface TypeApiUpdateDiscountRes {
 
 
 
-
-
+/*<====================================>*/
 // Catalog
+/*<====================================>*/
 export interface TypeApiCatalog {
     id: number;
     title: string;
@@ -637,8 +574,10 @@ export interface TypeApiDeleteCatalogRes {
 export type TypeApiGetCatalogsRes = TypeApiCatalog[]
 
 
-// Permission
 
+/*<====================================>*/
+// Permission
+/*<====================================>*/
 export type TypeApiPermission = {
     id: number
     catalogId : number
@@ -705,3 +644,139 @@ export interface TypeApiUpdatePermissionRes {
 
 
 
+
+/*<====================================>*/
+// Connection
+/*<====================================>*/
+export interface TypeApiConnection {
+    id: number;
+
+    bankName1: TypeBankName;
+    merchantId1: string | null
+
+    bankName2: TypeBankName;
+    merchantId2: string | null
+
+    smsName: TypeSmsName
+
+    smsURL: string | null
+    smsToken: string | null
+    smsUserName: string | null
+    smsPassword: string | null
+    smsFrom: string | null
+
+    smsCodePattern1: string | null;
+    smsCodePattern2: string | null;
+    smsCodePattern3: string | null;
+    smsCodePattern4: string | null;
+    smsCodePattern5: string | null;
+    smsCodePattern6: string | null;
+    smsCodePattern7: string | null;
+    smsCodePattern8: string | null;
+
+    smtpURL: string | null;
+    smtpPort: number | null;
+    smtpUserName: string | null;
+    smtpPassword: string | null;
+
+    createdAt: Date;
+    updatedAt: Date;
+}
+
+export type TypeApiGetConnectionsRes = TypeApiConnection[]
+
+export type TypeApiUpdateConnectionReq = TypeApiConnection
+
+export interface TypeApiUpdateConnectionRes {
+    Message: string
+}
+
+
+
+
+/*<====================================>*/
+// Email
+/*<====================================>*/
+
+
+export interface TypeApiSendEmailReq {
+    content?: string
+    title: string
+    subject: string
+    text: string
+    email: string
+    trackingCode: string
+    dateName: string
+    date: string
+    time: string
+    service: string
+    provider: string
+}
+export interface TypeApiSendEmailRes {
+    Message: string
+}
+
+
+/*<====================================>*/
+// Sms
+/*<====================================>*/
+export type TypeApiSendSmsReq = object
+
+export interface TypeApiSendSmsRes {
+    status: boolean
+    data: unknown
+}
+
+
+/*<====================================>*/
+// Setting
+/*<====================================>*/
+export interface TypeApiSetting {
+    id: number;
+    name: string;
+    url: string;
+    address: string;
+    phone: string;
+    theme: TypeTheme;
+
+    minReservationDate: number;
+    maxReservationDate: number;
+    minReservationTime: number;
+    cancellationDeadline: number;
+    maxReservationDaily: number;
+    maxReservationMonthly: number;
+
+    automaticConfirmation: boolean;
+    cancellationReservationUser: boolean;
+
+    smsCancellationReservation: TypeCancellationReservation;
+    emailCancellationReservation: TypeCancellationReservation;
+
+    groupReservation: boolean;
+    emailStatus: TypeEmailStatus;
+
+    shiftWorkStatus: boolean;
+    permissionSearchShiftWork: boolean;
+
+    registerOTP: boolean;
+    loginOTP: boolean;
+
+    cart: boolean;
+    minReservationLock: number;
+    guestReservation: boolean;
+
+    // headerCode?: string;
+    footerCode: string | null;
+    code: string;
+
+    createdAt: Date;
+    updatedAt: Date;
+}
+
+export type TypeApiGetSettingsRes = TypeApiSetting[]
+
+export type TypeApiUpdateSettingReq = TypeApiSetting
+
+export interface TypeApiUpdateSettingRes {
+    Message: string
+}
