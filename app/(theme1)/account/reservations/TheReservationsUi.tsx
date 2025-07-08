@@ -10,7 +10,7 @@ import {
   textSettingsBankName
 } from "@/libs/utility";
 import TheSpinner from "@/components/layout/TheSpinner";
-import {dateNowP, fullStringToDateObjectP, minuteMaker, numberWithCommas} from "@/libs/convertor";
+import {dateNowP, fullStringToDateObjectP, minuteIntegerToTime, numberWithCommas} from "@/libs/convertor";
 import Popup from "reactjs-popup";
 import {IoClose} from "react-icons/io5";
 import useHook from "@/hooks/controller/useHook";
@@ -229,7 +229,7 @@ export default function TheReservationsUi() {
                                             </>
                                             :
                                             <p>حداقل زمان لغو رزرو،<strong
-                                              className="px-1 text-red-500">{minuteMaker(setting.cancellationDeadline, 'string')}</strong>دقیقه
+                                              className="px-1 text-red-500">{minuteIntegerToTime(setting.cancellationDeadline, 'string')}</strong>دقیقه
                                               قبل از شروع رزرو است. پس نمیتوانید این رزرو را لغو نمایید.</p>
                                         }
                                       </div>

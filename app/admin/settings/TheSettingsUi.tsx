@@ -586,7 +586,7 @@ export default function TheSettingsUi() {
                 {/*  <textarea*/}
                 {/*    {...register('headerCode')}*/}
                 {/*    dir="ltr"*/}
-                {/*    rows="5" className="bk-input text-left"/>*/}
+                {/*    rows={5} className="bk-input text-left"/>*/}
                 {/*  <FormErrorMessage errors={errors} name="headerCode"/>*/}
                 {/*</div>*/}
 

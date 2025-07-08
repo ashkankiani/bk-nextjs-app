@@ -43,7 +43,7 @@ export async function PUT(request: Request) {
     // آپدیت سوال متداول
     await prisma.faqs.update({
       data: body,
-      where: { id: id },
+      where: { id: parseInt(id) },
     });
 
     return createSuccessResponseWithMessage("سوال متداول آپدیت شد.");

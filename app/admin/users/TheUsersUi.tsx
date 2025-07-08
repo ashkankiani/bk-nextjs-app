@@ -1,3 +1,5 @@
+"use client"
+
 import {AiFillPlusCircle} from "react-icons/ai";
 import Link from "next/link";
 import {RiDeleteBin5Line, RiFileExcel2Fill} from "react-icons/ri";
@@ -14,7 +16,6 @@ import {useGetUsers} from "@/hooks/admin/useUser";
 import useHook from "@/hooks/controller/useHook";
 import {useDeleteUser} from "@/hooks/admin/useUser";
 import {TypeApiGetUsersRes} from "@/types/typeApiAdmin";
-
 
 export default function TheUsersUi() {
 
@@ -79,7 +80,7 @@ export default function TheUsersUi() {
 
                 {
                     permissions.importUsers &&
-                    <Link href="/admin/users/add-excel" className="action">
+                    <Link href="/admin/users/import-users" className="action">
                         <RiFileExcel2Fill size="24px" className="inline-flex align-middle ml-2"/>
                         <span>درون ریزی کاربر</span>
                     </Link>
@@ -106,7 +107,7 @@ export default function TheUsersUi() {
                 }
                 {
                     permissions.addUsers &&
-                    <Link href="/admin/users/add" className="action">
+                    <Link href="/admin/users/add/TheAddUserUi" className="action">
                         <AiFillPlusCircle size="24px" className="inline-flex align-middle ml-2"/>
                         <span>کاربر جدید</span>
                     </Link>

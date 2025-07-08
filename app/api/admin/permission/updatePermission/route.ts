@@ -41,7 +41,7 @@ export async function PUT(request: Request) {
     // آپدیت مجوز
     await prisma.permissions.update({
       data: body,
-      where: { id: id },
+      where: { id: parseInt(id) },
     });
 
     return createSuccessResponseWithMessage("مجوز آپدیت شد.");

@@ -43,7 +43,7 @@ export async function PUT(request: Request) {
     // آپدیت تعطیلی
     await prisma.holidays.update({
       data: body,
-      where: { id: id },
+      where: { id: parseInt(id) },
     });
 
     return createSuccessResponseWithMessage("تعطیلی آپدیت شد.");

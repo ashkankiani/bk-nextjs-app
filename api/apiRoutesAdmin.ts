@@ -54,7 +54,28 @@ export const ApiRoutesAdmin: TypeApiRoutesAdmin = {
         GetUsers: '/admin/user/getUsers',
         ShowUser: '/admin/user/showUser?',
         UpdateUser: '/admin/user/updateUser',
+        ImportUsers: '/admin/user/importUsers',
+        GetUsersByCatalogId: '/admin/user/getUsersByCatalogId?',
     },
-
-
+    Service: {
+        AddService: '/admin/service/addService',
+        DeleteService: '/admin/service/deleteService?',
+        GetServices: '/admin/service/getServices',
+        ShowService: '/admin/service/showService?',
+        UpdateService: '/admin/service/updateService',
+    },
+    Provider: {
+        AddProvider: '/admin/provider/addProvider',
+        DeleteProvider: '/admin/provider/deleteProvider?',
+        GetProviders: '/admin/provider/getProviders',
+        ShowProvider: '/admin/provider/showProvider?',
+        UpdateProvider: '/admin/provider/updateProvider',
+        GetProvidersByServiceId: '/admin/provider/getProvidersByServiceId?',
+    },
+    TimeSheet: {
+        AddTimeSheet: '/admin/timeSheet/addTimeSheet',
+        DeleteTimeSheet: '/admin/timeSheet/deleteTimeSheet?',
+        ShowTimeSheet: '/admin/timeSheet/showTimeSheet?',
+        UpdateTimeSheet: '/admin/timeSheet/updateTimeSheet',
+    },
 }

@@ -33,6 +33,9 @@ export type TypeApiRoutesAdmin = {
     Sms: EndpointApiRoutes
     Setting: EndpointApiRoutes
     User: EndpointApiRoutes
+    Service: EndpointApiRoutes
+    Provider: EndpointApiRoutes
+    TimeSheet: EndpointApiRoutes
 
 }
 

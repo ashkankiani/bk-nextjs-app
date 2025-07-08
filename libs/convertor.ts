@@ -8,6 +8,7 @@ import gregorian_en from "react-date-object/locales/gregorian_en"
 /*<====================================>*/
 // اعداد را سه رقم سه رقم جدا می کند.
 /*<====================================>*/
+
 // Add Comma Separator To Number
 export function numberWithCommas(number: number) {
     return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
@@ -79,24 +80,31 @@ export function dateGConvertDateP(dateObject: DateObject) {
 }
 
 
-export function minuteMaker(totalMinute: number, type: 'string' | 'withDay') {
-    const mins = totalMinute % 60;
+
+/*<====================================>*/
+// مقدار عددی را به زمان روز ساعت و دقیقه تبدیل می کند.
+/*<====================================>*/
+export function minuteIntegerToTime(totalMinute: number, type: 'string' | 'withDay' | 'oneDay' = 'oneDay') {
+    //string = 1 روز و 5 ساعت و 2 دقیقه
+    //withDay = 130:20:10
+    //oneDay = 20:10
+    const minutes = totalMinute % 60;
     const hour = Math.floor(totalMinute / 60);
     const days = Math.floor(hour / 24);
     const hours = hour % 24
 
-    const minsWithZero = totalMinute % 60 < 10 ? "0" + totalMinute % 60 : totalMinute % 60;
+    const minutesWithZero = totalMinute % 60 < 10 ? "0" + totalMinute % 60 : totalMinute % 60;
     const hoursWithZero = hour % 24 < 10 ? "0" + hour % 24 : hour % 24;
 
     if (type === 'withDay') {
-        return days + ':' + hoursWithZero + ':' + minsWithZero;
+        return days + ':' + hoursWithZero + ':' + minutesWithZero;
     } else if (type === 'string') {
         if (days === 0) {
-            return hours + ' ساعت و ' + mins + ' دقیقه';
+            return hours + ' ساعت و ' + minutes + ' دقیقه';
         } else {
-            return days + ' روز و ' + hours + ' ساعت و ' + mins + ' دقیقه';
+            return days + ' روز و ' + hours + ' ساعت و ' + minutes + ' دقیقه';
         }
     } else {
-        return hoursWithZero + ':' + minsWithZero;
+        return hoursWithZero + ':' + minutesWithZero;
     }
 }

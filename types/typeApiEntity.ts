@@ -178,7 +178,6 @@ export interface TypeApiUser {
     updatedAt: Date;
 }
 
-
 export interface TypeApiService {
     id: number;
 
@@ -234,4 +233,18 @@ export interface TypeApiProvider {
     updatedAt: Date;
 }
 
+export interface TypeApiTimeSheet {
+    id: number;
 
+    serviceId: number;
+
+    providerId: number;
+
+    dayName: string;
+    dayIndex: number;
+    startTime: string;
+    endTime: string;
+
+    createdAt: Date;
+    updatedAt: Date;
+}

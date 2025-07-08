@@ -50,7 +50,41 @@ import {
     TypeApiAddUserRes,
     TypeApiDeleteUserReq,
     TypeApiDeleteUserRes,
-    TypeApiGetUsersRes, TypeApiShowUserReq, TypeApiUpdateUserReq, TypeApiUpdateUserRes, TypeApiShowUserRes
+    TypeApiGetUsersRes,
+    TypeApiShowUserReq,
+    TypeApiUpdateUserReq,
+    TypeApiUpdateUserRes,
+    TypeApiShowUserRes,
+    TypeApiImportUsersReq,
+    TypeApiImportUsersRes,
+    TypeApiAddServiceReq,
+    TypeApiDeleteServiceReq,
+    TypeApiShowServiceReq,
+    TypeApiUpdateServiceReq,
+    TypeApiGetServicesRes,
+    TypeApiAddServiceRes,
+    TypeApiDeleteServiceRes,
+    TypeApiShowServiceRes,
+    TypeApiUpdateServiceRes,
+    TypeApiGetUsersByCatalogIdRes,
+    TypeApiGetUsersByCatalogIdReq,
+    TypeApiAddProviderReq,
+    TypeApiDeleteProviderReq,
+    TypeApiShowProviderReq,
+    TypeApiUpdateProviderReq,
+    TypeApiGetProvidersRes,
+    TypeApiAddProviderRes,
+    TypeApiDeleteProviderRes,
+    TypeApiShowProviderRes,
+    TypeApiUpdateProviderRes,
+    TypeApiGetProvidersByServiceIdReq,
+    TypeApiGetProvidersByServiceIdRes,
+    TypeApiAddTimeSheetReq,
+    TypeApiDeleteTimeSheetReq,
+    TypeApiShowTimeSheetReq,
+    TypeApiUpdateTimeSheetReq,
+    TypeApiAddTimeSheetRes,
+    TypeApiDeleteTimeSheetRes, TypeApiShowTimeSheetRes, TypeApiUpdateTimeSheetRes
 } from "@/types/typeApiAdmin";
 import {ApiRoutesAdmin} from "@/api/apiRoutesAdmin";
 
@@ -80,7 +114,7 @@ export const UpdateHoliday = (params: TypeApiUpdateHolidayReq) => putRequest<Typ
 /*<====================================>*/
 export const AddDiscount = (params: TypeApiAddDiscountReq) => postRequest<TypeApiAddDiscountRes>(ApiRoutesAdmin.Discount.AddDiscount, params)
 export const DeleteDiscount = (params: TypeApiDeleteDiscountReq) => deleteRequest<TypeApiDeleteDiscountRes>(ApiRoutesAdmin.Discount.DeleteDiscount, params)
-export const GetDiscounts = () => getRequest<TypeApiGetDiscountsRes>(ApiRoutesAdmin.Discount.GetDiscounts)
+export const GetDiscounts = () => getRequest<TypeApiGetDiscountsRes[]>(ApiRoutesAdmin.Discount.GetDiscounts)
 export const ShowDiscount = (params: TypeApiShowDiscountReq) => getRequest<TypeApiShowDiscountRes>(ApiRoutesAdmin.Discount.ShowDiscount , params)
 export const UpdateDiscount = (params: TypeApiUpdateDiscountReq) => putRequest<TypeApiUpdateDiscountRes>(ApiRoutesAdmin.Discount.UpdateDiscount, params)
 
@@ -132,3 +166,35 @@ export const DeleteUser = (params: TypeApiDeleteUserReq) => deleteRequest<TypeAp
 export const GetUsers = () => getRequest<TypeApiGetUsersRes[]>(ApiRoutesAdmin.User.GetUsers)
 export const ShowUser = (params: TypeApiShowUserReq) => getRequest<TypeApiShowUserRes>(ApiRoutesAdmin.User.ShowUser , params)
 export const UpdateUser = (params: TypeApiUpdateUserReq) => putRequest<TypeApiUpdateUserRes>(ApiRoutesAdmin.User.UpdateUser, params)
+export const ImportUsers = (params: TypeApiImportUsersReq[]) => postRequest<TypeApiImportUsersRes>(ApiRoutesAdmin.User.ImportUsers, params)
+export const GetUsersByCatalogId = (params: TypeApiGetUsersByCatalogIdReq) => getRequest<TypeApiGetUsersByCatalogIdRes[]>(ApiRoutesAdmin.User.GetUsersByCatalogId , params)
+
+
+
+/*<====================================>*/
+// Service
+/*<====================================>*/
+export const AddService = (params: TypeApiAddServiceReq) => postRequest<TypeApiAddServiceRes>(ApiRoutesAdmin.Service.AddService, params)
+export const DeleteService = (params: TypeApiDeleteServiceReq) => deleteRequest<TypeApiDeleteServiceRes>(ApiRoutesAdmin.Service.DeleteService, params)
+export const GetServices = () => getRequest<TypeApiGetServicesRes[]>(ApiRoutesAdmin.Service.GetServices)
+export const ShowService = (params: TypeApiShowServiceReq) => getRequest<TypeApiShowServiceRes>(ApiRoutesAdmin.Service.ShowService , params)
+export const UpdateService = (params: TypeApiUpdateServiceReq) => putRequest<TypeApiUpdateServiceRes>(ApiRoutesAdmin.Service.UpdateService, params)
+
+
+/*<====================================>*/
+// Provider
+/*<====================================>*/
+export const AddProvider = (params: TypeApiAddProviderReq) => postRequest<TypeApiAddProviderRes>(ApiRoutesAdmin.Provider.AddProvider, params)
+export const DeleteProvider = (params: TypeApiDeleteProviderReq) => deleteRequest<TypeApiDeleteProviderRes>(ApiRoutesAdmin.Provider.DeleteProvider, params)
+export const GetProviders = () => getRequest<TypeApiGetProvidersRes[]>(ApiRoutesAdmin.Provider.GetProviders)
+export const ShowProvider = (params: TypeApiShowProviderReq) => getRequest<TypeApiShowProviderRes>(ApiRoutesAdmin.Provider.ShowProvider , params)
+export const UpdateProvider = (params: TypeApiUpdateProviderReq) => putRequest<TypeApiUpdateProviderRes>(ApiRoutesAdmin.Provider.UpdateProvider, params)
+export const GetProvidersByServiceId = (params: TypeApiGetProvidersByServiceIdReq) => getRequest<TypeApiGetProvidersByServiceIdRes[]>(ApiRoutesAdmin.Provider.GetProvidersByServiceId , params)
+
+/*<====================================>*/
+// TimeSheet
+/*<====================================>*/
+export const AddTimeSheet = (params: TypeApiAddTimeSheetReq) => postRequest<TypeApiAddTimeSheetRes>(ApiRoutesAdmin.TimeSheet.AddTimeSheet, params)
+export const DeleteTimeSheet = (params: TypeApiDeleteTimeSheetReq) => deleteRequest<TypeApiDeleteTimeSheetRes>(ApiRoutesAdmin.TimeSheet.DeleteTimeSheet, params)
+export const ShowTimeSheet = (params: TypeApiShowTimeSheetReq) => getRequest<TypeApiShowTimeSheetRes[]>(ApiRoutesAdmin.TimeSheet.ShowTimeSheet , params)
+export const UpdateTimeSheet = (params: TypeApiUpdateTimeSheetReq) => putRequest<TypeApiUpdateTimeSheetRes>(ApiRoutesAdmin.TimeSheet.UpdateTimeSheet, params)

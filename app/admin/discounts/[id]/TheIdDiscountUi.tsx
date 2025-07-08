@@ -68,15 +68,10 @@ export default function TheIdDiscountUi() {
             code: data.code,
             type: data.type,
             amount: parseInt(data.amount),
+            startDate: data.startDate ? PNtoEN(data.startDate.format()) : null,
+            endDate: data.endDate ? PNtoEN(data.endDate.format()) : null
         }
 
-        if (data.startDate && data.endDate) {
-            transformedData.startDate = PNtoEN(data.startDate.format())
-            transformedData.endDate = PNtoEN(data.endDate.format())
-        } else {
-            transformedData.startDate = null
-            transformedData.endDate = null
-        }
 
         await mutateAsyncUpdateDiscount(transformedData).then((res) => {
             bkToast('success', res.Message)
@@ -224,8 +219,7 @@ export default function TheIdDiscountUi() {
                                                     containerClassName="w-full"
                                                     className={"green " + (theme !== "light" ? "bg-dark" : "")}
                                                     inputClass="bk-input"
-                                                    // minDate={new Date()}
-                                                    minDate={dateNowP()}
+                                                    minDate={minDate}
                                                     maxDate={maxDate}
                                                     calendar={persian}
                                                     locale={persian_fa}

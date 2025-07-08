@@ -97,14 +97,14 @@ export default function TheDashboardUi() {
       <HeaderPage title="داشبورد" description="خلاصه اطلاعات سامانه را مشاهده نمایید.">
         {
           permissions.addServices &&
-          <Link href="/admin/services/add" className="action">
+          <Link href="/admin/services/add/TheAddServiceUi" className="action">
             <AiFillPlusCircle size="24px" className="inline-flex align-middle ml-2"/>
             <span>خدمت جدید</span>
           </Link>
         }
         {
           permissions.addProviders &&
-          <Link href="/admin/providers/add" className="action">
+          <Link href="/admin/providers/add/TheAddProviderUi" className="action">
             <AiFillPlusCircle size="24px" className="inline-flex align-middle ml-2"/>
             <span>ارائه دهنده جدید</span>
           </Link>

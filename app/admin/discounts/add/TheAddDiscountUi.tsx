@@ -28,9 +28,9 @@ export default function TheAddDiscountUi() {
     const refStartDate = useRef(null)
     const refEndDate = useRef(null)
 
-    const [statusRequiredStartDate, setStatusRequiredStartDate] = useState(false)
-    const [statusRequiredEndDate, setStatusRequiredEndDate] = useState(false)
-    const [maxDate, setMaxDate] = useState(dateNowP().add(1, "year"))
+    const [statusRequiredStartDate, setStatusRequiredStartDate] = useState<boolean>(false)
+    const [statusRequiredEndDate, setStatusRequiredEndDate] = useState<boolean>(false)
+    const [maxDate, setMaxDate] = useState<DateObject>(dateNowP().add(1, "year"))
 
     type TypeFormAddDiscountUi = {
         title: string;

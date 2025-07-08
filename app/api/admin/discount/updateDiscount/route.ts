@@ -45,7 +45,7 @@ export async function PUT(request: Request) {
     // آپدیت کد تخفیف
     await prisma.discounts.update({
       data: body,
-      where: { id: id },
+      where: { id: parseInt(id) },
     });
 
     return createSuccessResponseWithMessage("کد تخفیف آپدیت شد.");
