@@ -1,5 +1,5 @@
-import TheIdProviderUi from "@/app/admin/providers/[id]/TheIdProviderUi";
+import TheIdProviderUi from '@/app/admin/providers/[id]/TheIdProviderUi'
 
 export default function TheIdProviderPage() {
-    return <TheIdProviderUi />
+  return <TheIdProviderUi />
 }

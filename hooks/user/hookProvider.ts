@@ -1,5 +1,5 @@
-import {bkRequest} from '@/api/api'
-import Qs from "qs";
+import { bkRequest } from '@/api/api'
+import Qs from 'qs'
 
 export const hookGetProviders = async (data, callback) => {
   await bkRequest

@@ -1,4 +1,4 @@
-import {bkRequest} from '@/api/api'
+import { bkRequest } from '@/api/api'
 
 export const hookGetSession = async (data, callback) => {
   await bkRequest
@@ -16,9 +16,9 @@ export const hookGetSession = async (data, callback) => {
     })
 }
 
-export const hookDeleteSession = async (callback) => {
+export const hookDeleteSession = async callback => {
   await bkRequest
-    .get("/user/session")
+    .get('/user/session')
     .then(res => {
       if (res.status === 200) {
         callback(true, res.data)

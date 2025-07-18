@@ -1,1 +1,1 @@
-export const SESSION = "bk-session"
+export const SESSION = 'bk-session'

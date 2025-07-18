@@ -1,12 +1,19 @@
-import {createSlice} from '@reduxjs/toolkit'
-import {TypeApiUser, TypeApiPermissions} from "@/types/typeApiAdmin";
+import { createSlice } from '@reduxjs/toolkit'
+import { TypeApiPermission, TypeApiService, TypeApiUser } from '@/types/typeApiEntity'
+import { TypeApiGetProvidersByServiceIdRes } from '@/types/typeApiUser'
+import { TypeCart } from '@/app/(theme1)/reserve/TheReserveUi'
 
 interface TypeInitialState {
   isLogin: boolean
   user: null | TypeApiUser
-  permissions: TypeApiPermissions | null
-  searchQuery: any
-  cart: any
+  permissions: TypeApiPermission | null
+  searchQuery: {
+    service: TypeApiService
+    provider: TypeApiGetProvidersByServiceIdRes
+    startDate: string
+    endDate: string
+  } | null
+  cart: TypeCart[]
   order: any
 }
 
@@ -14,9 +21,9 @@ const initialState = (): TypeInitialState => ({
   isLogin: false,
   user: null,
   permissions: null,
-  searchQuery: [],
+  searchQuery: null,
   cart: [],
-  order: []
+  order: [],
 })
 
 export const sliceUser = createSlice({
@@ -45,7 +52,6 @@ export const sliceUser = createSlice({
     setOrder: (state, action) => {
       state.order = action.payload
     },
-
   },
 })
 

@@ -1,5 +1,5 @@
-import TheAddCatalogUi from "@/app/admin/catalogs/add/TheAddCatalogUi";
+import TheAddCatalogUi from '@/app/admin/catalogs/add/TheAddCatalogUi'
 
 export default function TheAddCatalogPage() {
-    return <TheAddCatalogUi />
+  return <TheAddCatalogUi />
 }

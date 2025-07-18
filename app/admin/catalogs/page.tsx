@@ -1,5 +1,5 @@
-import TheCatalogsUi from "@/app/admin/catalogs/TheCatalogsUi";
+import TheCatalogsUi from '@/app/admin/catalogs/TheCatalogsUi'
 
 export default function TheCatalogsPage() {
-    return <TheCatalogsUi />
+  return <TheCatalogsUi />
 }

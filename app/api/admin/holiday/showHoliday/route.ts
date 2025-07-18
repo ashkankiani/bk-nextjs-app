@@ -1,18 +1,18 @@
-import prisma from "@/prisma/client";
+import prisma from '@/prisma/client'
 import {
   createSuccessResponseWithData,
   handlerRequestError,
   checkMethodAllowed,
-  getQueryStringByUrl, createErrorResponseWithMessage
-} from "@/app/api/_utils/handleRequest";
+  getQueryStringByUrl,
+  createErrorResponseWithMessage,
+} from '@/app/api/_utils/handleRequest'
 
-const allowedMethods = ["GET"];
+const allowedMethods = ['GET']
 
 export async function GET(request: Request) {
-
   // بررسی مجاز بودن درخواست
-  const methodCheckResponse = checkMethodAllowed(request, allowedMethods);
-  if (methodCheckResponse) return methodCheckResponse;
+  const methodCheckResponse = checkMethodAllowed(request, allowedMethods)
+  if (methodCheckResponse) return methodCheckResponse
 
   // اعتبارسنجی توکن
   // const authResponse = await authenticateRequest(request);
@@ -22,22 +22,21 @@ export async function GET(request: Request) {
   // }
 
   // دریافت Id درخواست
-  const id = getQueryStringByUrl(request.url);
+  const id = getQueryStringByUrl(request.url)
 
   // بررسی وجود ID
   if (!id) {
-    return createErrorResponseWithMessage("آیدی ضروری است.");
+    return createErrorResponseWithMessage('آیدی ضروری است.')
   }
 
   try {
-
     // دریافت تعطیلی
     const holiday = await prisma.holidays.findUnique({
       where: { id: parseInt(id) },
-    });
+    })
 
-    return createSuccessResponseWithData(holiday);
+    return createSuccessResponseWithData(holiday)
   } catch (error) {
-    return handlerRequestError(error);
+    return handlerRequestError(error)
   }
 }

@@ -1,5 +1,5 @@
 import { combineReducers, configureStore } from '@reduxjs/toolkit'
-import { thunk } from 'redux-thunk'
+// import { thunk } from 'redux-thunk'
 import { persistReducer, persistStore } from 'redux-persist'
 import storage from 'redux-persist/lib/storage'
 
@@ -24,14 +24,13 @@ const rootReducer = combineReducers({
   user: persistedReducerUser,
 })
 
-
 export const store = configureStore({
   reducer: rootReducer,
-  middleware: (getDefaultMiddleware) =>
-      getDefaultMiddleware({
-        serializableCheck: false,
-      }),
-    // .concat(thunk)
+  middleware: getDefaultMiddleware =>
+    getDefaultMiddleware({
+      serializableCheck: false,
+    }),
+  // .concat(thunk)
 })
 
 export const persistor = persistStore(store)

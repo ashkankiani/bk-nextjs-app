@@ -1,4 +1,4 @@
-import {bkRequest} from '@/api/api'
+import { bkRequest } from '@/api/api'
 
 export const hookRegister = async (data, callback) => {
   await bkRequest

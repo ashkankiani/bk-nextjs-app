@@ -1,8 +1,8 @@
-import {bkRequest} from '@/api/api'
-import Qs from "qs";
+import { bkRequest } from '@/api/api'
+import Qs from 'qs'
 export const hookGetOrder = async (data, callback) => {
   await bkRequest
-    .get('/user/order?' + Qs.stringify(data) )
+    .get('/user/order?' + Qs.stringify(data))
     .then(res => {
       if (res.status === 200) {
         callback(true, res.data)

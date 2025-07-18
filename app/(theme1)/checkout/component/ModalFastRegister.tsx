@@ -1,16 +1,15 @@
-import {IoClose} from "react-icons/io5";
-import {useForm} from "react-hook-form";
-import {bkToast} from "@/libs/utility";
-import {hookLogin, hookRegister} from "@/hooks/user/hookAuth";
-import FormErrorMessage from "@/components/back-end/section/FormErrorMessage";
-import TheSpinner from "@/components/layout/TheSpinner";
-import {useState} from "react";
-import {useDispatch} from "react-redux";
-import {setIsLogin, setPermissions, setUser} from "@/store/slice/user";
+import { IoClose } from 'react-icons/io5'
+import { useForm } from 'react-hook-form'
+import { bkToast } from '@/libs/utility'
+import { hookLogin, hookRegister } from '@/hooks/user/hookAuth'
+import FormErrorMessage from '@/components/back-end/section/FormErrorMessage'
+import TheSpinner from '@/components/layout/TheSpinner'
+import { useState } from 'react'
+import { useDispatch } from 'react-redux'
+import { setIsLogin, setPermissions, setUser } from '@/store/slice/user'
 // import {setCookie} from "cookies-next";
 
-export default function ModalFastRegister({checkDraft, close}) {
-
+export default function ModalFastRegister({ checkDraft, close }) {
   const dispatch = useDispatch()
 
   const [loading, setLoading] = useState(false)
@@ -20,15 +19,15 @@ export default function ModalFastRegister({checkDraft, close}) {
     register,
     getValues,
     handleSubmit,
-    formState: {errors},
+    formState: { errors },
   } = useForm({
     criteriaMode: 'all',
   })
 
-  const onSubmit = async (data) => {
-    data["type"] = "REGISTER";
+  const onSubmit = async data => {
+    data['type'] = 'REGISTER'
     if (data.fullName.length === 0) {
-      data.fullName = "مهمان"
+      data.fullName = 'مهمان'
     }
     data.password = password.toString()
     await handlerRegister(data)
@@ -47,7 +46,7 @@ export default function ModalFastRegister({checkDraft, close}) {
 
   const handlerLogin = async () => {
     let params = {
-      type: "LOGIN",
+      type: 'LOGIN',
       codeMeli: getValues('codeMeli'),
       password: password.toString(),
     }
@@ -72,19 +71,14 @@ export default function ModalFastRegister({checkDraft, close}) {
     })
   }
 
-
   return (
     <div className="panel-wrapper-modal max-w-[480px]">
-      <IoClose
-        size="32px"
-        onClick={close}
-        className="absolute left-4 top-4 cursor-pointer"
-      />
+      <IoClose size="32px" onClick={close} className="absolute left-4 top-4 cursor-pointer" />
       <div className="panel-modal-title">ثبت نوبت مهمان</div>
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className="panel-modal-content">
           <p className="mb-4">برای پیگیری رزرو و رهگیری پرداخت نیاز به تکمیل اطلاعات زیر است.</p>
-          <div className="columns-1 mb-4">
+          <div className="mb-4 columns-1">
             <input
               {...register('codeMeli', {
                 required: {
@@ -104,10 +98,13 @@ export default function ModalFastRegister({checkDraft, close}) {
                   message: 'کد ملی باید 10 کاراکتر باشد.',
                 },
               })}
-              type="text" className="bk-input" placeholder="کد ملی"/>
-            <FormErrorMessage errors={errors} name="codeMeli"/>
+              type="text"
+              className="bk-input"
+              placeholder="کد ملی"
+            />
+            <FormErrorMessage errors={errors} name="codeMeli" />
           </div>
-          <div className="columns-1 mb-4">
+          <div className="mb-4 columns-1">
             <input
               {...register('mobile', {
                 required: {
@@ -127,9 +124,12 @@ export default function ModalFastRegister({checkDraft, close}) {
                   message: 'شماره موبایل باید نهایتا 16 کاراکتر باشد.',
                 },
               })}
-              type="text" dir="ltr" className="bk-input" placeholder="شماره موبایل"/>
-            <FormErrorMessage errors={errors} name="mobile"/>
-
+              type="text"
+              dir="ltr"
+              className="bk-input"
+              placeholder="شماره موبایل"
+            />
+            <FormErrorMessage errors={errors} name="mobile" />
           </div>
           <div className="columns-1">
             <input
@@ -147,24 +147,26 @@ export default function ModalFastRegister({checkDraft, close}) {
                   message: 'نام و نام خانوادگی نباید بیش از 25 کاراکتر باشد.',
                 },
               })}
-              type="text" className="bk-input" placeholder="نام و نام خانوادگی (اختیاری)"/>
-            <FormErrorMessage errors={errors} name="fullName"/>
+              type="text"
+              className="bk-input"
+              placeholder="نام و نام خانوادگی (اختیاری)"
+            />
+            <FormErrorMessage errors={errors} name="fullName" />
           </div>
         </div>
         <div className="panel-modal-footer">
           <button
-            className={"panel-modal-confirm flex-center-center gap-2 " + (loading ? 'disable-action' : '')}>
-            {
-              loading ?
-                <TheSpinner/>
-                :
-                'تکمیل سفارش'
+            className={
+              'panel-modal-confirm flex-center-center gap-2 ' + (loading ? 'disable-action' : '')
             }
+          >
+            {loading ? <TheSpinner /> : 'تکمیل سفارش'}
           </button>
-          <div className="panel-modal-close" onClick={close}>بستن</div>
+          <div className="panel-modal-close" onClick={close}>
+            بستن
+          </div>
         </div>
       </form>
-
     </div>
   )
 }

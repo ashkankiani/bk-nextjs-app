@@ -1,18 +1,18 @@
-"use client"
-import {ReactNode, useState} from "react";
-import useHook from "@/hooks/controller/useHook";
-import {RxHamburgerMenu} from "react-icons/rx";
-import TheSidebar from "@/components/back-end/layout/TheSidebar";
-import TheFooter from "@/components/back-end/layout/TheFooter";
-import Link from "next/link";
-import imageLogo from "@/public/images/logo.png";
-import {IoMdClose} from "react-icons/io";
+'use client'
+import { ReactNode, useState } from 'react'
+import useHook from '@/hooks/controller/useHook'
+import { RxHamburgerMenu } from 'react-icons/rx'
+import TheSidebar from '@/components/back-end/layout/TheSidebar'
+import TheFooter from '@/components/back-end/layout/TheFooter'
+import Link from 'next/link'
+import imageLogo from '@/public/images/logo.png'
+import { IoMdClose } from 'react-icons/io'
 
-export default function LayoutPanel({children}:{ children: ReactNode }) {
-  const {user, permissions, router} = useHook()
+export default function LayoutPanel({ children }: { children: ReactNode }) {
+  const { user, permissions, router } = useHook()
   const [toggleSidebar, setToggleSidebar] = useState(true)
 
-  if ((user === null) || !permissions.admin) router.push('/account/sign-in')
+  if (user === null || !permissions.admin) router.push('/account/sign-in')
 
   const [menuInMobile, setMenuInMobile] = useState(false)
 
@@ -21,30 +21,39 @@ export default function LayoutPanel({children}:{ children: ReactNode }) {
   }
 
   return (
-    <div className="container-fluid h-auto flex items-stretch justify-stretch relative">
-      <TheSidebar toggleSidebar={toggleSidebar} setToggleSidebar={setToggleSidebar} menuInMobile={menuInMobile} setMenuInMobile={setMenuInMobile}/>
+    <div className="container-fluid relative flex h-auto items-stretch justify-stretch">
+      <TheSidebar
+        toggleSidebar={toggleSidebar}
+        setToggleSidebar={setToggleSidebar}
+        menuInMobile={menuInMobile}
+        setMenuInMobile={setMenuInMobile}
+      />
       <div
-        className={"panel-container " + (toggleSidebar ? "panel-container-100-300" : "panel-container-100-80")}>
-        <div
-          className="flex-center-between md:hidden p-4 text-black bg-primary-400 dark:bg-darkNavy1 dark:text-gray-50">
+        className={
+          'panel-container ' +
+          (toggleSidebar ? 'panel-container-100-300' : 'panel-container-100-80')
+        }
+      >
+        <div className="flex-center-between bg-primary-400 p-4 text-black dark:bg-darkNavy1 dark:text-gray-50 md:hidden">
           <Link href="/">
-            <img src={imageLogo.src} className="dark:brightness-200 w-10/12" alt="logo"/>
+            <img src={imageLogo.src} className="w-10/12 dark:brightness-200" alt="logo" />
           </Link>
-          {
-            menuInMobile ?
-              <IoMdClose
-                size="32px"
-                className="cursor-pointer"
-                onClick={() => toggleMenuInMobile()}
-              />
-              :
-              <RxHamburgerMenu size="32px" className="cursor-pointer" onClick={() => toggleMenuInMobile()}/>
-          }
+          {menuInMobile ? (
+            <IoMdClose
+              size="32px"
+              className="cursor-pointer"
+              onClick={() => toggleMenuInMobile()}
+            />
+          ) : (
+            <RxHamburgerMenu
+              size="32px"
+              className="cursor-pointer"
+              onClick={() => toggleMenuInMobile()}
+            />
+          )}
         </div>
-        <main>
-          {children}
-        </main>
-        <TheFooter/>
+        <main>{children}</main>
+        <TheFooter />
       </div>
     </div>
   )

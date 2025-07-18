@@ -1,319 +1,210 @@
 import {
-    TypeBankName,
-    TypeDiscountsType,
-    TypeGender,
-    TypePaymentType,
-    TypeReservationsStatus,
-} from "@/types/typeConfig";
+  TypeBankName,
+  TypeDiscountsType,
+  TypeGender,
+  TypePaymentType,
+  TypeReservationsStatus,
+  TypeStatusReserve,
+} from '@/types/typeConfig'
 import {
-    TypeApiCatalog,
-    TypeApiConnection,
-    TypeApiDiscount,
-    TypeApiFaq,
-    TypeApiHoliday,
-    TypeApiPermission, TypeApiProvider, TypeApiService,
-    TypeApiSetting, TypeApiTimeSheet,
-    TypeApiUser,
-} from "@/types/typeApiEntity";
-import {DateObject} from "react-multi-date-picker";
-
-export interface TypeReservationRes {
-    id: number;
-
-    orderId: number;
-
-    paymentId: number;
-
-    transactionId?: number;
-
-    serviceId: number;
-
-    providerId: number;
-
-    userId: number;
-
-    dateTimeStartEpoch: bigint;
-    dateTimeEndEpoch: bigint;
-    date: string;
-    time: string;
-
-    status: TypeReservationsStatus;
-
-    createdAt: Date;
-    updatedAt: Date;
-}
-
-export interface TypeDraftRes {
-    createEpoch: bigint;
-
-    serviceId: number;
-
-    providerId: number;
-
-    userId?: number;
-
-    dateTimeStartEpoch: bigint;
-    dateTimeEndEpoch: bigint;
-    date: string;
-    time: string;
-
-    createdAt: Date;
-    updatedAt: Date;
-}
-
-
-export interface TypeOrderRes {
-    id: number;
-    trackingCode: string;
-
-    status: TypeReservationsStatus;
-
-    userId: number;
-
-    serviceId: number;
-
-    providerId: number;
-
-    paymentId: number;
-
-    discountId?: number;
-
-    price: number;
-    discountPrice?: number;
-    totalPrice: number;
-
-    reservations: TypeReservationRes[];
-
-    createdAt: Date;
-    updatedAt: Date;
-}
-
-export interface TypePaymentRes {
-    id: number;
-
-    paymentType: TypePaymentType;
-
-    userId: number;
-
-    transactionId?: number;
-
-    description?: string;
-
-    orders: TypeOrderRes[];
-    reservations: TypeReservationRes[];
-
-    createdAt: Date;
-    updatedAt: Date;
-}
-
-export interface TypeTransactionRes {
-    id: number;
-
-    bankName: TypeBankName;
-    trackId: string;
-    amount: number;
-    cardNumber: string;
-    authority: string;
-
-    payments: TypePaymentRes[];
-    reservations: TypeReservationRes[];
-
-    createdAt: Date;
-    updatedAt: Date;
-}
-
-
-
-
-
+  TypeApiCatalog,
+  TypeApiConnection,
+  TypeApiDiscount,
+  TypeApiDraft,
+  TypeApiFaq,
+  TypeApiHoliday,
+  TypeApiOrder,
+  TypeApiPayment,
+  TypeApiPermission,
+  TypeApiProvider,
+  TypeApiReservation,
+  TypeApiService,
+  TypeApiSetting,
+  TypeApiTimeSheet,
+  TypeApiTransaction,
+  TypeApiUser,
+} from '@/types/typeApiEntity'
+import { DateObject } from 'react-multi-date-picker'
 
 export interface TypeCatalogs {
-    id: number;
-    title: string;
+  id: number
+  title: string
 
-    Users?: TypeApiUser[];
-    Permissions?: Permissions[];
+  Users?: TypeApiUser[]
+  Permissions?: Permissions[]
 }
-
 
 export interface TypeSessions {
-    id: number;
-    sessionToken: string;
-    userId: number;
+  id: number
+  sessionToken: string
+  userId: number
 
-    expires: bigint; // چون در پرایسما BigInt است، اینجا از bigint استفاده می‌کنیم
+  expires: bigint // چون در پرایسما BigInt است، اینجا از bigint استفاده می‌کنیم
 }
-
 
 export interface TypeOtpSms {
-    id: number;
-    mobile: string;
-    expires: bigint;  // چون BigInt هستیم از bigint استفاده می‌کنیم
-    createdAt: Date;
-    updatedAt: Date;
+  id: number
+  mobile: string
+  expires: bigint // چون BigInt هستیم از bigint استفاده می‌کنیم
+  createdAt: Date
+  updatedAt: Date
 }
-
 
 /*<====================================>*/
 // Faq
 /*<====================================>*/
 export interface TypeApiAddFaqReq {
-    title: string;
-    content: string;
+  title: string
+  content: string
 }
 
 export interface TypeApiAddFaqRes {
-    Message: string
+  Message: string
 }
 
 export interface TypeApiDeleteFaqReq {
-    id: number;
+  id: number
 }
 
 export interface TypeApiDeleteFaqRes {
-    Message: string
+  Message: string
 }
 
 export type TypeApiGetFaqsRes = TypeApiFaq[]
 
 export type TypeApiShowFaqReq = {
-    id: number
+  id: number
 }
 export type TypeApiShowFaqRes = TypeApiFaq
 
 export type TypeApiUpdateFaqReq = {
-    id: number;
-    title: string;
-    content: string;
+  id: number
+  title: string
+  content: string
 }
 
 export interface TypeApiUpdateFaqRes {
-    Message: string
+  Message: string
 }
-
 
 /*<====================================>*/
 // Holiday
 /*<====================================>*/
 
 export interface TypeApiAddHolidayReq {
-    date: string;
-    title: string;
+  date: string
+  title: string
 }
 
 export interface TypeApiAddHolidayRes {
-    Message: string
+  Message: string
 }
 
 export interface TypeApiDeleteHolidayReq {
-    id: number;
+  id: number
 }
 
 export interface TypeApiDeleteHolidayRes {
-    Message: string
+  Message: string
 }
 
 export type TypeApiGetHolidaysRes = TypeApiHoliday[]
 
 export type TypeApiShowHolidayReq = {
-    id: number
+  id: number
 }
 export type TypeApiShowHolidayRes = TypeApiHoliday
 
 export type TypeApiUpdateHolidayReq = {
-    id: number;
-    date: string;
-    title: string;
+  id: number
+  date: string
+  title: string
 }
 
 export interface TypeApiUpdateHolidayRes {
-    Message: string
+  Message: string
 }
-
 
 /*<====================================>*/
 // Discount
 /*<====================================>*/
 
 export interface TypeApiAddDiscountReq {
-    title: string;
-    code: string;
-    startDate?: string | null
-    endDate?: string | null
-    type: TypeDiscountsType;
-    amount: number;
+  title: string
+  code: string
+  startDate?: string | null
+  endDate?: string | null
+  type: TypeDiscountsType
+  amount: number
 }
 
 export interface TypeApiAddDiscountRes {
-    Message: string
+  Message: string
 }
 
 export interface TypeApiDeleteDiscountReq {
-    id: number;
+  id: number
 }
 
 export interface TypeApiDeleteDiscountRes {
-    Message: string
+  Message: string
 }
 
 export type TypeApiGetDiscountsRes = TypeApiDiscount
 
 export type TypeApiShowDiscountReq = {
-    id: number
+  id: number
 }
 export type TypeApiShowDiscountRes = TypeApiDiscount
 
 export type TypeApiUpdateDiscountReq = {
-    id: number;
-    title: string;
-    code: string;
-    startDate?: string | null
-    endDate?: string | null
-    type: TypeDiscountsType;
-    amount: number;
+  id: number
+  title: string
+  code: string
+  startDate?: string | null
+  endDate?: string | null
+  type: TypeDiscountsType
+  amount: number
 }
 
 export interface TypeApiUpdateDiscountRes {
-    Message: string
+  Message: string
 }
-
 
 /*<====================================>*/
 // Catalog
 /*<====================================>*/
 export interface TypeApiAddCatalogReq {
-    title: string;
+  title: string
 }
 
 export interface TypeApiAddCatalogRes {
-    Message: string
+  Message: string
 }
 
 export interface TypeApiDeleteCatalogReq {
-    id: number;
+  id: number
 }
 
 export interface TypeApiDeleteCatalogRes {
-    Message: string
+  Message: string
 }
 
 export type TypeApiGetCatalogsRes = TypeApiCatalog[]
-
 
 /*<====================================>*/
 // Permission
 /*<====================================>*/
 export type TypeApiShowPermissionReq = {
-    id: number
+  id: number
 }
 export type TypeApiShowPermissionRes = TypeApiPermission
 
 export type TypeApiUpdatePermissionReq = TypeApiPermission
 
 export interface TypeApiUpdatePermissionRes {
-    Message: string
+  Message: string
 }
-
 
 /*<====================================>*/
 // Connection
@@ -323,31 +214,29 @@ export type TypeApiGetConnectionsRes = TypeApiConnection[]
 export type TypeApiUpdateConnectionReq = TypeApiConnection
 
 export interface TypeApiUpdateConnectionRes {
-    Message: string
+  Message: string
 }
-
 
 /*<====================================>*/
 // Email
 /*<====================================>*/
 export interface TypeApiSendEmailReq {
-    content?: string
-    title: string
-    subject: string
-    text: string
-    email: string
-    trackingCode: string
-    dateName: string
-    date: string
-    time: string
-    service: string
-    provider: string
+  content?: string
+  title: string
+  subject: string
+  text: string
+  email: string
+  trackingCode: string
+  dateName: string
+  date: string
+  time: string
+  service: string
+  provider: string
 }
 
 export interface TypeApiSendEmailRes {
-    Message: string
+  Message: string
 }
-
 
 /*<====================================>*/
 // Sms
@@ -355,10 +244,9 @@ export interface TypeApiSendEmailRes {
 export type TypeApiSendSmsReq = object
 
 export interface TypeApiSendSmsRes {
-    status: boolean
-    data: unknown
+  status: boolean
+  data: unknown
 }
-
 
 /*<====================================>*/
 // Setting
@@ -368,316 +256,444 @@ export type TypeApiGetSettingsRes = TypeApiSetting[]
 export type TypeApiUpdateSettingReq = TypeApiSetting
 
 export interface TypeApiUpdateSettingRes {
-    Message: string
+  Message: string
 }
-
 
 /*<====================================>*/
 // User
 /*<====================================>*/
 export interface TypeApiAddUserReq {
-    catalogId: number;
-    codeMeli: string;
-    gender: TypeGender
-    fullName: string
-    mobile: string;
-    email: string;
-    password: string;
-    status: string;
+  catalogId: number
+  codeMeli: string
+  gender: TypeGender
+  fullName: string
+  mobile: string
+  email: string
+  password: string
+  status: string
 }
 
 export interface TypeApiAddUserRes {
-    Message: string
+  Message: string
 }
 
-
 export interface TypeApiDeleteUserReq {
-    id: number;
+  id: number
 }
 
 export interface TypeApiDeleteUserRes {
-    Message: string
+  Message: string
 }
 
-
 export type TypeApiGetUsersRes = TypeApiUser & {
-    catalog: TypeApiCatalog;
-};
+  catalog: TypeApiCatalog
+}
 
 export type TypeApiShowUserReq = {
-    id: number
+  id: number
 }
 export type TypeApiShowUserRes = TypeApiUser
 
 export type TypeApiUpdateUserReq = {
-    id: number;
-    catalogId: number;
-    codeMeli: string;
-    gender: TypeGender
-    fullName: string
-    mobile: string;
-    email: string;
-    password?: string;
-    status: string;
+  id: number
+  catalogId: number
+  codeMeli: string
+  gender: TypeGender
+  fullName: string
+  mobile: string
+  email: string
+  password?: string
+  status: string
 }
 
 export interface TypeApiUpdateUserRes {
-    Message: string
+  Message: string
 }
 
 export interface TypeApiImportUsersReq {
-    codeMeli: string;
-    fullName: string;
-    mobile: string
-    email: string;
+  codeMeli: string
+  fullName: string
+  mobile: string
+  email: string
 }
 
 export interface TypeApiImportUsersRes {
-    CountSuccess: number
-    CountError: number
+  CountSuccess: number
+  CountError: number
 }
 
-
 export interface TypeApiGetUsersByCatalogIdReq {
-    id: number
+  id: number
 }
 
 export type TypeApiGetUsersByCatalogIdRes = TypeApiUser
 
-
-
-
 /*<====================================>*/
 // Service
 /*<====================================>*/
-export interface TypeFormService  {
-    userId: number;
+export interface TypeFormService {
+  userId: number
 
-    name: string;
-    periodTime: string;
-    price: string;
-    capacity: string;
+  name: string
+  periodTime: string
+  price: string
+  capacity: string
 
-    startDate: DateObject | null;
-    endDate: DateObject | null;
+  startDate: DateObject | null
+  endDate: DateObject | null
 
-    gender: TypeGender;
+  gender: TypeGender
 
-    codPayment: boolean;
-    onlinePayment: boolean;
+  codPayment: boolean
+  onlinePayment: boolean
 
-    smsToAdminService: boolean;
-    smsToAdminProvider: boolean;
-    smsToUserService: boolean;
+  smsToAdminService: boolean
+  smsToAdminProvider: boolean
+  smsToUserService: boolean
 
-    emailToAdminService: boolean;
-    emailToAdminProvider: boolean;
-    emailToUserService: boolean;
+  emailToAdminService: boolean
+  emailToAdminProvider: boolean
+  emailToUserService: boolean
 
-    description: string| null;
-    descriptionAfterPurchase: string| null;
+  description: string | null
+  descriptionAfterPurchase: string | null
 }
 
 export interface TypeApiAddServiceReq {
-    userId: number;
+  userId: number
 
-    name: string;
-    periodTime: number;
-    price: number;
-    capacity: number;
+  name: string
+  periodTime: number
+  price: number
+  capacity: number
 
-    startDate: string | null;
-    endDate: string | null;
+  startDate: string | null
+  endDate: string | null
 
-    gender: TypeGender;
+  gender: TypeGender
 
-    codPayment: boolean;
-    onlinePayment: boolean;
+  codPayment: boolean
+  onlinePayment: boolean
 
-    smsToAdminService: boolean;
-    smsToAdminProvider: boolean;
-    smsToUserService: boolean;
+  smsToAdminService: boolean
+  smsToAdminProvider: boolean
+  smsToUserService: boolean
 
-    emailToAdminService: boolean;
-    emailToAdminProvider: boolean;
-    emailToUserService: boolean;
+  emailToAdminService: boolean
+  emailToAdminProvider: boolean
+  emailToUserService: boolean
 
-    description: string | null;
-    descriptionAfterPurchase: string | null;
+  description: string | null
+  descriptionAfterPurchase: string | null
 }
 
 export interface TypeApiAddServiceRes {
-    Message: string
+  Message: string
 }
 
 export interface TypeApiDeleteServiceReq {
-    id: number;
+  id: number
 }
 
 export interface TypeApiDeleteServiceRes {
-    Message: string
+  Message: string
 }
 
 export type TypeApiGetServicesRes = TypeApiService & {
-    user: Partial<TypeApiUser>;
-};
+  user: TypeApiUser
+}
 
 export type TypeApiShowServiceReq = {
-    id: number
+  id: number
 }
 export type TypeApiShowServiceRes = TypeApiService
 
 export type TypeApiUpdateServiceReq = TypeApiService
 
 export interface TypeApiUpdateServiceRes {
-    Message: string
+  Message: string
 }
-
-
-
 
 /*<====================================>*/
 // Provider
 /*<====================================>*/
 
-export interface TypeFormProvider  {
-    serviceId: number;
+export interface TypeFormProvider {
+  serviceId: number
 
-    userId: number;
+  userId: number
 
-    slotTime: number;
+  slotTime: number
 
-    startDate: DateObject | null;
-    endDate: DateObject | null;
+  startDate: DateObject | null
+  endDate: DateObject | null
 
-    startTime: DateObject | null
-    endTime: DateObject | null;
+  startTime: DateObject | null
+  endTime: DateObject | null
 
-    status: string;
-    workHolidays: string;
-    description: string | null;
+  status: string
+  workHolidays: string
+  description: string | null
 }
 
-
 export interface TypeApiAddProviderReq {
+  serviceId: number
 
-    serviceId: number;
+  userId: number
 
-    userId: number;
+  slotTime: number
 
-    slotTime: number;
+  startDate: string | null
+  endDate: string | null
 
-    startDate: string | null;
-    endDate: string | null;
+  startTime: string | null
+  endTime: string | null
 
-    startTime: string | null
-    endTime: string | null;
-
-    status: boolean;
-    workHolidays: boolean;
-    description: string | null;
-
+  status: boolean
+  workHolidays: boolean
+  description: string | null
 }
 
 export interface TypeApiAddProviderRes {
-    Message: string
+  Message: string
 }
 
 export interface TypeApiDeleteProviderReq {
-    id: number;
+  id: number
 }
 
 export interface TypeApiDeleteProviderRes {
-    Message: string
+  Message: string
 }
 
 export type TypeApiGetProvidersRes = TypeApiProvider & {
-    service: Partial<TypeApiService>;
-    user: Partial<TypeApiUser>;
-};
+  service: TypeApiService
+  user: TypeApiUser
+}
 
 export type TypeApiShowProviderReq = {
-    id: number
+  id: number
 }
-export type TypeApiShowProviderRes =  TypeApiProvider & {
-    service: Partial<TypeApiService>;
-    user: Partial<TypeApiUser>;
-};
+export type TypeApiShowProviderRes = TypeApiProvider & {
+  service: TypeApiService
+  user: TypeApiUser
+}
 
 export type TypeApiUpdateProviderReq = TypeApiProvider
 
 export interface TypeApiUpdateProviderRes {
-    Message: string
+  Message: string
 }
 
 export interface TypeApiGetProvidersByServiceIdReq {
-    id: number
+  id: number
 }
 
 export type TypeApiGetProvidersByServiceIdRes = TypeApiProvider & {
-    service: Partial<TypeApiService>;
-    user: Partial<TypeApiUser>;
-};
-
-
-
-
-
-
-
-
+  service: TypeApiService
+  user: TypeApiUser
+}
 
 /*<====================================>*/
 // TimeSheet
 /*<====================================>*/
 
-export interface TypeFormTimeSheet  {
-    // serviceId: number;
+export interface TypeFormTimeSheet {
+  // serviceId: number;
 
-    // providerId: number;
+  // providerId: number;
 
-    dayName: string;
-    dayIndex: number;
-    startTime: DateObject;
-    endTime: DateObject;
-
+  dayName: string
+  dayIndex: number
+  startTime: DateObject
+  endTime: DateObject
 }
 
-
 export interface TypeApiAddTimeSheetReq {
+  serviceId: number
 
-    serviceId: number;
+  providerId: number
 
-    providerId: number;
-
-    dayName: string;
-    dayIndex: number;
-    startTime: string;
-    endTime: string;
-
+  dayName: string
+  dayIndex: number
+  startTime: string
+  endTime: string
 }
 
 export interface TypeApiAddTimeSheetRes {
-    Message: string
+  Message: string
 }
 
 export interface TypeApiDeleteTimeSheetReq {
-    id: number;
+  id: number
 }
 
 export interface TypeApiDeleteTimeSheetRes {
-    Message: string
+  Message: string
 }
 
-
 export type TypeApiShowTimeSheetReq = {
-    id: number
+  id: number
 }
 export type TypeApiShowTimeSheetRes = TypeApiTimeSheet
 
-export type TypeApiUpdateTimeSheetReq = TypeApiTimeSheet
+/*<====================================>*/
+// Orders
+/*<====================================>*/
 
-export interface TypeApiUpdateTimeSheetRes {
-    Message: string
+export type TypeApiGetOrdersRes = TypeApiOrder & {
+  service: TypeApiService
+  user: TypeApiUser
+  discount: TypeApiDiscount
+  payment: TypeApiPayment
 }
 
+/*<====================================>*/
+// Drafts
+/*<====================================>*/
+
+export type TypeApiGetDraftsRes = TypeApiDraft & {
+  service: TypeApiService
+  provider: TypeApiProvider
+  user: TypeApiUser
+}
+
+export interface TypeApiDeleteDraftsRes {
+  Message: string
+}
+
+/*<====================================>*/
+// Reservation
+/*<====================================>*/
+
+export interface TypeApiAddReservationReq {
+  shouldExecuteTransaction: boolean
+  trackingCode: string
+  paymentType: TypePaymentType
+  status: TypeReservationsStatus
+
+  service: TypeApiService
+  provider: TypeApiProvider
+  user: TypeApiUser
+
+  price: number
+  totalPrice: number
+
+  date: string
+  time: string
+
+  description: string | null
+
+  discountId?: number
+  discountPrice?: number
+
+  bankName?: string
+  trackId?: string
+  amount?: string
+  cardNumber?: string
+  authority?: string
+}
+
+export interface TypeApiAddReservationRes {
+  Message: string
+}
+
+export interface TypeApiDeleteReservationReq {
+  id: number
+}
+
+export interface TypeApiDeleteReservationRes {
+  Message: string
+}
+
+export type TypeApiGetReservationsReq = {
+  startEpoch: number
+  endEpoch: number
+}
+
+export type TypeApiGetReservationsRes = TypeApiReservation & {
+  order: TypeApiOrder & {
+    payment: TypeApiPayment & {
+      transaction: TypeApiTransaction
+    }
+    discount: TypeApiDiscount
+    user: TypeApiUser
+    provider: TypeApiProvider & {
+      service: TypeApiService
+      user: TypeApiUser
+    }
+  }
+}
+
+export type TypeApiShowReservationReq = {
+  id: number
+}
+export type TypeApiShowReservationRes = TypeApiReservation
+
+export type TypeApiUpdateReservationReq = {
+  id: number
+  title: string
+  code: string
+  startDate?: string | null
+  endDate?: string | null
+  // type: TypeReservationsType;
+  amount: number
+}
+
+export interface TypeApiUpdateReservationRes {
+  Message: string
+}
+
+export type TypeApiUpdateStatusReservationReq = {
+  reserve: TypeApiReservation
+  statusReserve: TypeStatusReserve
+  status: TypeReservationsStatus
+
+  smsChangeStatusToAdminProvider: boolean
+  smsChangeStatusToUserService: boolean
+  emailChangeStatusToAdminProvider: boolean
+  emailChangeStatusToUserService: boolean
+
+  smsStatusDoneToAdminProvider: boolean
+  smsStatusDoneToUserService: boolean
+  emailStatusDoneToAdminProvider: boolean
+  emailStatusDoneToUserService: boolean
+}
+
+export interface TypeApiUpdateStatusReservationRes {
+  Message: string
+}
+
+export interface TypeApiReminderReservationReq {
+  reserve: TypeApiReservation
+  smsReminderToAdminProvider: boolean
+  smsReminderToUserService: boolean
+  emailReminderToAdminProvider: boolean
+  emailReminderToUserService: boolean
+}
+export interface TypeApiReminderReservationRes {
+  Message: string
+}
+
+export interface TypeApiAppreciationReservationReq {
+  reserve: TypeApiReservation
+  discountCode: string
+  smsAppreciationToAdminProvider: boolean
+  smsAppreciationToUserService: boolean
+  emailAppreciationToAdminProvider: boolean
+  emailAppreciationToUserService: boolean
+}
+export interface TypeApiAppreciationReservationRes {
+  Message: string
+}
+
+export interface TypeApiGetReservationTimeSheetsInDateReq {
+  service: TypeApiService
+  provider: TypeApiProvider
+  date: string
+}
+export interface TypeApiGetReservationTimeSheetsInDateRes {
+  Message: string
+  Message1: string
+  Message2: string
+}

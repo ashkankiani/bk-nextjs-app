@@ -1,52 +1,52 @@
 import Qs from 'qs'
-import {AxiosResponse} from 'axios'
-import {AppHeader} from '@/libs/utility'
-import {bkRequest} from "@/api/api";
-import {TypeApiCustomError} from "@/types/typeConfig";
+import { AxiosResponse } from 'axios'
+import { AppHeader } from '@/libs/utility'
+import { bkRequest } from '@/api/api'
+import { TypeApiCustomError } from '@/types/typeConfig'
 
 /*<====================================>*/
 // Helper functions
 /*<====================================>*/
 export const checkRequestGet = <T>(response: AxiosResponse): T => {
-    if (response.status === 200) {
-        if (response.data.Success && response.data.Data) {
-            return response.data.Data as T
-        } else if (response.data.Success && !response.data.Data) {
-            return response.data as T
-        } else {
-            const error: TypeApiCustomError = new Error(response.data.Message) as TypeApiCustomError
-            error.Code = response.data.Code
-            error.Reason = response.data.Message
-            error.Details = response.data.Details
-            throw error
-        }
+  if (response.status === 200) {
+    if (response.data.Success && response.data.Data) {
+      return response.data.Data as T
+    } else if (response.data.Success && !response.data.Data) {
+      return response.data as T
     } else {
-        const error: TypeApiCustomError = new Error(response.data.error) as TypeApiCustomError
-        error.Code = response.data.Code
-        error.Reason = response.data.error
-        throw error
+      const error: TypeApiCustomError = new Error(response.data.Message) as TypeApiCustomError
+      error.Code = response.data.Code
+      error.Reason = response.data.Message
+      error.Details = response.data.Details
+      throw error
     }
+  } else {
+    const error: TypeApiCustomError = new Error(response.data.error) as TypeApiCustomError
+    error.Code = response.data.Code
+    error.Reason = response.data.error
+    throw error
+  }
 }
 
 export const checkRequestPost = <T>(response: AxiosResponse): T => {
-    if (response.status === 200) {
-        if (response.data.Success && response.data.Data) {
-            return response.data.Data as T
-        } else if (response.data.Success && !response.data.Data) {
-            return response.data as T
-        } else {
-            const error: TypeApiCustomError = new Error(response.data.Message) as TypeApiCustomError
-            error.Code = response.data.Code
-            error.Reason = response.data.Message
-            error.Details = response.data.Details
-            throw error
-        }
+  if (response.status === 200) {
+    if (response.data.Success && response.data.Data) {
+      return response.data.Data as T
+    } else if (response.data.Success && !response.data.Data) {
+      return response.data as T
     } else {
-        const error: TypeApiCustomError = new Error(response.data.error) as TypeApiCustomError
-        error.Code = response.data.Code
-        error.Reason = response.data.error
-        throw error
+      const error: TypeApiCustomError = new Error(response.data.Message) as TypeApiCustomError
+      error.Code = response.data.Code
+      error.Reason = response.data.Message
+      error.Details = response.data.Details
+      throw error
     }
+  } else {
+    const error: TypeApiCustomError = new Error(response.data.error) as TypeApiCustomError
+    error.Code = response.data.Code
+    error.Reason = response.data.error
+    throw error
+  }
 }
 
 // export const checkRequestFile = <T>(response: AxiosResponse): T => {
@@ -66,14 +66,14 @@ export const checkRequestPost = <T>(response: AxiosResponse): T => {
 
 // Generic GET request
 export const getRequest = async <T>(url: string, params?: object): Promise<T> => {
-    const response = await bkRequest.get(url + Qs.stringify(params, {allowDots: true}), AppHeader())
-    return checkRequestGet<T>(response)
+  const response = await bkRequest.get(url + Qs.stringify(params, { allowDots: true }), AppHeader())
+  return checkRequestGet<T>(response)
 }
 
 // Generic POST request
 export const postRequest = async <T>(url: string, params: object): Promise<T> => {
-    const response = await bkRequest.post(url, params, AppHeader())
-    return checkRequestPost<T>(response)
+  const response = await bkRequest.post(url, params, AppHeader())
+  return checkRequestPost<T>(response)
 }
 
 // Generic GET request with file
@@ -89,13 +89,13 @@ export const postRequest = async <T>(url: string, params: object): Promise<T> =>
 // }
 
 // Generic Delete request
-export const deleteRequest = async <T>(url: string, params: object): Promise<T> => {
-    const response = await bkRequest.delete(url + Qs.stringify(params), AppHeader())
-    return checkRequestPost<T>(response)
+export const deleteRequest = async <T>(url: string, params?: object): Promise<T> => {
+  const response = await bkRequest.delete(url + Qs.stringify(params), AppHeader())
+  return checkRequestPost<T>(response)
 }
 
 // Generic POST request
 export const putRequest = async <T>(url: string, params: object): Promise<T> => {
-    const response = await bkRequest.put(url, params, AppHeader())
-    return checkRequestPost<T>(response)
+  const response = await bkRequest.put(url, params, AppHeader())
+  return checkRequestPost<T>(response)
 }

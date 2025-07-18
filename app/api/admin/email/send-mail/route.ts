@@ -1,112 +1,110 @@
 import {
-    checkMethodAllowed, checkRequiredFields, createErrorResponseWithMessage,
-    createSuccessResponseWithMessage,
-    handlerRequestError,
-} from "@/app/api/_utils/handleRequest";
-import prisma from "@/prisma/client";
-import nodemailer from "nodemailer";
-import {TypeApiConnection} from "@/types/typeApiAdmin";
+  checkMethodAllowed,
+  checkRequiredFields,
+  createErrorResponseWithMessage,
+  createSuccessResponseWithMessage,
+  handlerRequestError,
+} from '@/app/api/_utils/handleRequest'
+import prisma from '@/prisma/client'
+import nodemailer from 'nodemailer'
+import { TypeApiConnection } from '@/types/typeApiAdmin'
 
-const allowedMethods = ["POST"];
+const allowedMethods = ['POST']
 
 export async function POST(request: Request) {
-    // بررسی مجاز بودن درخواست
-    const methodCheckResponse = checkMethodAllowed(request, allowedMethods);
-    if (methodCheckResponse) return methodCheckResponse;
+  // بررسی مجاز بودن درخواست
+  const methodCheckResponse = checkMethodAllowed(request, allowedMethods)
+  if (methodCheckResponse) return methodCheckResponse
 
-    // اعتبارسنجی توکن
-    // const authResponse = await authenticateRequest(request);
+  // اعتبارسنجی توکن
+  // const authResponse = await authenticateRequest(request);
 
-    // if (!authResponse?.status) {
-    //   return createErrorResponse(authResponse?.message);
+  // if (!authResponse?.status) {
+  //   return createErrorResponse(authResponse?.message);
+  // }
+
+  // دریافت اطلاعات داخل درخواست
+  const body = await request.json()
+  const { email, subject, text } = body
+
+  // بررسی وجود داده های ورودی مورد نیاز
+  const errorMessage = checkRequiredFields({
+    email,
+    subject,
+    text,
+  })
+
+  if (errorMessage) {
+    return createErrorResponseWithMessage(errorMessage)
+  }
+
+  try {
+    // دریافت داده های ارتباطات
+    const connections: TypeApiConnection[] = await prisma.connections.findMany()
+
+    if (!connections || !connections[0]) {
+      return createErrorResponseWithMessage('دسترسی به ارتباطات مویثر نشد.')
+    }
+
+    const smtpURL = connections[0].smtpURL
+    const smtpPort = connections[0].smtpPort
+    const smtpUserName = connections[0].smtpUserName
+    const smtpPassword = connections[0].smtpPassword
+
+    if (!smtpURL || !smtpPort || !smtpUserName || !smtpPassword) {
+      return createErrorResponseWithMessage('یکی از اطلاعات پیکربندی smtp مشکل دارد.')
+    }
+
+    // const errorData = checkRequiredFields({
+    //     smtpURL,
+    //     smtpPort,
+    //     smtpUserName,
+    //     smtpPassword,
+    // });
+    //
+    // if (errorData) {
+    //     return createErrorResponseWithMessage(errorData);
     // }
 
-    // دریافت اطلاعات داخل درخواست
-    const body = await request.json();
-    const {email, subject, text} = body;
+    // ساخت  smtp ایمیل
+    const transporter = nodemailer.createTransport({
+      host: smtpURL,
+      port: smtpPort,
+      auth: {
+        user: smtpUserName,
+        pass: smtpPassword,
+      },
+    })
 
+    // پیکربندی و ارسال ایمیل
+    await transporter.sendMail({
+      from: `"${process.env.NEXT_PUBLIC_SITE_NAME}" <${smtpUserName}>`, // sender address
+      to: body.email,
+      subject: body.subject,
+      text: body.text,
+      html: templateEmail(body),
+    })
 
-    // بررسی وجود داده های ورودی مورد نیاز
-    const errorMessage = checkRequiredFields({
-        email,
-        subject,
-        text,
-    });
-
-    if (errorMessage) {
-        return createErrorResponseWithMessage(errorMessage);
-    }
-
-    try {
-
-        // دریافت داده های ارتباطات
-        const connections: TypeApiConnection[] = await prisma.connections.findMany();
-
-        if (!connections || !connections[0]) {
-            return createErrorResponseWithMessage("دسترسی به ارتباطات مویثر نشد.");
-        }
-
-        const smtpURL = connections[0].smtpURL
-        const smtpPort = connections[0].smtpPort
-        const smtpUserName = connections[0].smtpUserName
-        const smtpPassword = connections[0].smtpPassword
-
-        if (!smtpURL || !smtpPort || !smtpUserName || !smtpPassword) {
-            return createErrorResponseWithMessage("یکی از اطلاعات پیکربندی smtp مشکل دارد.");
-        }
-
-
-        // const errorData = checkRequiredFields({
-        //     smtpURL,
-        //     smtpPort,
-        //     smtpUserName,
-        //     smtpPassword,
-        // });
-        //
-        // if (errorData) {
-        //     return createErrorResponseWithMessage(errorData);
-        // }
-
-        // ساخت  smtp ایمیل
-        const transporter = nodemailer.createTransport({
-            host: smtpURL,
-            port: smtpPort,
-            auth: {
-                user: smtpUserName,
-                pass: smtpPassword
-            }
-        });
-
-
-        // پیکربندی و ارسال ایمیل
-        await transporter.sendMail({
-            from: `"${process.env.NEXT_PUBLIC_SITE_NAME}" <${smtpUserName}>`, // sender address
-            to: body.email,
-            subject: body.subject,
-            text: body.text,
-            html: templateEmail(body),
-        });
-
-        return createSuccessResponseWithMessage('ایمیل با موفقیت ارسال شد.');
-    } catch (error: unknown) {
-        return handlerRequestError(error);
-    }
+    return createSuccessResponseWithMessage('ایمیل با موفقیت ارسال شد.')
+  } catch (error: unknown) {
+    return handlerRequestError(error)
+  }
 }
 
 type TypeTemplateEmail = {
-    content?: string
-    title: string
-    trackingCode: string
-    dateName: string
-    date: string
-    time: string
-    service: string
-    provider: string
+  content?: string
+  title: string
+  trackingCode: string
+  dateName: string
+  date: string
+  time: string
+  service: string
+  provider: string
 }
 
 // یاداوری تغییر تمپلیت و راهکار پیامک و ضروری بودن یا نبودن مقادیر ورودی بالا
 function templateEmail(body: TypeTemplateEmail) {
-    return `<!DOCTYPE html>
+  return `<!DOCTYPE html>
 <html xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office" lang="en">
 
 <head>

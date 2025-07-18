@@ -1,9 +1,8 @@
-import * as jose from 'jose';
-import {hookGetSession} from "@/hooks/user/hookSession";
-import {hookGetPermission} from "@/hooks/admin/hookPermissions";
-import {apiRoutes} from "@/libs/apiRoutes";
-import {TypeSession} from "@/types/typeConfig";
-
+import * as jose from 'jose'
+import { hookGetSession } from '@/hooks/user/hookSession'
+import { hookGetPermission } from '@/hooks/admin/hookPermissions'
+import { apiRoutes } from '@/libs/apiRoutes'
+import { TypeSession } from '@/types/typeConfig'
 
 export const jwtConfig = {
   secret: new TextEncoder().encode(process.env.NEXT_JWT_SECRET_KEY),
@@ -13,19 +12,19 @@ export const jwtConfig = {
   algo: { alg: 'HS256' },
 }
 
-
 export const encodeJwt = async (payload: TypeSession): Promise<string> => {
   const jwt = await new jose.SignJWT(payload)
-      .setExpirationTime(jwtConfig.expireDate)
-      .setProtectedHeader(jwtConfig.algo)
-      .setIssuer(jwtConfig.issuer)
-      .setAudience(jwtConfig.audience)
-      .sign(jwtConfig.secret)
+    .setExpirationTime(jwtConfig.expireDate)
+    .setProtectedHeader(jwtConfig.algo)
+    .setIssuer(jwtConfig.issuer)
+    .setAudience(jwtConfig.audience)
+    .sign(jwtConfig.secret)
   return jwt
 }
 
-
-export const decodeJwt = async <T extends Record<string, unknown>>(payload: string): Promise<T | null> => {
+export const decodeJwt = async <T extends Record<string, unknown>>(
+  payload: string
+): Promise<T | null> => {
   try {
     const { payload: decodedPayload } = await jose.jwtVerify(payload, jwtConfig.secret)
     return decodedPayload as T
@@ -36,19 +35,19 @@ export const decodeJwt = async <T extends Record<string, unknown>>(payload: stri
 }
 
 export const isAuthenticated = async (token: string) => {
-  if (!token) return {status: false, message: 'Authorization required'};
-  const decodedToken = await decodeJwt<TypeSession>(token);
+  if (!token) return { status: false, message: 'Authorization required' }
+  const decodedToken = await decodeJwt<TypeSession>(token)
   if (!decodedToken)
     return {
       status: false,
       message: 'Authorization required (Token Not Verify)',
-    };
+    }
   const compareToken = await validateSession(decodedToken.userId, token)
   if (!compareToken)
     return {
       status: false,
       message: 'Authorization required (Token Not Valid)',
-    };
+    }
 
   const permissions = await getPermissions(decodedToken.catalogId)
 
@@ -56,7 +55,7 @@ export const isAuthenticated = async (token: string) => {
     return {
       status: false,
       message: 'Authorization required (Permissions Not Received!)',
-    };
+    }
 
   return {
     status: true,
@@ -65,43 +64,44 @@ export const isAuthenticated = async (token: string) => {
     catalogId: decodedToken.catalogId,
     permissions: permissions.data,
   }
-};
+}
 
 async function validateSession(userId: number, token: string) {
   // eslint-disable-next-line no-undef
-  return new Promise((resolve) => {
+  return new Promise(resolve => {
     hookGetSession(userId, (response, message) => {
       if (response && message && message.sessionToken === token) {
-        resolve(true);
+        resolve(true)
       } else {
-        resolve(false);
+        resolve(false)
       }
-    });
+    })
   }).catch(() => {
-    return false;
-  });
+    return false
+  })
 }
 
 async function getPermissions(catalogId: number) {
-  return new Promise((resolve) => {
+  return new Promise(resolve => {
     hookGetPermission(catalogId, (response, message) => {
       if (response) {
         delete message.id
         delete message.catalogId
-        resolve({status: true, data: message});
+        resolve({ status: true, data: message })
       } else {
-        resolve({status: false});
+        resolve({ status: false })
       }
-    });
+    })
   }).catch(() => {
-    return false;
-  });
+    return false
+  })
 }
 
-export const isAccess = async (method: "GET" | "POST", pathname: string, query, permissions) => {
-  if (pathname.startsWith("/api/")) {
-
-    const route = apiRoutes.find(r => r.route === removeTrailingSegment(pathname, query) && r.method === method);
+export const isAccess = async (method: 'GET' | 'POST', pathname: string, query, permissions) => {
+  if (pathname.startsWith('/api/')) {
+    const route = apiRoutes.find(
+      r => r.route === removeTrailingSegment(pathname, query) && r.method === method
+    )
 
     // console.log('////////////////////////////////')
     // console.log("method : " + method + " => pathname : " + pathname)
@@ -128,25 +128,28 @@ export const isAccess = async (method: "GET" | "POST", pathname: string, query, 
   }
 }
 
-
 const removeTrailingSegment = (pathname: string, query) => {
-  const segments = pathname.split('/');
+  const segments = pathname.split('/')
   const exclude = [
-    "/api/admin/user/importUser",
-    "/api/admin/provider/timesheet",
-    "/api/admin/reservation/editReserve",
-    "/api/admin/reservation/changeStatusReserve",
-    "/api/admin/reservation/appreciationReserve",
-    "/api/admin/reservation/reminderReserve",
-    "/api/admin/reservation/isReservation",
-  ];
+    '/api/admin/user/importUser',
+    '/api/admin/provider/timesheet',
+    '/api/admin/reservation/editReserve',
+    '/api/admin/reservation/changeStatusReserve',
+    '/api/admin/reservation/appreciationReserve',
+    '/api/admin/reservation/reminderReserve',
+    '/api/admin/reservation/isReservation',
+  ]
 
   if (query !== undefined && query.length > 0) {
-    return pathname;
+    return pathname
   }
 
-  if ((exclude.includes(pathname) && segments.length === 4) || segments.length === 4 || (exclude.includes(pathname) && segments.length === 5)) {
-    return pathname;
+  if (
+    (exclude.includes(pathname) && segments.length === 4) ||
+    segments.length === 4 ||
+    (exclude.includes(pathname) && segments.length === 5)
+  ) {
+    return pathname
   }
-  return pathname.substring(0, pathname.lastIndexOf('/'));
+  return pathname.substring(0, pathname.lastIndexOf('/'))
 }

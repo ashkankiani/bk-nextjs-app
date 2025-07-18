@@ -1,7 +1,7 @@
-import {useDispatch, useSelector} from "react-redux";
-import {useRouter} from "next/navigation";
-import {TypeRootState} from "@/store/store";
-import {TypeApiPermission, TypeApiSetting, TypeApiUser} from "@/types/typeApiEntity";
+import { useDispatch, useSelector } from 'react-redux'
+import { useRouter } from 'next/navigation'
+import { TypeRootState } from '@/store/store'
+import { TypeApiPermission, TypeApiSetting, TypeApiUser } from '@/types/typeApiEntity'
 
 export default function useHook() {
   const dispatch = useDispatch()
@@ -10,7 +10,9 @@ export default function useHook() {
   const isLogin = useSelector((state: TypeRootState) => state.user.isLogin)
   const user = useSelector((state: TypeRootState) => state.user.user) as TypeApiUser
   const setting = useSelector((state: TypeRootState) => state.app.setting) as TypeApiSetting
-  const permissions = useSelector((state: TypeRootState) => state.user.permissions) as TypeApiPermission
+  const permissions = useSelector(
+    (state: TypeRootState) => state.user.permissions
+  ) as TypeApiPermission
   const searchQuery = useSelector((state: TypeRootState) => state.user.searchQuery)
   const cart = useSelector((state: TypeRootState) => state.user.cart)
   const order = useSelector((state: TypeRootState) => state.user.order)
@@ -25,6 +27,6 @@ export default function useHook() {
     permissions,
     searchQuery,
     cart,
-    order
+    order,
   }
 }

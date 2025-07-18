@@ -1,33 +1,45 @@
 import Highcharts from 'highcharts'
 import HighchartsExporting from 'highcharts/modules/exporting'
 import HighchartsReact from 'highcharts-react-official'
-import {useSelector} from 'react-redux'
 import dynamic from 'next/dynamic'
-import {numberWithCommas} from "@/libs/convertor";
-import React from "react";
+import { numberWithCommas } from '@/libs/convertor'
+import React from 'react'
+import useHook from '@/hooks/controller/useHook'
 
 if (typeof Highcharts === 'object') {
-  HighchartsExporting(Highcharts)
-  require('highcharts/modules/exporting')(Highcharts)
-  require('highcharts/modules/export-data')(Highcharts)
+  // HighchartsExporting(Highcharts)
+  // require('highcharts/modules/exporting')(Highcharts)
+  // require('highcharts/modules/export-data')(Highcharts)
 }
+
 const TheSpinner = dynamic(() => import('@/components/layout/TheSpinner'), {
   loading: () => 'بارگذاری',
 })
 
 type TypeChartAreaSplineProps<T> = {
   loading: boolean
-  data: T[]
+  data: T[] | undefined
   series: T[]
   category: T[]
   reference: React.Ref<any>
 }
 
-export default function ChartAreaSpline<T>({loading, data, series, category, reference, } : TypeChartAreaSplineProps<T>) {
-
-  const theme = useSelector(state => state.app.initTheme)
+export default function ChartAreaSpline<T>({
+  loading,
+  data,
+  series,
+  category,
+  reference,
+}: TypeChartAreaSplineProps<T>) {
+  const { theme } = useHook()
 
   if (loading) {
+    return (
+      <div className="flex-center-center h-[400px] w-full">
+        <TheSpinner />
+      </div>
+    )
+  } else {
     const options = {
       chart: {
         type: 'areaspline',
@@ -61,15 +73,17 @@ export default function ChartAreaSpline<T>({loading, data, series, category, ref
         },
         categories: category,
         crosshair: {
-          className:
-            theme === 'light' ? 'stroke-[#a8edf9]' : 'stroke-[#185872]',
+          className: theme === 'light' ? 'stroke-[#a8edf9]' : 'stroke-[#185872]',
           dashStyle: 'LongDash',
           width: 1,
         },
         labels: {
           formatter: function () {
-            return '<span class="stroke-[#185872] dark:stroke-[#fff] font-light">' +
-              this.value + '</span>'
+            return (
+              '<span class="stroke-[#185872] dark:stroke-[#fff] font-light">' +
+              this.value +
+              '</span>'
+            )
           },
           style: {
             fontSize: '13px',
@@ -85,8 +99,7 @@ export default function ChartAreaSpline<T>({loading, data, series, category, ref
             },
           },
           crosshair: {
-            className:
-              theme === 'light' ? 'stroke-[#a8edf9]' : 'stroke-[#185872]',
+            className: theme === 'light' ? 'stroke-[#a8edf9]' : 'stroke-[#185872]',
             dashStyle: 'LongDash',
             width: 1,
           },
@@ -156,22 +169,10 @@ export default function ChartAreaSpline<T>({loading, data, series, category, ref
         enabled: false,
       },
     }
-    return data.length !== 0 ? (
-      <HighchartsReact
-        highcharts={Highcharts}
-        options={options}
-        ref={reference}
-      />
+    return data && data.length !== 0 ? (
+      <HighchartsReact highcharts={Highcharts} options={options} ref={reference} />
     ) : (
-      <div className="flex-center-center fa-regular-18px h-[376px] w-full">
-        داده ای وجود ندارد.
-      </div>
-    )
-  } else {
-    return (
-      <div className="flex-center-center h-[400px] w-full">
-        <TheSpinner/>
-      </div>
+      <div className="flex-center-center fa-regular-18px h-[376px] w-full">داده ای وجود ندارد.</div>
     )
   }
 }

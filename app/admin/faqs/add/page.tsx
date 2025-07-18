@@ -1,5 +1,5 @@
-import TheAddFaqUi from "@/app/admin/faqs/add/TheAddFaqUi";
+import TheAddFaqUi from '@/app/admin/faqs/add/TheAddFaqUi'
 
 export default function TheAddFaqPage() {
-    return <TheAddFaqUi />
+  return <TheAddFaqUi />
 }

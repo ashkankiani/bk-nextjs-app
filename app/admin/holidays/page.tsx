@@ -1,5 +1,5 @@
-import TheHolidaysUi from "@/app/admin/holidays/TheHolidaysUi";
+import TheHolidaysUi from '@/app/admin/holidays/TheHolidaysUi'
 
 export default function TheHolidaysPage() {
-    return <TheHolidaysUi />
+  return <TheHolidaysUi />
 }

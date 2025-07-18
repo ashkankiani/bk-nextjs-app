@@ -39,10 +39,8 @@ model Reservations {
   updatedAt DateTime @updatedAt
 }
 
-model Draft {
+model Drafts {
   // id Int @id @default(autoincrement())
-
-  createEpoch BigInt
 
   service   Services @relation(fields: [serviceId], references: [id])
   serviceId Int
@@ -50,16 +48,18 @@ model Draft {
   provider   Providers @relation(fields: [providerId], references: [id])
   providerId Int
 
-  user   Users? @relation(fields: [userId], references: [id])
-  userId Int?
+  user   Users @relation(fields: [userId], references: [id])
+  userId Int
 
   dateTimeStartEpoch BigInt
   dateTimeEndEpoch   BigInt
   date               String
   time               String
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createEpoch BigInt
+
+  createdAt DateTime @default(now()) // deleted
+  updatedAt DateTime @updatedAt // deleted
 
   @@id([serviceId, providerId, date, time])
 }
@@ -170,7 +170,7 @@ model Services {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  Draft     Draft[]
+  Draft     Drafts[]
 }
 
 model Providers {
@@ -201,7 +201,7 @@ model Providers {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  Draft     Draft[]
+  Draft     Drafts[]
 }
 
 model TimeSheets {
@@ -278,7 +278,7 @@ model Users {
   Reservations Reservations[]
   Payments     Payments[]
   Services     Services[]
-  Draft        Draft[]
+  Draft        Drafts[]
   // Profile      Profile[]
   // Catalogs     Catalogs[]
   Session      Sessions[]

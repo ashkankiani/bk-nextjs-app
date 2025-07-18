@@ -1,0 +1,8 @@
+node_modules
+build
+.next
+out
+public
+coverage
+*.snap
+prisma/migrations

@@ -1,13 +1,16 @@
-import prisma from "@/prisma/client";
-import {createSuccessResponseWithData, handlerRequestError, checkMethodAllowed} from "@/app/api/_utils/handleRequest";
+import prisma from '@/prisma/client'
+import {
+  createSuccessResponseWithData,
+  handlerRequestError,
+  checkMethodAllowed,
+} from '@/app/api/_utils/handleRequest'
 
-const allowedMethods = ["GET"];
+const allowedMethods = ['GET']
 
 export async function GET(request: Request) {
-
   // بررسی مجاز بودن درخواست
-  const methodCheckResponse = checkMethodAllowed(request, allowedMethods);
-  if (methodCheckResponse) return methodCheckResponse;
+  const methodCheckResponse = checkMethodAllowed(request, allowedMethods)
+  if (methodCheckResponse) return methodCheckResponse
 
   // اعتبارسنجی توکن
   // const authResponse = await authenticateRequest(request);
@@ -17,22 +20,15 @@ export async function GET(request: Request) {
   // }
 
   try {
-
     // دریافت لیست سرویس ها
     const services = await prisma.services.findMany({
       include: {
-        user: {
-          select: {
-            fullName: true,
-            mobile: true,
-            email: true,
-          },
-        },
+        user: true,
       },
-    });
+    })
 
-    return createSuccessResponseWithData(services);
+    return createSuccessResponseWithData(services)
   } catch (error) {
-    return handlerRequestError(error);
+    return handlerRequestError(error)
   }
 }

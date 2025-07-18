@@ -1,5 +1,4 @@
-import {bkRequest} from '@/api/api'
-
+import { bkRequest } from '@/api/api'
 
 export const hookDeleteTransaction = async (data, callback) => {
   await bkRequest
@@ -41,8 +40,6 @@ export const hookDeleteTransaction = async (data, callback) => {
 //         })
 //         .catch(error => console.log('error in hookAddTransaction: ' + error.message))
 // }
-
-
 
 // export const hookGetTransaction = async (data, callback) => {
 //     await bkRequest

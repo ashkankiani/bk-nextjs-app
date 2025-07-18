@@ -1,16 +1,18 @@
 import {
-  checkMethodAllowed, checkRequiredFields, createErrorResponseWithMessage,
+  checkMethodAllowed,
+  checkRequiredFields,
+  createErrorResponseWithMessage,
   createSuccessResponseWithMessage,
   handlerRequestError,
-} from "@/app/api/_utils/handleRequest";
-import prisma from "@/prisma/client";
+} from '@/app/api/_utils/handleRequest'
+import prisma from '@/prisma/client'
 
-const allowedMethods = ["POST"];
+const allowedMethods = ['POST']
 
 export async function POST(request: Request) {
   // بررسی مجاز بودن درخواست
-  const methodCheckResponse = checkMethodAllowed(request, allowedMethods);
-  if (methodCheckResponse) return methodCheckResponse;
+  const methodCheckResponse = checkMethodAllowed(request, allowedMethods)
+  if (methodCheckResponse) return methodCheckResponse
 
   // اعتبارسنجی توکن
   // const authResponse = await authenticateRequest(request);
@@ -20,8 +22,8 @@ export async function POST(request: Request) {
   // }
 
   // دریافت اطلاعات داخل درخواست
-  const body = await request.json();
-  const {title, code,type,amount} = body;
+  const body = await request.json()
+  const { title, code, type, amount } = body
 
   // بررسی وجود داده های ورودی مورد نیاز
   const errorMessage = checkRequiredFields({
@@ -29,22 +31,20 @@ export async function POST(request: Request) {
     code,
     type,
     amount,
-  });
+  })
 
   if (errorMessage) {
-    return createErrorResponseWithMessage(errorMessage);
+    return createErrorResponseWithMessage(errorMessage)
   }
 
   try {
-
     // ثبت کد تخفیف جدید
     await prisma.discounts.create({
       data: body,
-    });
+    })
 
-    return createSuccessResponseWithMessage('کد تخفیف ثبت شد.');
+    return createSuccessResponseWithMessage('کد تخفیف ثبت شد.')
   } catch (error: unknown) {
-    return handlerRequestError(error);
+    return handlerRequestError(error)
   }
 }
-

@@ -1,12 +1,47 @@
-import { NextRequest, NextResponse } from 'next/server';
-import Qs from 'qs';
 
-export async function GET(req: NextRequest) {
-  const { searchParams } = new URL(req.url);
-  const query: Record<string, string> = {};
-  searchParams.forEach((value, key) => {
-    query[key] = value;
-  });
-  console.log(query);
-  return NextResponse.redirect('/payment/?' + Qs.stringify(query));
-} 
+import {checkMethodAllowed, createSuccessResponseWithData, handlerRequestError} from '@/app/api/_utils/handleRequest'
+import Qs from 'qs'
+import {NextResponse} from "next/server";
+
+const allowedMethods = ['GET']
+
+export async function GET(request: Request) {
+  // بررسی مجاز بودن درخواست
+  const methodCheckResponse = checkMethodAllowed(request, allowedMethods)
+  if (methodCheckResponse) return methodCheckResponse
+
+  // اعتبارسنجی توکن
+  // const authResponse = await authenticateRequest(request);
+
+  // if (!authResponse?.status) {
+  //     return createErrorResponse(authResponse?.message);
+  // }
+
+  const { searchParams } = new URL(request.url)
+  const query: Record<string, string> = {}
+
+  try {
+
+    // ?Authority=A0000000000000000000000000000wwOGYpd&Status=OK
+    searchParams.forEach((value, key) => {
+      query[key] = value
+    })
+
+
+    console.log(query)
+    return createSuccessResponseWithData(query)
+
+    const callback = {
+      status: query.status === "OK",
+      authority: query.Authority
+    }
+
+
+    const redirectUrl = `/payment/?${Qs.stringify(callback)}`
+    return NextResponse.redirect(redirectUrl)
+
+  } catch (error) {
+    return handlerRequestError(error)
+  }
+}
+

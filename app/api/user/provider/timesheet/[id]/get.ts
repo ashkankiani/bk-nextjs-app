@@ -1,16 +1,17 @@
-import prisma from '@/prisma/client';
+import prisma from '@/prisma/client'
 import {
   checkMethodAllowed,
-  createErrorResponseWithMessage, createSuccessResponseWithData,
-  getQueryStringByUrl, handlerRequestError,
-} from "@/app/api/_utils/handleRequest";
+  createErrorResponseWithMessage,
+  createSuccessResponseWithData,
+  getQueryStringByUrl,
+  handlerRequestError,
+} from '@/app/api/_utils/handleRequest'
 
-const allowedMethods = ["GET"];
+const allowedMethods = ['GET']
 
 export async function DELETE(request: Request) {
-
-  const methodCheckResponse = checkMethodAllowed(request, allowedMethods);
-  if (methodCheckResponse) return methodCheckResponse;
+  const methodCheckResponse = checkMethodAllowed(request, allowedMethods)
+  if (methodCheckResponse) return methodCheckResponse
 
   // اعتبارسنجی توکن
   // const authResponse = await authenticateRequest(request);
@@ -19,21 +20,20 @@ export async function DELETE(request: Request) {
   //     return createErrorResponse(authResponse?.message);
   // }
 
-  const id = getQueryStringByUrl(request.url);
+  const id = getQueryStringByUrl(request.url)
 
   // بررسی وجود ID
   if (!id) {
-    return createErrorResponseWithMessage("آیدی ضروری است.");
+    return createErrorResponseWithMessage('آیدی ضروری است.')
   }
 
   try {
-
     const timeSheets = await prisma.timeSheets.findMany({
       where: { providerId: parseInt(id) },
-    });
+    })
 
-    return createSuccessResponseWithData(timeSheets);
+    return createSuccessResponseWithData(timeSheets)
   } catch (error) {
-    return handlerRequestError(error);
+    return handlerRequestError(error)
   }
 }

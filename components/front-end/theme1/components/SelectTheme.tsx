@@ -3,11 +3,11 @@ import { FiMoon } from 'react-icons/fi'
 import { useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { setInitTheme } from '@/store/slice/app'
-import useHook from "@/hooks/controller/useHook";
+import useHook from '@/hooks/controller/useHook'
 
 export default function SelectTheme() {
   const dispatch = useDispatch()
-  const {theme} = useHook()
+  const { theme } = useHook()
 
   const [darkMode, setDarkMode] = useState(theme)
   const darkHandler = () => {
@@ -32,11 +32,17 @@ export default function SelectTheme() {
   return (
     <>
       {darkMode === 'dark' ? (
-        <div className="inline-flex cursor-pointer bk-button bg-amber-700 p-2" onClick={darkHandler}>
+        <div
+          className="bk-button inline-flex cursor-pointer bg-amber-700 p-2"
+          onClick={darkHandler}
+        >
           <FiMoon size="22px" />
         </div>
       ) : darkMode === 'light' ? (
-        <div className="inline-flex cursor-pointer bk-button bg-amber-700 p-2" onClick={lightHandler}>
+        <div
+          className="bk-button inline-flex cursor-pointer bg-amber-700 p-2"
+          onClick={lightHandler}
+        >
           <WiDaySunny size="22px" />
         </div>
       ) : null}

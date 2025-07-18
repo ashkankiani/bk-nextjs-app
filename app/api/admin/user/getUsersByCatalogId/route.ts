@@ -1,50 +1,44 @@
-import prisma from "@/prisma/client";
+import prisma from '@/prisma/client'
 import {
-    createSuccessResponseWithData,
-    handlerRequestError,
-    checkMethodAllowed,
-    getQueryStringByUrl, createErrorResponseWithMessage
-} from "@/app/api/_utils/handleRequest";
+  createSuccessResponseWithData,
+  handlerRequestError,
+  checkMethodAllowed,
+  getQueryStringByUrl,
+  createErrorResponseWithMessage,
+} from '@/app/api/_utils/handleRequest'
 
-const allowedMethods = ["GET"];
+const allowedMethods = ['GET']
 
 export async function GET(request: Request) {
+  // بررسی مجاز بودن درخواست
+  const methodCheckResponse = checkMethodAllowed(request, allowedMethods)
+  if (methodCheckResponse) return methodCheckResponse
 
-    // بررسی مجاز بودن درخواست
-    const methodCheckResponse = checkMethodAllowed(request, allowedMethods);
-    if (methodCheckResponse) return methodCheckResponse;
+  // اعتبارسنجی توکن
+  // const authResponse = await authenticateRequest(request);
 
-    // اعتبارسنجی توکن
-    // const authResponse = await authenticateRequest(request);
+  // if (!authResponse?.status) {
+  //     return createErrorResponse(authResponse?.message);
+  // }
 
-    // if (!authResponse?.status) {
-    //     return createErrorResponse(authResponse?.message);
-    // }
+  // دریافت Id درخواست
+  const id = getQueryStringByUrl(request.url)
 
+  // بررسی وجود ID
+  if (!id) {
+    return createErrorResponseWithMessage('آیدی ضروری است.')
+  }
 
-    // دریافت Id درخواست
-    const id = getQueryStringByUrl(request.url);
+  try {
+    // دریافت لیست کاربران بر اساس سطح دسترسی
+    const users = await prisma.users.findMany({
+      where: {
+        catalogId: parseInt(id),
+      },
+    })
 
-
-    // بررسی وجود ID
-    if (!id) {
-        return createErrorResponseWithMessage("آیدی ضروری است.");
-    }
-
-    try {
-
-        // دریافت لیست کاربران بر اساس سطح دسترسی
-        const users = await prisma.users.findMany(
-            {
-                where:{
-                    catalogId: parseInt(id)
-                }
-            }
-        );
-
-        return createSuccessResponseWithData(users);
-    } catch (error) {
-        return handlerRequestError(error);
-    }
+    return createSuccessResponseWithData(users)
+  } catch (error) {
+    return handlerRequestError(error)
+  }
 }
-

@@ -1,4 +1,4 @@
-import {bkRequest} from '@/api/api'
+import { bkRequest } from '@/api/api'
 export const hookListHolidays = async callback => {
   await bkRequest
     .get('/user/holiday')
@@ -9,5 +9,5 @@ export const hookListHolidays = async callback => {
         callback(false, res.data.error)
       }
     })
-    .catch(error => console.log('error in hookListHoliday: ' + error.message),)
+    .catch(error => console.log('error in hookListHoliday: ' + error.message))
 }

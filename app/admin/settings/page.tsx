@@ -1,5 +1,5 @@
-import TheSettingsUi from "@/app/admin/settings/TheSettingsUi";
+import TheSettingsUi from '@/app/admin/settings/TheSettingsUi'
 
 export default function TheSettingsPage() {
-    return <TheSettingsUi />
+  return <TheSettingsUi />
 }

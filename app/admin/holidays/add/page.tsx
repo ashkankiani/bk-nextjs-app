@@ -1,5 +1,5 @@
-import TheAddHolidayUi from "@/app/admin/holidays/add/TheAddHolidayUi";
+import TheAddHolidayUi from '@/app/admin/holidays/add/TheAddHolidayUi'
 
 export default function TheAddHolidayPage() {
-    return <TheAddHolidayUi />
+  return <TheAddHolidayUi />
 }

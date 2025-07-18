@@ -1,5 +1,10 @@
-import {bkRequestAqayePardakht, bkRequestIdPay, bkRequestZarinpal, bkRequestZibal} from "@/api/api";
-import Qs from "qs";
+import {
+  bkRequestAqayePardakht,
+  bkRequestIdPay,
+  bkRequestZarinpal,
+  bkRequestZibal,
+} from '@/api/api'
+import Qs from 'qs'
 
 export const hookZarinpalGetAuthority = async (data, callback) => {
   await bkRequestZarinpal
@@ -18,17 +23,17 @@ export const hookZarinpalGetVerify = async (data, callback) => {
   await bkRequestZarinpal
     .post('/verify.json', data)
     .then(res => {
-      if ((res.status === 200 && res.data.data.code === 100) || (res.status === 200 && res.data.data.code === 101)) {
+      if (
+        (res.status === 200 && res.data.data.code === 100) ||
+        (res.status === 200 && res.data.data.code === 101)
+      ) {
         callback(true, res.data.data)
       } else {
         callback(false, res.data.errors)
       }
     })
-    .catch(error =>
-      console.log('error in hookZarinpalGetVerify: ' + error.message)
-    )
+    .catch(error => console.log('error in hookZarinpalGetVerify: ' + error.message))
 }
-
 
 export const hookIdPayGetAuthority = async (data, token, callback) => {
   await bkRequestIdPay
@@ -54,17 +59,17 @@ export const hookIdPayGetVerify = async (data, callback) => {
     .post('/verify.json', data)
     .then(res => {
       console.log(res.data)
-      if ((res.status === 200 && res.data.data.code === 100) || (res.status === 200 && res.data.data.code === 101)) {
+      if (
+        (res.status === 200 && res.data.data.code === 100) ||
+        (res.status === 200 && res.data.data.code === 101)
+      ) {
         callback(true, res.data.data)
       } else {
         callback(false, res.data.errors)
       }
     })
-    .catch(error =>
-      console.log('error in hookZarinpalGetVerify: ' + error.message)
-    )
+    .catch(error => console.log('error in hookZarinpalGetVerify: ' + error.message))
 }
-
 
 export const hookAqayePardakhtGetAuthority = async (data, callback) => {
   await bkRequestAqayePardakht
@@ -97,7 +102,6 @@ export const hookAqayePardakhtGetVerify = async (data, callback) => {
     })
 }
 
-
 export const hookZibalGetAuthority = async (data, callback) => {
   await bkRequestZibal
     .post('/request', data)
@@ -115,13 +119,14 @@ export const hookZibalGetVerify = async (data, callback) => {
   await bkRequestZibal
     .post('/verify', data)
     .then(res => {
-      if ((res.status === 200 && res.data.result === 100) || (res.status === 200 && res.data.result === 201)){
+      if (
+        (res.status === 200 && res.data.result === 100) ||
+        (res.status === 200 && res.data.result === 201)
+      ) {
         callback(true, res.data)
       } else {
         callback(false, res.data)
       }
     })
-    .catch(error =>
-      console.log('error in hookZibalGetVerify: ' + error.message)
-    )
+    .catch(error => console.log('error in hookZibalGetVerify: ' + error.message))
 }

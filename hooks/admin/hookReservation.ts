@@ -1,4 +1,4 @@
-import {bkRequest} from '@/api/api'
+import { bkRequest } from '@/api/api'
 
 export const hookListReservations = async callback => {
   await bkRequest
@@ -10,9 +10,7 @@ export const hookListReservations = async callback => {
         callback(false, res.data.error)
       }
     })
-    .catch(error =>
-      console.log('error in hookListReservations: ' + error.message),
-    )
+    .catch(error => console.log('error in hookListReservations: ' + error.message))
 }
 
 export const hookAddReservation = async (data, callback) => {
@@ -144,7 +142,7 @@ export const hookIsReservation = async (data, callback) => {
     .then(res => {
       if (res.status === 200) {
         callback(true, res.data)
-      }else {
+      } else {
         callback(false, res.data.error)
       }
     })

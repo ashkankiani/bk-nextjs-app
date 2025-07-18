@@ -1,6 +1,6 @@
 // import LoadingPage from '@/components/layouts/loadingPage'
 import React from 'react'
-import TheSpinner from "@/components/layout/TheSpinner";
+import TheSpinner from '@/components/layout/TheSpinner'
 
 const loading = () => {
   return <TheSpinner />
