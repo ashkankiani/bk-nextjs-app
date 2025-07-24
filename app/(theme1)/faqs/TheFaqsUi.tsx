@@ -1,3 +1,5 @@
+'use client'
+
 import { useEffect, useState } from 'react'
 import { bkToast } from '@/libs/utility'
 import TheHeader from '@/components/front-end/theme1/layout/TheHeader'

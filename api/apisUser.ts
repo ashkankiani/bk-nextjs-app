@@ -1,4 +1,4 @@
-import { getRequest, postRequest } from '@/api/apiRequest'
+import { getRequest, postRequest, putRequest } from '@/api/apiRequest'
 import {
   TypeApiSignInRes,
   TypeApiSendCodeOtpRes,
@@ -22,12 +22,20 @@ import {
   TypeApiGetGatewaysRes,
   TypeApiCheckDiscountReq,
   TypeApiCheckDiscountRes,
-  TypeApiAddDraftReservationsReq,
-  TypeApiAddDraftReservationsRes,
+  TypeApiAddReservationsReq,
+  TypeApiAddReservationsRes,
   TypeApiCreateAuthorityReq,
   TypeApiCreateAuthorityRes,
   TypeApiVerifyPaymentReq,
   TypeApiVerifyPaymentRes,
+  TypeApiAddOrderReq,
+  TypeApiAddOrderRes,
+  TypeApiUpdateOrderReq,
+  TypeApiUpdateOrderRes,
+  TypeApiGetOrderByBankTransactionCodeReq,
+  TypeApiGetOrderByBankTransactionCodeRes,
+  TypeApiShowOrderReq,
+  TypeApiShowOrderRes,
 } from '@/types/typeApiUser'
 import { ApiRoutesUser } from '@/api/apiRoutesUser'
 import { TypeApiSetting } from '@/types/typeApiEntity'
@@ -68,7 +76,6 @@ export const ResetPassword = (params: TypeApiResetPasswordReq) =>
 export const UpdateUser = (params: TypeApiUpdateUserReq) =>
   postRequest<TypeApiUpdateUserRes>(ApiRoutesUser.Auth.UpdateUser, params)
 
-
 /*<====================================>*/
 // Reservation
 /*<====================================>*/
@@ -79,8 +86,8 @@ export const GetReservationsByUserId = (params: TypeApiGetReservationsByUserIdRe
     ApiRoutesUser.Reservation.GetReservationsByUserId,
     params
   )
-export const AddDraftReservations = (params: TypeApiAddDraftReservationsReq[]) =>
-    postRequest<TypeApiAddDraftReservationsRes>(ApiRoutesUser.Reservation.AddDraftReservations, params)
+export const AddReservations = (params: TypeApiAddReservationsReq[]) =>
+  postRequest<TypeApiAddReservationsRes>(ApiRoutesUser.Reservation.AddReservations, params)
 
 /*<====================================>*/
 // Holiday
@@ -96,15 +103,30 @@ export const GetConnections = () =>
 /*<====================================>*/
 // Discount
 /*<====================================>*/
-export const CheckDiscount = (params:TypeApiCheckDiscountReq ) =>
-    getRequest<TypeApiCheckDiscountRes>(ApiRoutesUser.Discount.CheckDiscount, params)
+export const CheckDiscount = (params: TypeApiCheckDiscountReq) =>
+  getRequest<TypeApiCheckDiscountRes>(ApiRoutesUser.Discount.CheckDiscount, params)
 
 /*<====================================>*/
 // Gateway
 /*<====================================>*/
 export const GetGateways = () =>
-    getRequest<TypeApiGetGatewaysRes[]>(ApiRoutesUser.Gateway.GetGateways)
+  getRequest<TypeApiGetGatewaysRes[]>(ApiRoutesUser.Gateway.GetGateways)
 export const CreateAuthority = (params: TypeApiCreateAuthorityReq) =>
-    postRequest<TypeApiCreateAuthorityRes>(ApiRoutesUser.Gateway.CreateAuthority, params)
+  postRequest<TypeApiCreateAuthorityRes>(ApiRoutesUser.Gateway.CreateAuthority, params)
 export const VerifyPayment = (params: TypeApiVerifyPaymentReq) =>
-    postRequest<TypeApiVerifyPaymentRes>(ApiRoutesUser.Gateway.VerifyPayment, params)
+  postRequest<TypeApiVerifyPaymentRes>(ApiRoutesUser.Gateway.VerifyPayment, params)
+
+/*<====================================>*/
+// Order
+/*<====================================>*/
+export const AddOrder = (params: TypeApiAddOrderReq) =>
+  postRequest<TypeApiAddOrderRes>(ApiRoutesUser.Order.AddOrder, params)
+export const ShowOrder = (params: TypeApiShowOrderReq) =>
+  getRequest<TypeApiShowOrderRes>(ApiRoutesUser.Order.ShowOrder, params)
+export const UpdateOrder = (params: TypeApiUpdateOrderReq) =>
+  putRequest<TypeApiUpdateOrderRes>(ApiRoutesUser.Order.UpdateOrder, params)
+export const GetOrderByBankTransactionCode = (params: TypeApiGetOrderByBankTransactionCodeReq) =>
+  getRequest<TypeApiGetOrderByBankTransactionCodeRes>(
+    ApiRoutesUser.Order.GetOrderByBankTransactionCode,
+    params
+  )

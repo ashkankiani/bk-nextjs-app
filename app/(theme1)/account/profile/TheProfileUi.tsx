@@ -69,7 +69,6 @@ export default function TheProfileUi() {
   }
 
   const handlerUpdateUser = async (data: TypeApiUser) => {
-    console.log(data)
     dispatch(setUser(data))
     bkToast('success', 'بروزرسانی با موفقیت انجام شد.')
   }

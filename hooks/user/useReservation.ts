@@ -1,7 +1,7 @@
 import {useMutation, useQuery} from '@tanstack/react-query'
-import {AddDraftReservations, AvailableTimes, GetReservationsByUserId} from '@/api/apisUser'
+import {AddReservations, AvailableTimes, GetReservationsByUserId} from '@/api/apisUser'
 import {
-  TypeApiAddDraftReservationsReq,
+  TypeApiAddReservationsReq,
   TypeApiAvailableTimesReq,
   TypeApiGetReservationsByUserIdReq
 } from '@/types/typeApiUser'
@@ -38,9 +38,9 @@ function useGetReservationsByUserId(query: TypeApiGetReservationsByUserIdReq, Op
   }
 }
 
-function useAddDraftReservations(Optional?: object) {
+function useAddReservations(Optional?: object) {
   const { mutateAsync, isPending } = useMutation({
-    mutationFn: (data: TypeApiAddDraftReservationsReq[]) => AddDraftReservations(data),
+    mutationFn: (data: TypeApiAddReservationsReq[]) => AddReservations(data),
     onSuccess: () => {},
     ...Optional,
   })
@@ -51,4 +51,4 @@ function useAddDraftReservations(Optional?: object) {
 }
 
 
-export { useAvailableTimes, useGetReservationsByUserId , useAddDraftReservations}
+export { useAvailableTimes, useGetReservationsByUserId , useAddReservations}

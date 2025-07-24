@@ -1,244 +1,87 @@
-"use effect"
+'use client'
 import TheHeader from '@/components/front-end/theme1/layout/TheHeader'
 import TheFooter from '@/components/front-end/theme1/layout/TheFooter'
 import { useEffect, useState } from 'react'
-import { hookSendGateway } from '@/hooks/user/hookGateway'
-import { bkToast } from '@/libs/utility'
+import {bkToast, textReservationsStatus} from '@/libs/utility'
 import Link from 'next/link'
-import { hookAddReservation } from '@/hooks/user/hookReservation'
-import { hookGetOrder } from '@/hooks/user/hookOrder'
 import TheSpinner from '@/components/layout/TheSpinner'
-import { setCart } from '@/store/slice/user'
-import useHook from '@/hooks/controller/useHook'
-import {useParams} from "next/navigation";
-import {useVerifyPayment} from "@/hooks/user/useGateway";
+import { useSearchParams } from 'next/navigation'
+import { useVerifyPayment } from '@/hooks/user/useGateway'
+import { TYPE_ONLINE_PAYMENT_STATUS } from '@/libs/constant'
+import { useGetOrderByBankTransactionCode } from '@/hooks/user/useOrder'
+import { TypeApiVerifyPaymentRes } from '@/types/typeApiUser'
 
-// {query}
 export default function ThePaymentUi() {
+  const searchParams = useSearchParams()
 
-  const params = useParams()
-  const status: boolean = params.status
-  const authority: string = params.authority
+  const Status: string = searchParams.get('Status')
+  const Authority: string = searchParams.get('Authority')
 
-  const { dispatch, router, searchQuery, order, user, setting } = useHook()
+  const [message, setMessage] = useState<string>('')
+  const [hasError, setHasError] = useState<boolean>(false)
+  const [order, setOrder] = useState<TypeApiVerifyPaymentRes | null>(null)
+  // const [checkGateway, setCheckGateway] = useState(false)
+  // const [statusPayment, setStatusPayment] = useState(false)
 
-  const [loading, setLoading] = useState(false)
+  // const [paymentId, setPaymentId] = useState(false)
+  // const [transferId, setTransferId] = useState(false)
 
-  const [checkGateway, setCheckGateway] = useState(false)
-  const [statusPayment, setStatusPayment] = useState(false)
+  const {
+    mutateAsync: mutateAsyncOrderByBankTransactionCode,
+    isPending: isPendingOrderByBankTransactionCode,
+  } = useGetOrderByBankTransactionCode()
 
-  const [paymentId, setPaymentId] = useState(false)
-  const [transferId, setTransferId] = useState(false)
+  const { mutateAsync: mutateAsyncVerifyPayment, isPending: isPendingVerifyPayment } =
+    useVerifyPayment()
 
+  // const {data: dataOrder , isRefetching: isRefetchingOrder, refetch: refetchOrder} = useShowOrder(order?.id , {
+  //     enabled: false,
+  // })
 
   useEffect(() => {
     handlerGetOrder()
   }, [])
 
   const handlerGetOrder = async () => {
-    let params = {
-      trackingCode: order.trackingCode,
-    }
-    if (order.trackingCode === undefined) {
-      bkToast('error', 'درخواست شما نامعتبر است.')
-      // router.push('/account/reservation')
+    if (!Status || !Authority) {
+      setMessage('درخواست شما نامعتبر است.')
       return
     }
-    await hookGetOrder(params, async (response, message) => {
-      if (response) {
-        if (message.length === 0) {
-          await callbackChecker()
-        } else {
-          bkToast('error', 'رزرو ثبت شده است. کد پیگیری را یادداشت کنید.')
-          // router.push('/account/reservation')
-        }
-      } else {
-        bkToast('error', message)
-      }
-    })
-  }
-  const {mutateAsync: mutateAsyncVerifyPayment, isPending:isPendingVerifyPayment } = useVerifyPayment()
 
-  const callbackChecker = async () => {
-
-    const params = {
-      authority: authority,
-      authority: authority,
-      price: 0
+    if (Status === TYPE_ONLINE_PAYMENT_STATUS.UN_PAID) {
+      setMessage('پرداخت شما نامعتبر است.')
     }
-    await mutateAsyncVerifyPayment(params)
-        .then(async () => {
 
+    if (Status === TYPE_ONLINE_PAYMENT_STATUS.PAID) {
+      await mutateAsyncOrderByBankTransactionCode({ id: Authority })
+        .then(async order => {
+          const params = {
+            authority: Authority,
+            trackingCode: order.trackingCode,
+            bankName: order.bankName,
+            price: order.price,
+            userId: order.userId,
+          }
 
-          await goGateway()
+          await mutateAsyncVerifyPayment(params)
+            .then(res => {
+              setOrder(res)
+            })
+            .catch(errors => {
+              setHasError(true)
+              setMessage(errors.Reason)
+              bkToast('error', errors.Reason)
+            })
         })
         .catch(errors => {
+          setHasError(true)
+          setMessage(errors.Reason)
           bkToast('error', errors.Reason)
         })
-
-
-
-    if (order.paymentType.name === 'ZARINPAL') {
-      let Authority = query.Authority
-      let Status = query.Status
-      setTransferId(Authority)
-
-      if (Authority === order.authority && Status === 'OK' && !checkGateway) {
-        let data = {
-          gateway: 'ZARINPAL',
-          action: 'verify',
-          params: {
-            merchant_id: order.paymentType.merchantId,
-            amount: order.totalPrice,
-            authority: order.authority,
-          },
-        }
-        await hookSendGateway(data, async (response, message) => {
-          setCheckGateway(true)
-          if (response) {
-            setStatusPayment(true)
-            setPaymentId(message.ref_id)
-            let params = {
-              shouldExecuteTransaction: true,
-              bankName: order.paymentType.name,
-              trackId: message.ref_id.toString(),
-              amount: order.totalPrice,
-              cardNumber: message.card_pan,
-              authority: order.authority,
-            }
-            await itemAddReservation(params)
-          } else {
-            bkToast('error', message.error)
-          }
-        })
-      } else {
-        bkToast('error', 'پرداخت شما ناموفق یا اشتباه است.')
-        setStatusPayment(false)
-      }
-    } else if (order.paymentType.name === 'ZIBAL') {
-      let Authority = query.trackId
-      let Status = query.success
-      setTransferId(Authority)
-
-      if (Authority === order.authority && Status === '1' && !checkGateway) {
-        let data = {
-          gateway: 'ZIBAL',
-          action: 'verify',
-          params: {
-            merchant: order.paymentType.merchantId,
-            // merchant: "zibal",
-            trackId: parseInt(order.authority),
-          },
-        }
-        await hookSendGateway(data, async (response, message) => {
-          setCheckGateway(true)
-          if (response) {
-            setStatusPayment(true)
-            setPaymentId(Authority)
-            let params = {
-              shouldExecuteTransaction: true,
-              bankName: order.paymentType.name,
-              trackId: order.authority,
-              amount: order.totalPrice,
-              cardNumber: message.cardNumber,
-              authority: message.refNumber.toString(), // or order.authority
-            }
-            await itemAddReservation(params)
-          } else {
-            bkToast('error', message.error)
-          }
-        })
-      } else {
-        bkToast('error', 'پرداخت شما ناموفق یا اشتباه است.')
-        setStatusPayment(false)
-      }
-    } else if (order.paymentType.name === 'IDPAY') {
-      console.log('IDPAY')
-    } else if (order.paymentType.name === 'AQAYEPARDAKHT') {
-      let Authority = query.transid
-      let Status = query.status
-      let TrackingNumber = query.tracking_number.toString()
-      let CardNumber = query.cardnumber
-      setTransferId(Authority)
-
-      if (Authority === order.authority && Status === '1' && !checkGateway) {
-        let data = {
-          gateway: 'AQAYEPARDAKHT',
-          action: 'verify',
-          params: {
-            pin: order.paymentType.merchantId,
-            amount: order.totalPrice,
-            transid: order.authority,
-          },
-        }
-        await hookSendGateway(data, async (response, message) => {
-          setCheckGateway(true)
-          if (response) {
-            setStatusPayment(true)
-            setPaymentId(TrackingNumber)
-            let params = {
-              shouldExecuteTransaction: true,
-              bankName: order.paymentType.name,
-              trackId: TrackingNumber,
-              amount: order.totalPrice,
-              cardNumber: CardNumber,
-              authority: order.authority, // or message.transid
-            }
-            await itemAddReservation(params)
-          } else {
-            // bkToast('error', 'تراکنش تایید نشد.')
-            bkToast('error', message.error)
-          }
-        })
-      } else {
-        bkToast('error', 'پرداخت شما ناموفق یا اشتباه است.')
-        setStatusPayment(false)
-      }
-    } else if (order.paymentType.name === 'UnknownPayment') {
-      setStatusPayment(true)
-      let params = {
-        shouldExecuteTransaction: false,
-      }
-      await itemAddReservation(params)
-    } else {
-      setStatusPayment(false)
-      bkToast('error', 'روش پرداختی تعریف نشده است.')
     }
 
-    dispatch(setCart([]))
-    setLoading(true)
-  }
-  const itemAddReservation = async data => {
-    for (let i = 0; i < order.cart.length; i++) {
-      let params = {
-        trackingCode: order.trackingCode,
-        user: user,
-        service: searchQuery.service,
-        provider: searchQuery.provider,
-        discountId: order.discountId,
-        discountPrice: order.discountPrice,
-        totalPrice: order.totalPrice,
-
-        date: order.cart[i].date,
-        time: order.cart[i].time.join('-'),
-        price: order.cart[i].price,
-        status: setting.automaticConfirmation ? 'COMPLETED' : 'REVIEW',
-
-        paymentType: order.paymentType.type,
-        ...data,
-      }
-      // generateTrackingCode++;
-      await addReservation(params)
-    }
-  }
-  const addReservation = async data => {
-    await hookAddReservation(data, (response, message) => {
-      if (response) {
-        bkToast('success', 'رزرو با موفقیت ثبت شد.')
-      } else {
-        bkToast('error', message)
-      }
-    })
+    //       bkToast('error', 'رزرو ثبت شده است. کد پیگیری را یادداشت کنید.')
+    //       // router.push('/account/reservation')
   }
 
   return (
@@ -247,62 +90,118 @@ export default function ThePaymentUi() {
         <TheHeader />
         <h1 className="mb-4 text-center text-xl font-semibold">نتیجه عملیات بانکی</h1>
 
-        {loading ? (
-          statusPayment ? (
+        {!Status ||
+          (!Authority && (
+            <div>
+              <p className="mb-4 text-center text-lg">{message}</p>
+              <Link
+                href="/"
+                className="bk-button fa-sbold-18px cursor-pointer bg-green-700 dark:bg-primary-900"
+              >
+                بازگشت
+              </Link>
+            </div>
+          ))}
+
+        {Status === TYPE_ONLINE_PAYMENT_STATUS.UN_PAID && (
+          <div>
+            <p className="mb-4 text-center text-lg">{message}</p>
+            <Link
+              href="/"
+              className="bk-button fa-sbold-18px cursor-pointer bg-green-700 dark:bg-primary-900"
+            >
+              بازگشت
+            </Link>
+          </div>
+        )}
+
+        {Status === TYPE_ONLINE_PAYMENT_STATUS.PAID && isPendingOrderByBankTransactionCode && (
+          <>
+            <p className="mb-4 text-center text-lg">در حال پردازش رزرو...</p>
+            <TheSpinner />
+          </>
+        )}
+        {Status === TYPE_ONLINE_PAYMENT_STATUS.PAID && hasError && (
+          <>
+            <p className="mb-4 text-center text-lg">{message}</p>
+          </>
+        )}
+
+        {Status === TYPE_ONLINE_PAYMENT_STATUS.PAID && isPendingVerifyPayment ? (
+          <>
+            <p className="mb-4 text-center text-lg">در حال تایید پرداخت و صدور رزرو...</p>
+            <TheSpinner />
+          </>
+        ) : (
+          order &&
+          !isPendingOrderByBankTransactionCode &&
+          !isPendingVerifyPayment && (
             <>
               <p className="mb-4 text-center text-lg">عملیات بانکی با موفقیت انجام شد.</p>
               <div className="flex-center-center my-8 flex-col">
                 <p className="mb-4 text-center text-lg">کد پیگیری رزرو خود را یادداشت نمایید:</p>
                 <p className="mb-4 rounded-md border border-green-700 bg-white px-8 text-center font-poppins text-5xl font-bold leading-normal text-green-700 dark:text-green-600">
-                  {order.trackingCode}
+                  {order.order.trackingCode}
                 </p>
               </div>
-              {paymentId && (
-                <div className="flex-center-center my-8 flex-col">
-                  <p className="mb-4 text-center text-lg">شماره تراکنش بانکی</p>
-                  <p className="mb-4 rounded-md border border-green-700 bg-white px-8 text-center font-poppins text-5xl font-bold leading-normal text-green-700 dark:text-green-600">
-                    {paymentId}
-                  </p>
-                </div>
-              )}
-              {!setting.automaticConfirmation && (
+              {/*<div className="flex-center-center my-8 flex-col">*/}
+              {/*  <p className="mb-4 text-center text-lg">شماره تراکنش بانکی</p>*/}
+              {/*  <p className="mb-4 rounded-md border border-green-700 bg-white px-8 text-center font-poppins text-5xl font-bold leading-normal text-green-700 dark:text-green-600">*/}
+              {/*    {order.order.bankTransactionCode}*/}
+              {/*  </p>*/}
+              {/*</div>*/}
+              {!order.automaticConfirmation && (
                 <p className="mb-4 rounded-md bg-white p-2 text-center text-lg text-red-500 opacity-80 dark:bg-darkNavy1">
                   رزرو شما ثبت شد و در وضعیت <strong>در صف بررسی</strong> قرار گرفت، پس از تایید
                   مدیر سیستم، پیامک تاییدیه برای شما ارسال می شود.
                 </p>
               )}
-              {searchQuery.service.descriptionAfterPurchase !== null &&
-                searchQuery.service.descriptionAfterPurchase.length > 0 && (
-                  <div className="rounded-md bg-white bg-opacity-50 p-4 dark:bg-opacity-5">
-                    <h2 className="mb-4 text-center text-xl font-semibold">دستورالعمل</h2>
-                    <p className="mb-0 text-center text-lg leading-10">
-                      {searchQuery.service.descriptionAfterPurchase}
-                    </p>
-                  </div>
-                )}
-            </>
-          ) : (
-            <>
-              <p className="mb-4 text-center text-lg">عملیات بانکی با موفقیت انجام نشد.</p>
-              <div className="flex-center-center my-8 flex-col">
-                <p className="mb-4 text-center text-xl font-semibold">تلاش مجدد برای پرداخت</p>
-                {paymentId && (
-                  <p className="mb-4 text-center text-lg">
-                    <span>شناسه: </span>
-                    <span dir="ltr">{transferId}</span>
-                  </p>
-                )}
-                <Link
-                  href="/checkout"
-                  className="bk-button fa-sbold-18px cursor-pointer bg-green-700 dark:bg-primary-900"
-                >
-                  پرداخت مجدد
-                </Link>
+
+              <div className="relative overflow-x-auto">
+                <table className="w-full text-left text-sm text-gray-500 dark:text-gray-400">
+                  <thead className="fa-sbold-18px bg-gray-700 text-center text-white dark:bg-darkNavy1 dark:text-gray-400">
+                    <tr>
+                      {['#', 'خدمت', 'ارائه دهنده', 'تاریخ', 'ساعت','وضعیت', 'یادداشت'].map(item => (
+                        <th key={item} scope="col" className="px-6 py-3">
+                          {item}
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody className="fa-sbold-16px bg-white text-center dark:bg-gray-800">
+
+                              {order.reservations.map((item, index) =>
+                                      <tr key={index}>
+                                          <td className="px-6 py-3">{index + 1}</td>
+                                          <td className="px-6 py-3">
+                                              {item.service.name}
+                                          </td>
+                                          <td className="px-6 py-3">{item.provider.user.fullName}</td>
+                                          <td className="px-6 py-3"> {item.date}</td>
+                                          <td className="px-6 py-3">
+                                              {/*{item.time.split("-").[0]} تا {item.time.split("-").[1]}*/}
+                                            {item.time}
+                                          </td>
+                                          <td className="px-6 py-3"> {textReservationsStatus(item.status)}</td>
+                                          <td className="px-6 py-3">
+                                              {item.service.descriptionAfterPurchase &&
+                                                  item.service.descriptionAfterPurchase.length > 0 &&
+                                                  // <div className="rounded-md bg-white bg-opacity-50 p-4 dark:bg-opacity-5">
+                                                  //     <h2 className="mb-4 text-center text-xl font-semibold">دستورالعمل</h2>
+                                                  //     <p className="mb-0 text-center text-lg leading-10">
+                                                          item.service.descriptionAfterPurchase
+                                                      // </p>
+                                                  // </div>
+                                              }
+                                          </td>
+                                      </tr>
+                              )}
+
+                  </tbody>
+                </table>
               </div>
             </>
           )
-        ) : (
-          <TheSpinner />
         )}
 
         <TheFooter />
@@ -310,3 +209,24 @@ export default function ThePaymentUi() {
     </>
   )
 }
+//
+// : (
+//     <>
+//         <p className="mb-4 text-center text-lg">عملیات بانکی با موفقیت انجام نشد.</p>
+//         <div className="flex-center-center my-8 flex-col">
+//             <p className="mb-4 text-center text-xl font-semibold">تلاش مجدد برای پرداخت</p>
+//             {paymentId && (
+//                 <p className="mb-4 text-center text-lg">
+//                     <span>شناسه: </span>
+//                     <span dir="ltr">{transferId}</span>
+//                 </p>
+//             )}
+//             <Link
+//                 href="/checkout"
+//                 className="bk-button fa-sbold-18px cursor-pointer bg-green-700 dark:bg-primary-900"
+//             >
+//                 پرداخت مجدد
+//             </Link>
+//         </div>
+//     </>
+// )

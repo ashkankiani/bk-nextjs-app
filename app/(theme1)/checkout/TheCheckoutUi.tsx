@@ -12,12 +12,13 @@ import Link from 'next/link'
 import Popup from 'reactjs-popup'
 import useHook from '@/hooks/controller/useHook'
 import ModalFastRegister from '@/app/(theme1)/checkout/component/ModalFastRegister'
-import { useAddDraftReservations, useGetReservationsByUserId } from '@/hooks/user/useReservation'
+import { useAddReservations, useGetReservationsByUserId } from '@/hooks/user/useReservation'
 import { TypeBankName, TypeDiscountsType, TypeGender } from '@/types/typeConfig'
 import { useCheckDiscount } from '@/hooks/user/useDiscount'
-import { TypeApiDiscount } from '@/types/typeApiEntity'
-import { TypeApiAddDraftReservationsReq } from '@/types/typeApiUser'
+import { TypeApiDiscount, TypeApiOrder } from '@/types/typeApiEntity'
+import { TypeApiAddOrderReq, TypeApiAddReservationsReq } from '@/types/typeApiUser'
 import { useCreateAuthority, useGetGateways } from '@/hooks/user/useGateway'
+import { useAddOrder, useUpdateOrder } from '@/hooks/user/useOrder'
 
 export type TypePaymentType = {
   key: TypeBankName | 'COD'
@@ -39,7 +40,6 @@ export default function TheCheckoutUi() {
 
   const [totalPrice, setTotalPrice] = useState(initTotalPrice)
   const [paymentType, setPaymentType] = useState<TypePaymentType | null>(null)
-
 
   const [modalGuest, setModalGuest] = useState(false)
 
@@ -100,7 +100,7 @@ export default function TheCheckoutUi() {
         }
         return false
       }
-      await checkDraft()
+      await addOrder()
     } else {
       if (setting.guestReservation) {
         setModalGuest(true)
@@ -110,16 +110,36 @@ export default function TheCheckoutUi() {
     }
   }
 
-  const { mutateAsync: mutateAsyncAddDraftReservations, isPending: isPendingAddDraftReservations } =
-    useAddDraftReservations()
+  const { mutateAsync: mutateAsyncAddOrder, isPending: isPendingAddOrder } = useAddOrder()
+
+  const addOrder = async () => {
+    const params: TypeApiAddOrderReq = {
+      userId: user.id,
+      discountId: activeDiscount?.id ? activeDiscount?.id : null,
+      price: initTotalPrice,
+      discountPrice: discountPrice,
+      totalPrice: totalPrice,
+    }
+    await mutateAsyncAddOrder(params)
+      .then(async res => {
+        await addReservations(res)
+      })
+      .catch(errors => {
+        bkToast('error', errors.Reason)
+      })
+  }
+
+  const { mutateAsync: mutateAsyncAddReservations, isPending: isPendingAddReservations } =
+    useAddReservations()
 
   const { mutateAsync: mutateAsyncCreateAuthority, isPending: isPendingCreateAuthority } =
-      useCreateAuthority()
+    useCreateAuthority()
 
-  const checkDraft = async () => {
-    const allPreReserve: TypeApiAddDraftReservationsReq[] = []
+  const addReservations = async (order: TypeApiOrder) => {
+    const allPreReserve: TypeApiAddReservationsReq[] = []
     for (let i = 0; i < cart.length; i++) {
-      const params: TypeApiAddDraftReservationsReq = {
+      const params: TypeApiAddReservationsReq = {
+        orderId: order.trackingCode,
         serviceId: cart[i].service.id,
         providerId: cart[i].provider.id,
         userId: user.id, // userGuestId
@@ -129,28 +149,40 @@ export default function TheCheckoutUi() {
       allPreReserve.push(params)
     }
 
-    await mutateAsyncAddDraftReservations(allPreReserve)
-      .then(async () => {
-        await goGateway()
+    await mutateAsyncAddReservations(allPreReserve)
+      .then(async res => {
+        if (res.status) {
+          await goGateway(order)
+        } else {
+          bkToast('error', res.message)
+        }
       })
       .catch(errors => {
         bkToast('error', errors.Reason)
       })
   }
 
+  const { mutateAsync: mutateAsyncUpdateOrder, isPending: isPendingUpdateOrder } = useUpdateOrder()
 
-  const goGateway = async () => {
-
+  const goGateway = async (order: TypeApiOrder) => {
     if (!paymentType || !paymentType?.key) {
+      // hint: باید بهش بگم ...
       bkToast('error', 'روش پرداخت آنلاین وجود ندارد.')
       return
     } else if (paymentType?.key === 'COD') {
-      router.push('/payment')
+      await mutateAsyncUpdateOrder({ trackingCode: order.trackingCode })
+        .then(() => {
+          // router.push('/payment')
+        })
+        .catch(errors => {
+          bkToast('error', errors.Reason)
+        })
     } else {
       const params = {
         gateway: paymentType?.key as TypeBankName,
         price: totalPrice,
         userId: user.id,
+        orderId: order.trackingCode,
       }
 
       await mutateAsyncCreateAuthority(params)
@@ -194,8 +226,6 @@ export default function TheCheckoutUi() {
   const { data: dataGateways, isLoading: isLoadingGateways } = useGetGateways({
     enabled: isFetchedGetReservationsByUserId,
   })
-
-
 
   useEffect(() => {
     if (isFetchedGetReservationsByUserId && dataGetReservationsByUserId) {
@@ -511,7 +541,9 @@ export default function TheCheckoutUi() {
             nested
             onClose={() => setModalGuest(false)}
           >
-            {(close: () => void) => <ModalFastRegister checkDraft={checkDraft} close={close} />}
+            {(close: () => void) => (
+              <ModalFastRegister checkDraft={addReservations} close={close} />
+            )}
           </Popup>
         )}
       </>

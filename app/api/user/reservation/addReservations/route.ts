@@ -5,8 +5,9 @@ import {
   createSuccessResponseWithData,
   handlerRequestError,
 } from '@/app/api/_utils/handleRequest'
-import { dateNowP, fullStringToDateObjectP } from '@/libs/convertor'
+import {  fullStringToDateObjectP } from '@/libs/convertor'
 import prisma from '@/prisma/client'
+import {TypeApiAddReservationsReq} from "@/types/typeApiUser";
 
 const allowedMethods = ['POST']
 
@@ -23,28 +24,20 @@ export async function POST(request: Request) {
   // }
 
   // دریافت اطلاعات داخل درخواست
-  const body = await request.json()
+  const body: TypeApiAddReservationsReq = await request.json()
 
   if (!Array.isArray(body)) {
     return createErrorResponseWithMessage('داده دریافتی باید آرایه‌ای از آبجکت‌ها باشد.')
   }
 
   // بررسی وجود داده های ورودی مورد نیاز
-  const allPreReserve: {
-    serviceId: number
-    providerId: number
-    userId: number
-    dateTimeStartEpoch: bigint
-    dateTimeEndEpoch: bigint
-    date: string
-    time: string
-    createEpoch: bigint
-  }[] = []
+  const allPreReserve: TypeApiAddReservationsReq[] = []
   const results = await Promise.all(
     body.map(async (item, index) => {
-      const { serviceId, providerId, userId, date, time } = item
+      const { orderId, serviceId, providerId, userId, date, time }  = item
 
       const errorMessage = checkRequiredFields({
+        orderId,
         serviceId,
         providerId,
         userId,
@@ -74,7 +67,8 @@ export async function POST(request: Request) {
           'YYYY/MM/DD HH:mm'
         ).valueOf()
 
-        const params = {
+        const params : TypeApiAddReservationsReq = {
+          orderId,
           serviceId,
           providerId,
           userId,
@@ -82,7 +76,6 @@ export async function POST(request: Request) {
           dateTimeEndEpoch,
           date,
           time: time.join('-'), // "15:00-16:00"
-          createEpoch: dateNowP().valueOf(),
         }
 
         // افزودن به لیست
@@ -108,15 +101,18 @@ export async function POST(request: Request) {
 
   try {
     // اگر کاربر draft قبلی دارد حذف شود تا آزاد شود.
-    await prisma.drafts.deleteMany({
-      where: {
-        userId: body[0].userId,
-      },
-    })
+    // await prisma.drafts.deleteMany({
+    //   where: {
+    //     userId: body[0].userId,
+    //   },
+    // })
+
+    // رزروهایی که تاریخشون رد شده رو حذف میکنه ابتدا
+
 
     try {
       // ایجاد در حال رزرو برای زمان مورد نیاز
-      await prisma.drafts.createMany({
+      await prisma.reservations.createMany({
         data: allPreReserve,
         // data: Object.values(allPreReserve),
       })
@@ -133,6 +129,7 @@ export async function POST(request: Request) {
     return createSuccessResponseWithData({
       // success: errors.length === 0,
       results,
+      status: errors.length === 0,
       successes: successes.length,
       errors: errors.length,
       message:

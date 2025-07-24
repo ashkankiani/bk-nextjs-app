@@ -21,14 +21,15 @@ export async function GET(request: Request) {
   const query: Record<string, string> = {}
 
   try {
-    // ?trackId=9900&success=1&status=2&orderId=1
+    // ?Authority=A0000000000000000000000000000wwOGYpd&Status=OK
+
     searchParams.forEach((value, key) => {
       query[key] = value
     })
 
     const Status =
-      query.success === '1' ? TYPE_ONLINE_PAYMENT_STATUS.PAID : TYPE_ONLINE_PAYMENT_STATUS.UN_PAID
-    const Authority = query.trackId
+      query.status === 'OK' ? TYPE_ONLINE_PAYMENT_STATUS.PAID : TYPE_ONLINE_PAYMENT_STATUS.UN_PAID
+    const Authority = query.Authority
 
     // آماده کردن URL برای هدایت به داشبورد
     const redirectUrl = new URL(

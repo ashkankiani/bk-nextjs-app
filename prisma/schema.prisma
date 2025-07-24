@@ -10,14 +10,8 @@ datasource db {
 model Reservations {
   id Int @id @default(autoincrement())
 
-  order   Orders @relation(fields: [orderId], references: [id], onUpdate: Cascade, onDelete: Cascade)
-  orderId Int
-
-  payment   Payments @relation(fields: [paymentId], references: [id], onUpdate: Cascade, onDelete: Cascade)
-  paymentId Int
-
-  transaction   Transaction? @relation(fields: [transactionId], references: [id], onUpdate: Cascade, onDelete: Cascade)
-  transactionId Int?
+  order   Orders? @relation(fields: [orderId], references: [trackingCode], onUpdate: Cascade, onDelete: Cascade)
+  orderId String? // nullable تا زمانی که سفارش تکمیل نشده
 
   service   Services @relation(fields: [serviceId], references: [id])
   serviceId Int
@@ -33,54 +27,28 @@ model Reservations {
   date               String
   time               String
 
-  status ReservationsStatus @default(COMPLETED)
+  status ReservationsStatus @default(PENDING)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
-model Drafts {
-  // id Int @id @default(autoincrement())
-
-  service   Services @relation(fields: [serviceId], references: [id])
-  serviceId Int
-
-  provider   Providers @relation(fields: [providerId], references: [id])
-  providerId Int
-
-  user   Users @relation(fields: [userId], references: [id])
-  userId Int
-
-  dateTimeStartEpoch BigInt
-  dateTimeEndEpoch   BigInt
-  date               String
-  time               String
-
-  createEpoch BigInt
-
-  createdAt DateTime @default(now()) // deleted
-  updatedAt DateTime @updatedAt // deleted
-
-  @@id([serviceId, providerId, date, time])
-}
-
 model Orders {
-  id           Int    @id @default(autoincrement())
-  trackingCode String
+  id Int @id @default(autoincrement())
 
-  status ReservationsStatus @default(COMPLETED)
+  trackingCode String @unique
+
+  bankName ConnectionsBankName @default(NONE)
+
+  bankTransactionCode String? @unique
+
+  status OrdersStatus @default(PENDING)
 
   user   Users @relation(fields: [userId], references: [id])
   userId Int
 
-  service   Services @relation(fields: [serviceId], references: [id])
-  serviceId Int
-
-  provider   Providers @relation(fields: [providerId], references: [id])
-  providerId Int
-
-  payment   Payments @relation(fields: [paymentId], references: [id], onUpdate: Cascade, onDelete: Cascade)
-  paymentId Int
+  payment   Payments? @relation(fields: [paymentId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  paymentId Int?
 
   discount   Discounts? @relation(fields: [discountId], references: [id])
   discountId Int?
@@ -90,6 +58,8 @@ model Orders {
   price         Int
   discountPrice Int?
   totalPrice    Int
+
+  expiresAt BigInt?
 
   Reservations Reservations[]
 
@@ -112,25 +82,23 @@ model Payments {
 
   Orders Orders[]
 
-  createdAt    DateTime       @default(now())
-  updatedAt    DateTime       @updatedAt
-  Reservations Reservations[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Transaction {
   id Int @id @default(autoincrement())
 
   bankName   ConnectionsBankName
-  trackId    String
+  authority  String
+  // trackId    String
   amount     Int
   cardNumber String
-  authority  String
 
   Payments Payments[]
 
-  createdAt    DateTime       @default(now())
-  updatedAt    DateTime       @updatedAt
-  Reservations Reservations[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Services {
@@ -165,12 +133,10 @@ model Services {
 
   Providers    Providers[]
   TimeSheets   TimeSheets[]
-  Orders       Orders[]
   Reservations Reservations[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  Draft     Drafts[]
 }
 
 model Providers {
@@ -196,12 +162,10 @@ model Providers {
   // Aks ham daram
 
   TimeSheets   TimeSheets[]
-  Orders       Orders[]
   Reservations Reservations[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  Draft     Drafts[]
 }
 
 model TimeSheets {
@@ -278,7 +242,6 @@ model Users {
   Reservations Reservations[]
   Payments     Payments[]
   Services     Services[]
-  Draft        Drafts[]
   // Profile      Profile[]
   // Catalogs     Catalogs[]
   Session      Sessions[]
@@ -508,11 +471,12 @@ enum SettingsCancellationReservation {
 }
 
 enum ReservationsStatus {
-  REVIEW
-  COMPLETED
-  DONE
-  CANCELED
-  REJECTED
+  REVIEW // در دست بررسی
+  COMPLETED // تکمیل شده
+  DONE // انجام شده
+  CANCELED // لغو شده
+  REJECTED // رد شده توسط مدیریت
+  PENDING // در حال پردازش (قبل از تکمیل پرداخت)
 }
 
 enum ReservationsPaymentType {
@@ -533,4 +497,10 @@ enum UsersGender {
   NONE
   MAN
   WOMAN
+}
+
+enum OrdersStatus {
+  PENDING // در حال پردازش
+  COMPLETED // تکمیل‌شده
+  CANCELED // لغوشده
 }

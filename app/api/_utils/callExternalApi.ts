@@ -57,7 +57,6 @@ export async function callExternalApi<T = unknown>({
           ...headers,
         },
       })
-      console.log(response)
     }
 
     return {
@@ -67,7 +66,6 @@ export async function callExternalApi<T = unknown>({
   } catch (error: unknown) {
     console.log(error)
     return {
-
       status: false,
       errorMessage: axios.isAxiosError(error) ? error.message : 'Unknown Error',
     }

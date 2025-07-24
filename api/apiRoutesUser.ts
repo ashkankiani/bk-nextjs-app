@@ -1,4 +1,5 @@
 import { TypeApiRoutesUser } from '@/types/typeConfig'
+import { GetOrderByBankTransactionCode, ShowOrder } from '@/api/apisUser'
 
 export const ApiRoutesUser: TypeApiRoutesUser = {
   Setting: {
@@ -21,7 +22,7 @@ export const ApiRoutesUser: TypeApiRoutesUser = {
   Reservation: {
     AvailableTimes: '/user/reservation/availableTimes?',
     GetReservationsByUserId: '/user/reservation/getReservationsByUserId?',
-    AddDraftReservations: '/user/reservation/addDraftReservations',
+    AddReservations: '/user/reservation/addReservations',
   },
   Connection: {
     GetConnections: '/user/connection/getConnections',
@@ -33,6 +34,15 @@ export const ApiRoutesUser: TypeApiRoutesUser = {
     GetGateways: '/user/gateway/getGateways',
     CreateAuthority: '/user/gateway/createAuthority',
     VerifyPayment: '/user/gateway/verifyPayment',
+  },
+  Order: {
+    AddOrder: '/user/order/addOrder',
+    ShowOrder: '/user/order/showOrder?',
+    UpdateOrder: '/user/order/updateOrder',
+    GetOrderByBankTransactionCode: '/user/order/getOrderByBankTransactionCode?',
+  },
+  Faq: {
+    GetFaqs: '/admin/faq/getFaqs',
   },
   // Holiday: {
   //     GetHolidays: '/user/holiday/getHolidays',

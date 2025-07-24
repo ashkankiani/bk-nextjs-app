@@ -1,10 +1,10 @@
 import prisma from '@/prisma/client'
 import {
-  checkMethodAllowed,
-  createErrorResponse,
   createSuccessResponseWithData,
-  getQueryStringByUrl,
   handlerRequestError,
+  checkMethodAllowed,
+  getQueryStringByUrl,
+  createErrorResponseWithMessage, serializeBigIntToNumber,
 } from '@/app/api/_utils/handleRequest'
 
 const allowedMethods = ['GET']
@@ -21,20 +21,25 @@ export async function GET(request: Request) {
   //     return createErrorResponse(authResponse?.message);
   // }
 
-  const trackingCode = getQueryStringByUrl(request.url, 'trackingCode')
+  // دریافت Id درخواست
+  const id = getQueryStringByUrl(request.url)
 
-  // بررسی وجود trackingCode
-  if (!trackingCode) {
-    return createErrorResponse('Tracking Code Is Required')
+  // بررسی وجود ID
+  if (!id) {
+    return createErrorResponseWithMessage('آیدی ضروری است.')
   }
 
   try {
-    const orders = await prisma.orders.findMany({
-      where: {
-        trackingCode: trackingCode,
-      },
+    // دریافت سرویس
+    const order = await prisma.orders.findUnique({
+      where: { bankTransactionCode: id },
     })
-    return createSuccessResponseWithData(orders)
+
+    if(order){
+      createErrorResponseWithMessage('سفارش یافت نشد')
+    }
+
+    return createSuccessResponseWithData(serializeBigIntToNumber(order))
   } catch (error) {
     return handlerRequestError(error)
   }

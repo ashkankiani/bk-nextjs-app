@@ -173,6 +173,8 @@ export function textReservationsStatus(value: TypeReservationsStatus): string {
       return 'لغو شده'
     case 'REJECTED':
       return 'رد شده'
+    case 'PENDING':
+      return 'در حال رزرو'
     default:
       return 'تعریف نشده'
   }
@@ -407,7 +409,6 @@ export function slotGenerator({
     })
     startDateDateObject.add(1, 'days')
   }
-  console.log(result)
   return result
 }
 

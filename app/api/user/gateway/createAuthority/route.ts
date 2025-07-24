@@ -3,12 +3,10 @@ import {
   checkRequiredFields,
   createErrorResponseWithMessage,
   createSuccessResponseWithData,
-  createSuccessResponseWithMessage,
   handlerRequestError,
 } from '@/app/api/_utils/handleRequest'
 import prisma from '@/prisma/client'
 import { TypeBankName } from '@/types/typeConfig'
-import { generateTrackingCodeWithDate } from '@/libs/utility'
 import { TypeApiConnection } from '@/types/typeApiEntity'
 import { callExternalApi } from '@/app/api/_utils/callExternalApi'
 
@@ -32,10 +30,12 @@ export async function POST(request: Request) {
     gateway,
     price,
     userId,
+    orderId,
   }: {
     gateway: TypeBankName
     price: number
     userId: number
+    orderId: string
   } = body
 
   // بررسی وجود داده های ورودی مورد نیاز
@@ -43,6 +43,7 @@ export async function POST(request: Request) {
     gateway,
     price,
     userId,
+    orderId,
   })
 
   if (errorMessage) {
@@ -71,7 +72,7 @@ export async function POST(request: Request) {
       return createErrorResponseWithMessage('مشخصات درگاه بانک ثبت نشده است.')
     }
 
-    const trackingCode = generateTrackingCodeWithDate()
+    const trackingCode = orderId
 
     const merchant =
       gateway === connections[0].bankName1 ? connections[0].merchantId1 : connections[0].merchantId2
@@ -113,6 +114,9 @@ export async function POST(request: Request) {
       // 		"message": "Success"
       // 	}
       if (getUrl.status) {
+        // آپدیت سفارش
+        await updateOrderWithTransactionCode(trackingCode, 'ZARINPAL', getUrl.data.data.authority)
+
         return createSuccessResponseWithData({
           authority: getUrl.data.data.authority,
           url: 'https://payment.zarinpal.com/pg/StartPay/' + getUrl.data.data.authority,
@@ -147,6 +151,9 @@ export async function POST(request: Request) {
       // }
 
       if (getUrl.status) {
+        // آپدیت سفارش
+        await updateOrderWithTransactionCode(trackingCode, 'ZIBAL', getUrl.data.trackId.toString())
+
         // if(getUrl.result ===100){
         return createSuccessResponseWithData({
           authority: getUrl.data.trackId.toString(),
@@ -181,12 +188,15 @@ export async function POST(request: Request) {
       // بررسی دریافت URL پرداخت
       // sandbox url  :'https://panel.aqayepardakht.ir/startpay/sandbox/'
       if (getUrl.status) {
+        // آپدیت سفارش
+        await updateOrderWithTransactionCode(trackingCode, 'AQAYEPARDAKHT', getUrl.data.transid)
+
         return createSuccessResponseWithData({
           authority: getUrl.data.transid,
           url:
             merchant === 'sandbox'
               ? 'https://panel.aqayepardakht.ir/startpay/sandbox/' + getUrl.data.transid
-              : 'https://panel.aqayepardakht.ir/startpay/' + getUrl.data.transid
+              : 'https://panel.aqayepardakht.ir/startpay/' + getUrl.data.transid,
         })
       } else {
         return createErrorResponseWithMessage(getUrl.errorMessage)
@@ -197,30 +207,52 @@ export async function POST(request: Request) {
       return createErrorResponseWithMessage('درگاه غیرفعال است.')
 
       /*      const params = {}
-      
-                  // ارسال درخواست برای دریافت URL پرداخت
-                  const getUrl = await callExternalApi({
-                    method: 'POST',
-                    url: "https://api.idpay.ir/v1.1/payment" ,
-                    data: params,
-                    headers: {
-                        'X-API-KEY': merchant,
-                    }
-                  })
-      
-      
-                  // بررسی دریافت URL پرداخت
-                  // res.data.errors
-                  if (getUrl.status) {
-                    return createSuccessResponseWithData(getUrl)
-                  } else {
-                    return createErrorResponseWithMessage(getUrl.errorMessage)
-                  }
-                  */
+
+                              // ارسال درخواست برای دریافت URL پرداخت
+                              const getUrl = await callExternalApi({
+                                method: 'POST',
+                                url: "https://api.idpay.ir/v1.1/payment" ,
+                                data: params,
+                                headers: {
+                                    'X-API-KEY': merchant,
+                                }
+                              })
+
+
+                              // بررسی دریافت URL پرداخت
+                              // res.data.errors
+                              if (getUrl.status) {
+
+                    // آپدیت سفارش
+                    await updateOrderWithTransactionCode(trackingCode , getUrl.data.transid)
+
+
+                                return createSuccessResponseWithData(getUrl)
+                              } else {
+                                return createErrorResponseWithMessage(getUrl.errorMessage)
+                              }
+                              */
     }
 
-    return createSuccessResponseWithMessage('کاربر ثبت شد.')
+    return createErrorResponseWithMessage('دسترسی به درگاه بانک مویثر نشد.')
   } catch (error: unknown) {
     return handlerRequestError(error)
   }
+}
+
+// تابع کمکی برای آپدیت سفارش
+async function updateOrderWithTransactionCode(
+  trackingCode: string,
+  bankName: TypeBankName,
+  transactionCode: string
+) {
+  return await prisma.orders.update({
+    where: {
+      trackingCode,
+    },
+    data: {
+      bankName: bankName,
+      bankTransactionCode: transactionCode,
+    },
+  })
 }

@@ -37,7 +37,6 @@ export type TypeApiRoutesAdmin = {
   Provider: EndpointApiRoutes
   TimeSheet: EndpointApiRoutes
   Order: EndpointApiRoutes
-  Draft: EndpointApiRoutes
   Reservation: EndpointApiRoutes
 }
 
@@ -50,6 +49,7 @@ export type TypeApiRoutesUser = {
   Connection: EndpointApiRoutes
   Discount: EndpointApiRoutes
   Gateway: EndpointApiRoutes
+  Order: EndpointApiRoutes
   // Holiday: EndpointApiRoutes
 }
 
@@ -61,7 +61,8 @@ export type TypeApiResponse = {
 export type TypeGender = 'NONE' | 'WOMAN' | 'MAN'
 export type TypeDiscountsType = 'CONSTANT' | 'PERCENT'
 export type TypeBankName = 'NONE' | 'ZARINPAL' | 'IDPAY' | 'AQAYEPARDAKHT' | 'ZIBAL'
-export type TypeReservationsStatus = 'REVIEW' | 'COMPLETED' | 'DONE' | 'CANCELED' | 'REJECTED'
+export type TypeReservationsStatus = 'REVIEW' | 'COMPLETED' | 'DONE' | 'CANCELED' | 'REJECTED' | 'PENDING'
+export type TypeOrderStatus = 'PENDING' | 'COMPLETED' | 'CANCELED'
 export type TypePaymentType =
   | 'OnlinePayment'
   | 'CashPayment'

@@ -1,6 +1,7 @@
 import { checkMethodAllowed, handlerRequestError } from '@/app/api/_utils/handleRequest'
 import Qs from 'qs'
-import {NextResponse} from "next/server";
+import { NextResponse } from 'next/server'
+import { TYPE_ONLINE_PAYMENT_STATUS } from '@/libs/constant'
 
 const allowedMethods = ['GET']
 
@@ -16,26 +17,33 @@ export async function GET(request: Request) {
   //     return createErrorResponse(authResponse?.message);
   // }
 
+
   const { searchParams } = new URL(request.url)
   const query: Record<string, string> = {}
 
   try {
-
     // ?Authority=A0000000000000000000000000000wwOGYpd&Status=OK
-        searchParams.forEach((value, key) => {
+
+    searchParams.forEach((value, key) => {
       query[key] = value
     })
 
+    const Status = query.Status === 'OK' ? TYPE_ONLINE_PAYMENT_STATUS.PAID : TYPE_ONLINE_PAYMENT_STATUS.UN_PAID
+    const Authority = query.Authority
 
-    const callback = {
-      status: query.status === "OK",
-      authority: query.Authority
-    }
-
-
-    const redirectUrl = `/payment/?${Qs.stringify(callback)}`
-    return NextResponse.redirect(redirectUrl)
-
+    // آماده کردن URL برای هدایت به داشبورد
+    const redirectUrl = new URL(
+      `/payment?${Qs.stringify({
+        Status,
+        Authority,
+      })}`,
+      process.env.NEXT_PUBLIC_FULL_PATH
+    )
+    console.log({
+      Status,
+      Authority,
+    })
+    return NextResponse.redirect(redirectUrl, { status: 302 })
   } catch (error) {
     return handlerRequestError(error)
   }

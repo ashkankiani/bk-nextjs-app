@@ -1,6 +1,6 @@
 import {useMutation, useQuery} from '@tanstack/react-query'
-import {AddDraftReservations, CreateAuthority, GetGateways, VerifyPayment} from '@/api/apisUser'
-import {TypeApiAddDraftReservationsReq, TypeApiCreateAuthorityReq, TypeApiVerifyPaymentReq} from "@/types/typeApiUser";
+import {AddReservations, CreateAuthority, GetGateways, VerifyPayment} from '@/api/apisUser'
+import {TypeApiAddReservationsReq, TypeApiCreateAuthorityReq, TypeApiVerifyPaymentReq} from "@/types/typeApiUser";
 
 
 function useGetGateways(Optional?: object) {

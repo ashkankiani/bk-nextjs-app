@@ -132,7 +132,6 @@ export default function TheIdProviderUi() {
 
       if (dataProvider.startTime !== null && dataProvider.startTime !== undefined) {
         const arrayStartTime = dataProvider.startTime.split(':')
-        console.log(arrayStartTime)
         setValue('startTime', dateNowP().setHour(arrayStartTime[0]).setMinute(arrayStartTime[1]))
       }
       if (dataProvider.endTime !== null && dataProvider.endTime !== undefined) {

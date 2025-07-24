@@ -1,6 +1,8 @@
 import { TypeBankName, TypeGender, TypeReservationsStatus } from '@/types/typeConfig'
 import {
-  TypeApiConnection, TypeApiDiscount,
+  TypeApiConnection,
+  TypeApiDiscount,
+  TypeApiOrder,
   TypeApiPermission,
   TypeApiProvider,
   TypeApiReservation,
@@ -16,6 +18,7 @@ export interface TypeApiSignInReq {
   codeMeli: string
   password: string
 }
+
 export interface TypeApiSignInOtpReq {
   mobile: string
 }
@@ -47,16 +50,20 @@ export interface TypeApiSignUpReq {
   mobile: string
   password: string
 }
+
 export interface TypeApiSignUpRes {
   Message: string
 }
+
 export interface TypeApiResetPasswordReq {
   mobile: string
   password: string
 }
+
 export interface TypeApiResetPasswordRes {
   Message: string
 }
+
 export interface TypeApiUpdateUserReq {
   codeMeli: string
   fullName: string
@@ -118,18 +125,19 @@ export type TypeApiGetReservationsByUserIdReq = {
 }
 export type TypeApiGetReservationsByUserIdRes = TypeApiReservation
 
-
-export type TypeApiAddDraftReservationsReq = {
+export type TypeApiAddReservationsReq = {
+  orderId: string
   serviceId: number
   providerId: number
   userId: number
-  // price: number
+  dateTimeStartEpoch?: number // bigint
+  dateTimeEndEpoch?: number // bigint
   date: string
   time: string[]
 }
 
-export type TypeApiAddDraftReservationsRes = {
-  results:{
+export type TypeApiAddReservationsRes = {
+  results: {
     serviceId: number
     providerId: number
     userId: number
@@ -139,7 +147,7 @@ export type TypeApiAddDraftReservationsRes = {
     time: string
     createEpoch: number
   }[]
-  userId: number
+  status: boolean
   successes: number
   errors: number
   message: string
@@ -154,7 +162,6 @@ export type TypeApiAddDraftReservationsRes = {
 /*<====================================>*/
 export type TypeApiGetConnectionsRes = TypeApiConnection[]
 
-
 /*<====================================>*/
 // Discount
 /*<====================================>*/
@@ -163,7 +170,6 @@ export type TypeApiCheckDiscountReq = {
 }
 
 export type TypeApiCheckDiscountRes = TypeApiDiscount
-
 
 /*<====================================>*/
 // Gateway
@@ -177,6 +183,7 @@ export type TypeApiCreateAuthorityReq = {
   gateway: TypeBankName
   price: number
   userId: number
+  orderId: string
 }
 export type TypeApiCreateAuthorityRes = {
   authority: string
@@ -184,9 +191,55 @@ export type TypeApiCreateAuthorityRes = {
 }
 export type TypeApiVerifyPaymentReq = {
   authority: string
+  trackingCode: string
+  bankName: TypeBankName
   price: number
+  userId: number
 }
 export type TypeApiVerifyPaymentRes = {
-  authority: string
-  url: string
+  order: TypeApiOrder
+  automaticConfirmation: boolean
+  reservations: TypeApiReservation & {
+    service: {
+      name: string
+      descriptionAfterPurchase: string
+    }
+    provider: {
+      user: {
+        fullName: string
+      }
+    }
+  }[]
 }
+
+/*<====================================>*/
+// Order
+/*<====================================>*/
+export type TypeApiAddOrderReq = {
+  userId: number
+  // serviceId: number,
+  // providerId: number,
+  discountId: number | null
+  price: number
+  discountPrice: number
+  totalPrice: number
+}
+export type TypeApiShowOrderReq = {
+  id: number
+}
+export type TypeApiShowOrderRes = TypeApiOrder
+
+export type TypeApiAddOrderRes = TypeApiOrder
+
+export type TypeApiUpdateOrderReq = {
+  trackingCode: string
+}
+export type TypeApiUpdateOrderRes = {
+  message: string
+}
+
+export type TypeApiGetOrderByBankTransactionCodeReq = {
+  id: string
+}
+
+export type TypeApiGetOrderByBankTransactionCodeRes = TypeApiOrder

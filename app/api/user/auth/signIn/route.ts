@@ -28,7 +28,7 @@ export async function POST(request: Request) {
   // دریافت اطلاعات داخل درخواست
   const body = await request.json()
   const { codeMeli, password } = body
-  console.log(codeMeli)
+
   // بررسی وجود داده های ورودی مورد نیاز
   const errorMessage = checkRequiredFields({
     codeMeli,

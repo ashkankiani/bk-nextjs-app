@@ -159,7 +159,7 @@ export default function TheHomeUi() {
               >
                 {isLoadingProviders ? (
                   <option value="" disabled>
-                    ابتدا خدمت را انتخاب کنید.
+                    در حال بارگزاری...
                   </option>
                 ) : dataProviders && dataProviders.length > 0 ? (
                   <>
@@ -187,7 +187,7 @@ export default function TheHomeUi() {
                     ))}
                   </>
                 ) : (
-                  <option>ارائه دهنده ای برای نمایش وجود ندارد.</option>
+                  <option>ابتدا خدمت را انتخاب کنید.</option>
                 )}
               </select>
             </div>
