@@ -5,9 +5,9 @@ import {
   createSuccessResponseWithData,
   handlerRequestError,
 } from '@/app/api/_utils/handleRequest'
-import {  fullStringToDateObjectP } from '@/libs/convertor'
+import { fullStringToDateObjectP } from '@/libs/convertor'
 import prisma from '@/prisma/client'
-import {TypeApiAddReservationsReq} from "@/types/typeApiUser";
+import { TypeApiAddReservationsReq } from '@/types/typeApiUser'
 
 const allowedMethods = ['POST']
 
@@ -34,7 +34,7 @@ export async function POST(request: Request) {
   const allPreReserve: TypeApiAddReservationsReq[] = []
   const results = await Promise.all(
     body.map(async (item, index) => {
-      const { orderId, serviceId, providerId, userId, date, time }  = item
+      const { orderId, serviceId, providerId, userId, date, time } = item
 
       const errorMessage = checkRequiredFields({
         orderId,
@@ -67,7 +67,7 @@ export async function POST(request: Request) {
           'YYYY/MM/DD HH:mm'
         ).valueOf()
 
-        const params : TypeApiAddReservationsReq = {
+        const params: TypeApiAddReservationsReq = {
           orderId,
           serviceId,
           providerId,
@@ -109,7 +109,6 @@ export async function POST(request: Request) {
 
     // رزروهایی که تاریخشون رد شده رو حذف میکنه ابتدا
 
-
     try {
       // ایجاد در حال رزرو برای زمان مورد نیاز
       await prisma.reservations.createMany({
@@ -134,8 +133,8 @@ export async function POST(request: Request) {
       errors: errors.length,
       message:
         errors.length === 0
-          ?  'در حال رزرو ثبت شد.'
-          : `پردازش کامل شد. موفق: ${successes.length}، ناموفق: ${errors.length}`
+          ? 'در حال رزرو ثبت شد.'
+          : `پردازش کامل شد. موفق: ${successes.length}، ناموفق: ${errors.length}`,
     })
   } catch (error: unknown) {
     return handlerRequestError(error)

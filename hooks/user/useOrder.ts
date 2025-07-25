@@ -1,13 +1,8 @@
 import { useMutation, useQuery } from '@tanstack/react-query'
-import {
-  AddOrder,
-  GetOrderByAuthority,
-  ShowOrder,
-  UpdateOrder,
-} from '@/api/apisUser'
+import { AddOrder, GetOrderByAuthority, ShowOrder, UpdateOrder } from '@/api/apisUser'
 import {
   TypeApiAddOrderReq,
-   TypeApiGetOrderByAuthorityReq,
+  TypeApiGetOrderByAuthorityReq,
   TypeApiUpdateOrderReq,
 } from '@/types/typeApiUser'
 
@@ -25,7 +20,7 @@ import {
 // }
 
 function useShowOrder(id: number, Optional?: object) {
-  const { data, isLoading, isFetched, refetch , isRefetching } = useQuery({
+  const { data, isLoading, isFetched, refetch, isRefetching } = useQuery({
     queryKey: ['ShowOrder', id],
     queryFn: () => ShowOrder({ id }),
     ...Optional,
@@ -76,7 +71,6 @@ function useUpdateOrder(Optional?: object) {
   }
 }
 
-
 function useGetOrderByAuthority(Optional?: object) {
   const { mutateAsync, isPending } = useMutation({
     mutationFn: (data: TypeApiGetOrderByAuthorityReq) => GetOrderByAuthority(data),
@@ -88,6 +82,4 @@ function useGetOrderByAuthority(Optional?: object) {
   }
 }
 
-
-
-export { useShowOrder, useAddOrder, useUpdateOrder , useGetOrderByAuthority}
+export { useShowOrder, useAddOrder, useUpdateOrder, useGetOrderByAuthority }

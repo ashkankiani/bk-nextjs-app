@@ -16,7 +16,7 @@ export async function POST(request: Request) {
   // بررسی مجاز بودن درخواست
   const methodCheckResponse = checkMethodAllowed(request, allowedMethods)
   if (methodCheckResponse) return methodCheckResponse
-console.log("vvvvvvvvvvvvvvv")
+  console.log('vvvvvvvvvvvvvvv')
   // اعتبارسنجی توکن
   // const authResponse = await authenticateRequest(request);
 
@@ -754,7 +754,7 @@ console.log("vvvvvvvvvvvvvvv")
         if (!connections[0].smsToken) {
           return createErrorResponseWithMessage('توکن وب سرویس پیامک صحیح نیست.')
         }
-console.log(params)
+        console.log(params)
         // درخواست ارسال پیامک otp به وب سرویس
         const smsSmsIr = await callExternalApi({
           method: 'bodyData',
@@ -764,7 +764,7 @@ console.log(params)
             'X-API-KEY': connections[0].smsToken,
           },
         })
-          console.log(smsSmsIr)
+        console.log(smsSmsIr)
         // بررسی ارسال پیامک
         if (smsSmsIr.status) {
           return createSuccessResponseWithData(smsSmsIr.data)

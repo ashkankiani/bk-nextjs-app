@@ -1,5 +1,5 @@
 import TheDiscountsUi from '@/app/admin/discounts/TheDiscountsUi'
-import {Metadata} from "next";
+import { Metadata } from 'next'
 
 export const metadata: Metadata = {
   title: 'کد تخفیف',

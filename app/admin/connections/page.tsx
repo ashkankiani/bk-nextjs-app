@@ -1,5 +1,5 @@
 import TheConnectionsUi from '@/app/admin/connections/TheConnectionsUi'
-import {Metadata} from "next";
+import { Metadata } from 'next'
 
 export const metadata: Metadata = {
   title: 'ارتباطات',

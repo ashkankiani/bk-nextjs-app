@@ -4,7 +4,8 @@ import {
   handlerRequestError,
   checkMethodAllowed,
   getQueryStringByUrl,
-  createErrorResponseWithMessage, serializeBigIntToNumber,
+  createErrorResponseWithMessage,
+  serializeBigIntToNumber,
 } from '@/app/api/_utils/handleRequest'
 
 const allowedMethods = ['GET']
@@ -35,7 +36,7 @@ export async function GET(request: Request) {
       where: { authority: id },
     })
 
-    if(order){
+    if (order) {
       createErrorResponseWithMessage('سفارش یافت نشد')
     }
 

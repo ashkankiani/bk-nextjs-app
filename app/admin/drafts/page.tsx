@@ -1,5 +1,5 @@
 import TheDraftsUi from '@/app/admin/drafts/TheDraftsUi'
-import {Metadata} from "next";
+import { Metadata } from 'next'
 
 export const metadata: Metadata = {
   title: 'در حال رزرو',

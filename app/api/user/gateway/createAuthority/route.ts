@@ -6,12 +6,12 @@ import {
   handlerRequestError,
 } from '@/app/api/_utils/handleRequest'
 import prisma from '@/prisma/client'
-import {TypeOrderMethod} from '@/types/typeConfig'
+import { TypeOrderMethod } from '@/types/typeConfig'
 import { TypeApiConnection } from '@/types/typeApiEntity'
 import { callExternalApi } from '@/app/api/_utils/callExternalApi'
-import {generateCode} from "@/libs/utility";
-import {TYPE_ONLINE_PAYMENT_STATUS} from "@/libs/constant";
-import Qs from "qs";
+import { generateCode } from '@/libs/utility'
+import { TYPE_ONLINE_PAYMENT_STATUS } from '@/libs/constant'
+import Qs from 'qs'
 
 const allowedMethods = ['POST']
 
@@ -91,9 +91,7 @@ export async function POST(request: Request) {
       ' کدملی: ' +
       user.codeMeli
 
-
     if (type === 'UnknownPayment') {
-
       const Authority = generateCode().toString()
 
       const queryString = {

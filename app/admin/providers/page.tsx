@@ -1,5 +1,5 @@
 import TheProvidersUi from '@/app/admin/providers/TheProvidersUi'
-import {Metadata} from "next";
+import { Metadata } from 'next'
 export const metadata: Metadata = {
   title: 'ارائه دهندگان',
 }

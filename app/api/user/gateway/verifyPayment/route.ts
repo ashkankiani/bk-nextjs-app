@@ -11,8 +11,8 @@ import { TypeOrderMethod, TypeReservationsStatus } from '@/types/typeConfig'
 import { TypeApiConnection, TypeApiSetting } from '@/types/typeApiEntity'
 import { callExternalApi } from '@/app/api/_utils/callExternalApi'
 import { TypeApiVerifyPaymentReq } from '@/types/typeApiUser'
-import {fullStringToDateObjectP} from "@/libs/convertor";
-import {callInternalApi} from "@/app/api/_utils/callInternalApi";
+import { fullStringToDateObjectP } from '@/libs/convertor'
+import { callInternalApi } from '@/app/api/_utils/callInternalApi'
 
 const allowedMethods = ['POST']
 
@@ -344,7 +344,6 @@ export async function POST(request: Request) {
 
 // تابع کمکی برای آپدیت سفارش
 async function sendSms(trackingCode: string) {
-
   // دریافت اطلاعات رزروهای نهایی
   const reservations = await prisma.reservations.findMany({
     where: {
@@ -365,14 +364,13 @@ async function sendSms(trackingCode: string) {
     },
   })
 
-
-  const sendSmsNotifications = async (paramsSms: object , mobile: string) => {
+  const sendSmsNotifications = async (paramsSms: object, mobile: string) => {
     await callInternalApi('api/admin/sms/sendSms', {
       method: 'POST',
       body: { ...paramsSms, mobile },
     })
   }
-  const sendEmailNotifications = async (paramsEmail: object , email: string) => {
+  const sendEmailNotifications = async (paramsEmail: object, email: string) => {
     await callInternalApi('/admin/email/sendEmail', {
       method: 'POST',
       body: { ...paramsEmail, email },
@@ -398,7 +396,7 @@ async function sendSms(trackingCode: string) {
     }
 
     if (reservation.service.smsToAdminService) {
-      await sendSmsNotifications(paramsSms , reservation.service.user.mobile)
+      await sendSmsNotifications(paramsSms, reservation.service.user.mobile)
     }
     if (reservation.service.smsToAdminProvider) {
       await sendSmsNotifications(paramsSms, reservation.provider.user.mobile)
@@ -409,17 +407,17 @@ async function sendSms(trackingCode: string) {
 
     if (reservation.service.emailToAdminService) {
       if (reservation.service.user.email) {
-        await sendEmailNotifications(paramsEmail , reservation.service.user.email)
+        await sendEmailNotifications(paramsEmail, reservation.service.user.email)
       }
     }
     if (reservation.service.emailToAdminProvider) {
       if (reservation.provider.user.email) {
-        await sendEmailNotifications(paramsEmail , reservation.provider.user.email)
+        await sendEmailNotifications(paramsEmail, reservation.provider.user.email)
       }
     }
     if (reservation.service.emailToUserService) {
       if (reservation.user.email) {
-        await sendEmailNotifications(paramsEmail , reservation.user.email)
+        await sendEmailNotifications(paramsEmail, reservation.user.email)
       }
     }
   }

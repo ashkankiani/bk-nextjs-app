@@ -142,7 +142,6 @@ export function generateCode(): number {
   return Math.floor(Math.random() * (max - min + 1)) + min
 }
 
-
 /*<====================================>*/
 // ترجمه نوع پرداخت
 /*<====================================>*/
@@ -245,99 +244,99 @@ export function textGenderType(value: TypeGender): string {
 export function textPermissionType(value: string): string {
   switch (value) {
     case 'admin':
-      return 'مدیریت';
+      return 'مدیریت'
     case 'viewDashboard':
-      return 'مشاهده داشبورد';
+      return 'مشاهده داشبورد'
     case 'viewReservation':
-      return 'مشاهده رزروها';
+      return 'مشاهده رزروها'
     case 'addReservation':
-      return 'افزودن رزرو';
+      return 'افزودن رزرو'
     case 'editReservation':
-      return 'ویرایش رزرو';
+      return 'ویرایش رزرو'
     case 'deleteReservation':
-      return 'حذف رزرو';
+      return 'حذف رزرو'
     case 'viewDraft':
-      return 'مشاهده درحال رزروها';
+      return 'مشاهده درحال رزروها'
     case 'deleteDraft':
-      return 'حذف درحال رزروها';
+      return 'حذف درحال رزروها'
     case 'viewServices':
-      return 'مشاهده خدمات';
+      return 'مشاهده خدمات'
     case 'addServices':
-      return 'افزودن خدمت';
+      return 'افزودن خدمت'
     case 'editServices':
-      return 'ویرایش خدمت';
+      return 'ویرایش خدمت'
     case 'deleteServices':
-      return 'حذف خدمت';
+      return 'حذف خدمت'
     case 'viewProviders':
-      return 'مشاهده ارائه‌دهندگان';
+      return 'مشاهده ارائه‌دهندگان'
     case 'addProviders':
-      return 'افزودن ارائه‌دهنده';
+      return 'افزودن ارائه‌دهنده'
     case 'editProviders':
-      return 'ویرایش ارائه‌دهنده';
+      return 'ویرایش ارائه‌دهنده'
     case 'deleteProviders':
-      return 'حذف ارائه‌دهنده';
+      return 'حذف ارائه‌دهنده'
     case 'viewTimesheets':
-      return 'مشاهده تقویم کاری';
+      return 'مشاهده تقویم کاری'
     case 'addTimesheets':
-      return 'افزودن تقویم کاری';
+      return 'افزودن تقویم کاری'
     case 'deleteTimesheets':
-      return 'حذف تقویم کاری';
+      return 'حذف تقویم کاری'
     case 'viewFinancial':
-      return 'مشاهده مالی';
+      return 'مشاهده مالی'
     case 'viewHolidays':
-      return 'مشاهده تعطیلات';
+      return 'مشاهده تعطیلات'
     case 'addHolidays':
-      return 'افزودن تعطیلی';
+      return 'افزودن تعطیلی'
     case 'editHolidays':
-      return 'ویرایش تعطیلی';
+      return 'ویرایش تعطیلی'
     case 'deleteHolidays':
-      return 'حذف تعطیلی';
+      return 'حذف تعطیلی'
     case 'viewDiscounts':
-      return 'مشاهده تخفیف‌ها';
+      return 'مشاهده تخفیف‌ها'
     case 'addDiscounts':
-      return 'افزودن تخفیف';
+      return 'افزودن تخفیف'
     case 'editDiscounts':
-      return 'ویرایش تخفیف';
+      return 'ویرایش تخفیف'
     case 'deleteDiscounts':
-      return 'حذف تخفیف';
+      return 'حذف تخفیف'
     case 'viewUsers':
-      return 'مشاهده کاربران';
+      return 'مشاهده کاربران'
     case 'addUsers':
-      return 'افزودن کاربر';
+      return 'افزودن کاربر'
     case 'editUsers':
-      return 'ویرایش کاربر';
+      return 'ویرایش کاربر'
     case 'deleteUsers':
-      return 'حذف کاربر';
+      return 'حذف کاربر'
     case 'exportUsers':
-      return 'درون ریزی کاربران';
+      return 'درون ریزی کاربران'
     case 'importUsers':
-      return 'برون بری کاربران';
+      return 'برون بری کاربران'
     case 'viewFaqs':
-      return 'مشاهده سوالات متداول';
+      return 'مشاهده سوالات متداول'
     case 'addFaqs':
-      return 'افزودن سوال متداول';
+      return 'افزودن سوال متداول'
     case 'editFaqs':
-      return 'ویرایش سوال متداول';
+      return 'ویرایش سوال متداول'
     case 'deleteFaqs':
-      return 'حذف سوال متداول';
+      return 'حذف سوال متداول'
     case 'viewSettings':
-      return 'مشاهده تنظیمات';
+      return 'مشاهده تنظیمات'
     case 'editSettings':
-      return 'ویرایش تنظیمات';
+      return 'ویرایش تنظیمات'
     case 'viewConnections':
-      return 'مشاهده ارتباطات';
+      return 'مشاهده ارتباطات'
     case 'editConnections':
-      return 'ویرایش ارتباطات';
+      return 'ویرایش ارتباطات'
     case 'viewCatalogs':
-      return 'مشاهده سطوح دسترسی';
+      return 'مشاهده سطوح دسترسی'
     case 'addCatalogs':
-      return 'افزودن سطوح دسترسی';
+      return 'افزودن سطوح دسترسی'
     case 'editCatalogs':
-      return 'ویرایش سطوح دسترسی';
+      return 'ویرایش سطوح دسترسی'
     case 'deleteCatalogs':
-      return 'حذف سطوح دسترسی';
+      return 'حذف سطوح دسترسی'
     default:
-      return 'تعریف نشده';
+      return 'تعریف نشده'
   }
 }
 
@@ -443,9 +442,7 @@ export function slotGenerator({
       dayIsHoliday = listDateHoliday.includes(PNtoEN(startDateDateObject.format()))
       // بدست اوردن عنوان روز تعطیل
       titleDayHoliday =
-        listTitleHoliday[
-          listDateHoliday.indexOf(PNtoEN(startDateDateObject.format()))
-        ]
+        listTitleHoliday[listDateHoliday.indexOf(PNtoEN(startDateDateObject.format()))]
     }
 
     // ساخت اسلات بازه شروع و پایان زمان های رزرو

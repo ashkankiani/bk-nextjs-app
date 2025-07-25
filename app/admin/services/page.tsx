@@ -1,5 +1,5 @@
 import TheServicesUi from '@/app/admin/services/TheServicesUi'
-import {Metadata} from "next";
+import { Metadata } from 'next'
 export const metadata: Metadata = {
   title: 'خدمات',
 }

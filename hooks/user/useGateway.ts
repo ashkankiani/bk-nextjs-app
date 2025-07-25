@@ -1,7 +1,10 @@
-import {useMutation, useQuery} from '@tanstack/react-query'
-import {AddReservations, CreateAuthority, GetGateways, VerifyPayment} from '@/api/apisUser'
-import {TypeApiAddReservationsReq, TypeApiCreateAuthorityReq, TypeApiVerifyPaymentReq} from "@/types/typeApiUser";
-
+import { useMutation, useQuery } from '@tanstack/react-query'
+import { AddReservations, CreateAuthority, GetGateways, VerifyPayment } from '@/api/apisUser'
+import {
+  TypeApiAddReservationsReq,
+  TypeApiCreateAuthorityReq,
+  TypeApiVerifyPaymentReq,
+} from '@/types/typeApiUser'
 
 function useGetGateways(Optional?: object) {
   const { data, isLoading, isFetched } = useQuery({
@@ -15,7 +18,6 @@ function useGetGateways(Optional?: object) {
     isFetched,
   }
 }
-
 
 function useCreateAuthority(Optional?: object) {
   const { mutateAsync, isPending } = useMutation({
@@ -41,5 +43,4 @@ function useVerifyPayment(Optional?: object) {
   }
 }
 
-
-export { useGetGateways , useCreateAuthority , useVerifyPayment}
+export { useGetGateways, useCreateAuthority, useVerifyPayment }

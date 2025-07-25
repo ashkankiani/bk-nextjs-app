@@ -18,7 +18,7 @@ export async function callInternalApi<T>(path: string, options: CallApiOptions =
   Object.entries(queryParams).forEach(([key, value]) => {
     url.searchParams.append(key, String(value))
   })
-console.log(url.toString())
+  console.log(url.toString())
   const response = await fetch(url.toString(), {
     method,
     headers: {
@@ -27,7 +27,7 @@ console.log(url.toString())
     },
     body: method !== 'GET' && body ? JSON.stringify(body) : undefined,
   })
-console.log(response)
+  console.log(response)
   if (!response.ok) {
     const errorText = await response.text()
 

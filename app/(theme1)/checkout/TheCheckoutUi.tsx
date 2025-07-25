@@ -13,7 +13,7 @@ import Popup from 'reactjs-popup'
 import useHook from '@/hooks/controller/useHook'
 import ModalFastRegister from '@/app/(theme1)/checkout/component/ModalFastRegister'
 import { useAddReservations, useGetReservationsByUserId } from '@/hooks/user/useReservation'
-import {TypeBankName, TypeDiscountsType, TypeGender, TypeOrderMethod} from '@/types/typeConfig'
+import { TypeBankName, TypeDiscountsType, TypeGender, TypeOrderMethod } from '@/types/typeConfig'
 import { useCheckDiscount } from '@/hooks/user/useDiscount'
 import { TypeApiDiscount, TypeApiOrder } from '@/types/typeApiEntity'
 import { TypeApiAddOrderReq, TypeApiAddReservationsReq } from '@/types/typeApiUser'
@@ -182,22 +182,21 @@ export default function TheCheckoutUi() {
     //       bkToast('error', errors.Reason)
     //     })
     // } else {
-      const params = {
-        type: paymentType?.type  as 'OnlinePayment' | 'UnknownPayment',
-        gateway: paymentType?.key as TypeBankName | 'COD',
-        price: totalPrice,
-        userId: user.id,
-        orderId: order.trackingCode,
-      }
+    const params = {
+      type: paymentType?.type as 'OnlinePayment' | 'UnknownPayment',
+      gateway: paymentType?.key as TypeBankName | 'COD',
+      price: totalPrice,
+      userId: user.id,
+      orderId: order.trackingCode,
+    }
 
-      await mutateAsyncCreateAuthority(params)
-        .then(res => {
-          router.push(res.url)
-        })
-        .catch(errors => {
-          bkToast('error', errors.Reason)
-        })
-
+    await mutateAsyncCreateAuthority(params)
+      .then(res => {
+        router.push(res.url)
+      })
+      .catch(errors => {
+        bkToast('error', errors.Reason)
+      })
 
     // }
   }
@@ -504,10 +503,22 @@ export default function TheCheckoutUi() {
                         onClick={() => checkReservation()}
                         className={
                           'bk-button fa-sbold-18px cursor-pointer border border-white p-4 text-white max-sm:mx-auto ' +
-                          (isPendingCreateAuthority || isPendingAddOrder || isPendingAddReservations || isPendingUpdateOrder ? 'disable-action' : '')
+                          (isPendingCreateAuthority ||
+                          isPendingAddOrder ||
+                          isPendingAddReservations ||
+                          isPendingUpdateOrder
+                            ? 'disable-action'
+                            : '')
                         }
                       >
-                        {isPendingCreateAuthority || isPendingAddOrder || isPendingAddReservations || isPendingUpdateOrder ? <TheSpinner /> : 'تکمیل سفارش'}
+                        {isPendingCreateAuthority ||
+                        isPendingAddOrder ||
+                        isPendingAddReservations ||
+                        isPendingUpdateOrder ? (
+                          <TheSpinner />
+                        ) : (
+                          'تکمیل سفارش'
+                        )}
                       </div>
                     </>
                   )}

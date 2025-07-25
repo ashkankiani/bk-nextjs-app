@@ -17,7 +17,6 @@ export async function GET(request: Request) {
   //     return createErrorResponse(authResponse?.message);
   // }
 
-
   const { searchParams } = new URL(request.url)
   const query: Record<string, string> = {}
 
@@ -29,7 +28,8 @@ export async function GET(request: Request) {
     })
 
     const Type = 'OnlinePayment'
-    const Status = query.Status === 'OK' ? TYPE_ONLINE_PAYMENT_STATUS.PAID : TYPE_ONLINE_PAYMENT_STATUS.UN_PAID
+    const Status =
+      query.Status === 'OK' ? TYPE_ONLINE_PAYMENT_STATUS.PAID : TYPE_ONLINE_PAYMENT_STATUS.UN_PAID
     const Authority = query.Authority
 
     // آماده کردن URL برای هدایت به داشبورد

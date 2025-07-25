@@ -1,7 +1,9 @@
 import {
   checkMethodAllowed,
   checkRequiredFields,
-  createErrorResponseWithMessage, createSuccessResponseWithData, createTemplateSuccessResponseWithData,
+  createErrorResponseWithMessage,
+  createSuccessResponseWithData,
+  createTemplateSuccessResponseWithData,
   handlerRequestError,
 } from '@/app/api/_utils/handleRequest'
 import Qs from 'qs'
@@ -28,13 +30,12 @@ export async function POST(request: Request) {
   // تبدیل به آبجکت ساده
   const body = Object.fromEntries(formData.entries())
 
-
-  if(process.env.NODE_ENV === 'development') {
-    body.cardnumber= "development"
+  if (process.env.NODE_ENV === 'development') {
+    body.cardnumber = 'development'
   }
 
   // استخراج پارامترهای مورد نیاز
-  const { transid, cardnumber, tracking_number, invoice_id,  status } = body
+  const { transid, cardnumber, tracking_number, invoice_id, status } = body
 
   // بررسی وجود داده های ورودی مورد نیاز
   const errorMessage = checkRequiredFields({
@@ -68,7 +69,7 @@ export async function POST(request: Request) {
     )
 
     return new Response(
-        `
+      `
   <html>
     <head>
       <meta http-equiv="refresh" content="0; url=${redirectUrl.toString()}" />
@@ -79,11 +80,11 @@ export async function POST(request: Request) {
     </body>
   </html>
   `,
-        {
-          headers: {
-            'Content-Type': 'text/html',
-          },
-        }
+      {
+        headers: {
+          'Content-Type': 'text/html',
+        },
+      }
     )
 
     // return createSuccessResponseWithData()

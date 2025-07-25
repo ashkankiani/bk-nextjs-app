@@ -1,5 +1,5 @@
 import TheAddUserUi from '@/app/admin/users/add/TheAddUserUi'
-import {Metadata} from "next";
+import { Metadata } from 'next'
 export const metadata: Metadata = {
   title: 'افزودن کاربر',
 }

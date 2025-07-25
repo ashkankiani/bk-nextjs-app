@@ -1,6 +1,5 @@
 import TheFaqsUi from '@/app/admin/faqs/TheFaqsUi'
-import {Metadata} from "next";
-
+import { Metadata } from 'next'
 
 export const metadata: Metadata = {
   title: 'سوالات متداول',

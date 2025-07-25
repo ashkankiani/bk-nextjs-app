@@ -6,8 +6,8 @@ import {
   getQueryStringByUrl,
   createErrorResponseWithMessage,
 } from '@/app/api/_utils/handleRequest'
-import {dateNowP, fullStringToDateObjectP} from "@/libs/convertor";
-import {bkToast, checkingTimeBetweenTimes, isCurrentTimeInRange} from "@/libs/utility";
+import { dateNowP, fullStringToDateObjectP } from '@/libs/convertor'
+import { bkToast, checkingTimeBetweenTimes, isCurrentTimeInRange } from '@/libs/utility'
 
 const allowedMethods = ['GET']
 
@@ -24,7 +24,7 @@ export async function GET(request: Request) {
   // }
 
   // دریافت Id درخواست
-  const code = getQueryStringByUrl(request.url , "code")
+  const code = getQueryStringByUrl(request.url, 'code')
 
   // بررسی وجود ID
   if (!code) {
@@ -50,7 +50,6 @@ export async function GET(request: Request) {
     } else {
       return createErrorResponseWithMessage('کد تخفیف یافت نشد.')
     }
-
   } catch (error) {
     return handlerRequestError(error)
   }

@@ -4,11 +4,12 @@ import {
   checkMethodAllowed,
   checkRequiredFields,
   createErrorResponseWithMessage,
-  createSuccessResponseWithMessage, createSuccessResponseWithData,
+  createSuccessResponseWithMessage,
+  createSuccessResponseWithData,
 } from '@/app/api/_utils/handleRequest'
-import {dateNowP} from "@/libs/convertor";
-import {generateCode} from "@/libs/utility";
-import {TYPE_ONLINE_PAYMENT_STATUS} from "@/libs/constant";
+import { dateNowP } from '@/libs/convertor'
+import { generateCode } from '@/libs/utility'
+import { TYPE_ONLINE_PAYMENT_STATUS } from '@/libs/constant'
 
 const allowedMethods = ['PUT']
 
@@ -39,7 +40,6 @@ export async function PUT(request: Request) {
   }
 
   try {
-
     // دریافت تنظیمات
     const settings = await prisma.settings.findMany()
 
@@ -78,7 +78,7 @@ export async function PUT(request: Request) {
     return createSuccessResponseWithData({
       Type,
       Status,
-      Authority
+      Authority,
     })
   } catch (error) {
     return handlerRequestError(error)

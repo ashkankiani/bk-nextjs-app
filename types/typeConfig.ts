@@ -64,7 +64,14 @@ export type TypeDiscountsType = 'CONSTANT' | 'PERCENT'
 export type TypePay = 'Paid' | 'Unpaid'
 export type TypeBankName = 'NONE' | 'ZARINPAL' | 'IDPAY' | 'AQAYEPARDAKHT' | 'ZIBAL'
 export type TypeOrderMethod = 'ZARINPAL' | 'IDPAY' | 'AQAYEPARDAKHT' | 'ZIBAL' | 'COD'
-export type TypeReservationsStatus = 'REVIEW' | 'COMPLETED' | 'DONE' | 'CANCELED' | 'REJECTED' | 'PENDING' | "RESET"
+export type TypeReservationsStatus =
+  | 'REVIEW'
+  | 'COMPLETED'
+  | 'DONE'
+  | 'CANCELED'
+  | 'REJECTED'
+  | 'PENDING'
+  | 'RESET'
 export type TypeOrderStatus = 'PENDING' | 'COMPLETED' | 'CANCELED'
 export type TypePaymentType =
   | 'OnlinePayment'
@@ -87,56 +94,54 @@ export type TypeCancellationReservation =
 export type TypeEmailStatus = 'OPTIONAL' | 'MANDATORY' | 'DELETE'
 export type TypeSmsName = 'NONE' | 'IPPANEL' | 'MELIPAYAMAK' | 'KAVENEGAR' | 'FARAZSMS' | 'SMSIR'
 export type TypePermissionKeys =
-    | "id"
-    | "catalogId"
-    | "admin"
-    | "viewDashboard"
-    | "viewReservation"
-    | "addReservation"
-    | "editReservation"
-    | "deleteReservation"
-    | "viewDraft"
-    | "deleteDraft"
-    | "viewServices"
-    | "addServices"
-    | "editServices"
-    | "deleteServices"
-    | "viewProviders"
-    | "addProviders"
-    | "editProviders"
-    | "deleteProviders"
-    | "viewTimesheets"
-    | "addTimesheets"
-    | "deleteTimesheets"
-    | "viewFinancial"
-    | "viewHolidays"
-    | "addHolidays"
-    | "editHolidays"
-    | "deleteHolidays"
-    | "viewDiscounts"
-    | "addDiscounts"
-    | "editDiscounts"
-    | "deleteDiscounts"
-    | "viewUsers"
-    | "addUsers"
-    | "editUsers"
-    | "deleteUsers"
-    | "exportUsers"
-    | "importUsers"
-    | "viewFaqs"
-    | "addFaqs"
-    | "editFaqs"
-    | "deleteFaqs"
-    | "viewSettings"
-    | "editSettings"
-    | "viewConnections"
-    | "editConnections"
-    | "viewCatalogs"
-    | "addCatalogs"
-    | "editCatalogs"
-    | "deleteCatalogs";
-
-
+  | 'id'
+  | 'catalogId'
+  | 'admin'
+  | 'viewDashboard'
+  | 'viewReservation'
+  | 'addReservation'
+  | 'editReservation'
+  | 'deleteReservation'
+  | 'viewDraft'
+  | 'deleteDraft'
+  | 'viewServices'
+  | 'addServices'
+  | 'editServices'
+  | 'deleteServices'
+  | 'viewProviders'
+  | 'addProviders'
+  | 'editProviders'
+  | 'deleteProviders'
+  | 'viewTimesheets'
+  | 'addTimesheets'
+  | 'deleteTimesheets'
+  | 'viewFinancial'
+  | 'viewHolidays'
+  | 'addHolidays'
+  | 'editHolidays'
+  | 'deleteHolidays'
+  | 'viewDiscounts'
+  | 'addDiscounts'
+  | 'editDiscounts'
+  | 'deleteDiscounts'
+  | 'viewUsers'
+  | 'addUsers'
+  | 'editUsers'
+  | 'deleteUsers'
+  | 'exportUsers'
+  | 'importUsers'
+  | 'viewFaqs'
+  | 'addFaqs'
+  | 'editFaqs'
+  | 'deleteFaqs'
+  | 'viewSettings'
+  | 'editSettings'
+  | 'viewConnections'
+  | 'editConnections'
+  | 'viewCatalogs'
+  | 'addCatalogs'
+  | 'editCatalogs'
+  | 'deleteCatalogs'
 
 export type TypeSession = { userId: number; catalogId: number }
 

@@ -14,5 +14,4 @@ function useGetConnections(Optional?: object) {
   }
 }
 
-
 export { useGetConnections }

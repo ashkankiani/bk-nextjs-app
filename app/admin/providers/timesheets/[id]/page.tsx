@@ -1,5 +1,5 @@
 import TheTimeSheetProviderUi from '@/app/admin/providers/timesheets/[id]/TheTimeSheetProviderUi'
-import {Metadata} from "next";
+import { Metadata } from 'next'
 export const metadata: Metadata = {
   title: 'تقویم کاری',
 }

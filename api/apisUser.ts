@@ -35,7 +35,8 @@ import {
   TypeApiGetOrderByAuthorityReq,
   TypeApiGetOrderByAuthorityRes,
   TypeApiShowOrderReq,
-  TypeApiShowOrderRes, TypeApiGetFaqsRes,
+  TypeApiShowOrderRes,
+  TypeApiGetFaqsRes,
 } from '@/types/typeApiUser'
 import { ApiRoutesUser } from '@/api/apiRoutesUser'
 import { TypeApiSetting } from '@/types/typeApiEntity'
@@ -126,13 +127,9 @@ export const ShowOrder = (params: TypeApiShowOrderReq) =>
 export const UpdateOrder = (params: TypeApiUpdateOrderReq) =>
   putRequest<TypeApiUpdateOrderRes>(ApiRoutesUser.Order.UpdateOrder, params)
 export const GetOrderByAuthority = (params: TypeApiGetOrderByAuthorityReq) =>
-  getRequest<TypeApiGetOrderByAuthorityRes>(
-    ApiRoutesUser.Order.GetOrderByAuthority,
-    params
-  )
+  getRequest<TypeApiGetOrderByAuthorityRes>(ApiRoutesUser.Order.GetOrderByAuthority, params)
 
 /*<====================================>*/
 // Faq
 /*<====================================>*/
-export const GetFaqs = () =>
-    getRequest<TypeApiGetFaqsRes[]>(ApiRoutesUser.Faq.GetFaqs)
+export const GetFaqs = () => getRequest<TypeApiGetFaqsRes[]>(ApiRoutesUser.Faq.GetFaqs)

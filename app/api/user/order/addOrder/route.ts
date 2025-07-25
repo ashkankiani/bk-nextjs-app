@@ -3,11 +3,12 @@ import {
   checkRequiredFields,
   createErrorResponseWithMessage,
   createSuccessResponseWithData,
-  handlerRequestError, serializeBigIntToString,
+  handlerRequestError,
+  serializeBigIntToString,
 } from '@/app/api/_utils/handleRequest'
 import prisma from '@/prisma/client'
 import { generateTrackingCodeWithDate } from '@/libs/utility'
-import {dateNowP} from "@/libs/convertor";
+import { dateNowP } from '@/libs/convertor'
 
 const allowedMethods = ['POST']
 
@@ -47,7 +48,6 @@ export async function POST(request: Request) {
   }
 
   try {
-
     // دریافت تنظیمات
     const settings = await prisma.settings.findMany()
 

@@ -47,7 +47,7 @@ export default function ConnectionTest() {
 
     // اینجا باید صحت سنجی کوبایل رو بزارم
     const data = {
-      type: "OTP",
+      type: 'OTP',
       mobile: mobile,
       code: '123456',
     }

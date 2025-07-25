@@ -1,9 +1,9 @@
-import {useMutation, useQuery} from '@tanstack/react-query'
-import {AddReservations, AvailableTimes, GetReservationsByUserId} from '@/api/apisUser'
+import { useMutation, useQuery } from '@tanstack/react-query'
+import { AddReservations, AvailableTimes, GetReservationsByUserId } from '@/api/apisUser'
 import {
   TypeApiAddReservationsReq,
   TypeApiAvailableTimesReq,
-  TypeApiGetReservationsByUserIdReq
+  TypeApiGetReservationsByUserIdReq,
 } from '@/types/typeApiUser'
 
 function useAvailableTimes(query: TypeApiAvailableTimesReq, Optional?: object) {
@@ -50,5 +50,4 @@ function useAddReservations(Optional?: object) {
   }
 }
 
-
-export { useAvailableTimes, useGetReservationsByUserId , useAddReservations}
+export { useAvailableTimes, useGetReservationsByUserId, useAddReservations }

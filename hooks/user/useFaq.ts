@@ -1,5 +1,5 @@
-import {GetFaqs} from "@/api/apisUser";
-import {useQuery} from "@tanstack/react-query";
+import { GetFaqs } from '@/api/apisUser'
+import { useQuery } from '@tanstack/react-query'
 
 function useGetFaqs(Optional?: object) {
   const { data, isLoading, isFetched } = useQuery({
@@ -13,7 +13,5 @@ function useGetFaqs(Optional?: object) {
     isFetched,
   }
 }
-
-
 
 export { useGetFaqs }
