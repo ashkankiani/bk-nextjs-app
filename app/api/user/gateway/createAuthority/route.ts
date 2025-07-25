@@ -6,9 +6,12 @@ import {
   handlerRequestError,
 } from '@/app/api/_utils/handleRequest'
 import prisma from '@/prisma/client'
-import { TypeBankName } from '@/types/typeConfig'
+import {TypeOrderMethod} from '@/types/typeConfig'
 import { TypeApiConnection } from '@/types/typeApiEntity'
 import { callExternalApi } from '@/app/api/_utils/callExternalApi'
+import {generateCode} from "@/libs/utility";
+import {TYPE_ONLINE_PAYMENT_STATUS} from "@/libs/constant";
+import Qs from "qs";
 
 const allowedMethods = ['POST']
 
@@ -27,12 +30,14 @@ export async function POST(request: Request) {
   // دریافت اطلاعات داخل درخواست
   const body = await request.json()
   const {
+    type,
     gateway,
     price,
     userId,
     orderId,
   }: {
-    gateway: TypeBankName
+    type: 'OnlinePayment' | 'UnknownPayment'
+    gateway: TypeOrderMethod
     price: number
     userId: number
     orderId: string
@@ -40,6 +45,7 @@ export async function POST(request: Request) {
 
   // بررسی وجود داده های ورودی مورد نیاز
   const errorMessage = checkRequiredFields({
+    type,
     gateway,
     price,
     userId,
@@ -85,155 +91,179 @@ export async function POST(request: Request) {
       ' کدملی: ' +
       user.codeMeli
 
-    if (gateway === 'ZARINPAL') {
-      const params = {
-        description: text,
-        merchant_id: merchant,
-        currency: 'IRT',
-        amount: price,
-        metadata: {
-          mobile: user.mobile,
-          email: user.email,
-        },
-        callback_url: process.env.NEXT_PUBLIC_FULL_PATH + '/api/user/gateway/callback/zarinpal',
+
+    if (type === 'UnknownPayment') {
+
+      const Authority = generateCode().toString()
+
+      const queryString = {
+        Type: type,
+        Status: TYPE_ONLINE_PAYMENT_STATUS.PAID,
+        Authority,
       }
 
-      // ارسال درخواست برای دریافت URL پرداخت
-      const getUrl = await callExternalApi({
-        method: 'POST',
-        url: 'https://payment.zarinpal.com/pg/v4/payment/request.json',
-        data: params,
+      // آپدیت سفارش
+      await updateOrderWithTransactionCode(trackingCode, 'COD', Authority)
+
+      return createSuccessResponseWithData({
+        authority: Authority,
+        url: process.env.NEXT_PUBLIC_FULL_PATH + '/payment?' + Qs.stringify(queryString),
       })
-
-      // بررسی دریافت URL پرداخت
-      // 	{
-      // 		"authority": "A0000000000000000000000000006q6xwoen",
-      // 		"fee": 3650,
-      // 		"fee_type": "Merchant",
-      // 		"code": 100,
-      // 		"message": "Success"
-      // 	}
-      if (getUrl.status) {
-        // آپدیت سفارش
-        await updateOrderWithTransactionCode(trackingCode, 'ZARINPAL', getUrl.data.data.authority)
-
-        return createSuccessResponseWithData({
-          authority: getUrl.data.data.authority,
-          url: 'https://payment.zarinpal.com/pg/StartPay/' + getUrl.data.data.authority,
-        })
-      } else {
-        return createErrorResponseWithMessage(getUrl.errorMessage)
-      }
     }
+    if (type === 'OnlinePayment') {
+      if (gateway === 'ZARINPAL') {
+        const params = {
+          description: text,
+          merchant_id: merchant,
+          currency: 'IRT',
+          amount: price,
+          metadata: {
+            mobile: user.mobile,
+            email: user.email,
+          },
+          callback_url: process.env.NEXT_PUBLIC_FULL_PATH + '/api/user/gateway/callback/zarinpal',
+        }
 
-    if (gateway === 'ZIBAL') {
-      const params = {
-        merchant: merchant,
-        description: text,
-        orderId: trackingCode,
-        amount: price * 10, // Rial To Toman
-        mobile: user.mobile,
-        callbackUrl: process.env.NEXT_PUBLIC_FULL_PATH + '/api/user/gateway/callback/zibal',
+        // ارسال درخواست برای دریافت URL پرداخت
+        const getUrl = await callExternalApi({
+          method: 'POST',
+          url: 'https://payment.zarinpal.com/pg/v4/payment/request.json',
+          data: params,
+        })
+
+        // بررسی دریافت URL پرداخت
+        // 	{
+        // 		"authority": "A0000000000000000000000000006q6xwoen",
+        // 		"fee": 3650,
+        // 		"fee_type": "Merchant",
+        // 		"code": 100,
+        // 		"message": "Success"
+        // 	}
+        if (getUrl.status) {
+          // آپدیت سفارش
+          await updateOrderWithTransactionCode(trackingCode, 'ZARINPAL', getUrl.data.data.authority)
+
+          return createSuccessResponseWithData({
+            authority: getUrl.data.data.authority,
+            url: 'https://payment.zarinpal.com/pg/StartPay/' + getUrl.data.data.authority,
+          })
+        } else {
+          return createErrorResponseWithMessage(getUrl.errorMessage)
+        }
       }
 
-      // ارسال درخواست برای دریافت URL پرداخت
-      const getUrl = await callExternalApi({
-        method: 'POST',
-        url: 'https://gateway.zibal.ir/v1/request',
-        data: params,
-      })
+      if (gateway === 'ZIBAL') {
+        const params = {
+          merchant: merchant,
+          description: text,
+          orderId: trackingCode,
+          amount: price * 10, // Rial To Toman
+          mobile: user.mobile,
+          callbackUrl: process.env.NEXT_PUBLIC_FULL_PATH + '/api/user/gateway/callback/zibal',
+        }
 
-      // بررسی دریافت URL پرداخت
-      // {
-      // 		"message": "success",
-      // 		"result": 100,
-      // 		"trackId": 4173967078
-      // }
-
-      if (getUrl.status) {
-        // آپدیت سفارش
-        await updateOrderWithTransactionCode(trackingCode, 'ZIBAL', getUrl.data.trackId.toString())
-
-        // if(getUrl.result ===100){
-        return createSuccessResponseWithData({
-          authority: getUrl.data.trackId.toString(),
-          url: 'https://gateway.zibal.ir/start/' + getUrl.data.trackId,
+        // ارسال درخواست برای دریافت URL پرداخت
+        const getUrl = await callExternalApi({
+          method: 'POST',
+          url: 'https://gateway.zibal.ir/v1/request',
+          data: params,
         })
+
+        // بررسی دریافت URL پرداخت
+        // {
+        // 		"message": "success",
+        // 		"result": 100,
+        // 		"trackId": 4173967078
         // }
-      } else {
-        return createErrorResponseWithMessage(getUrl.errorMessage)
+
+        if (getUrl.status) {
+          // آپدیت سفارش
+          await updateOrderWithTransactionCode(
+            trackingCode,
+            'ZIBAL',
+            getUrl.data.trackId.toString()
+          )
+
+          // if(getUrl.result ===100){
+          return createSuccessResponseWithData({
+            authority: getUrl.data.trackId.toString(),
+            url: 'https://gateway.zibal.ir/start/' + getUrl.data.trackId,
+          })
+          // }
+        } else {
+          return createErrorResponseWithMessage(getUrl.errorMessage)
+        }
       }
-    }
 
-    if (gateway === 'AQAYEPARDAKHT') {
-      const params = {
-        pin: merchant, // sandbox = "sandbox"
-        amount: price,
-        invoice_id: trackingCode,
-        desc: text,
-        metadata: {
-          mobile: user.mobile,
-          email: user.email,
-        },
-        callback: process.env.NEXT_PUBLIC_FULL_PATH + '/api/user/gateway/callback/aqayepardakht',
-      }
+      if (gateway === 'AQAYEPARDAKHT') {
+        const params = {
+          pin: merchant, // sandbox = "sandbox"
+          amount: price,
+          invoice_id: trackingCode,
+          desc: text,
+          metadata: {
+            mobile: user.mobile,
+            email: user.email,
+          },
+          callback: process.env.NEXT_PUBLIC_FULL_PATH + '/api/user/gateway/callback/aqayepardakht',
+        }
 
-      // ارسال درخواست برای دریافت URL پرداخت
-      const getUrl = await callExternalApi({
-        method: 'POST',
-        url: 'https://panel.aqayepardakht.ir/api/v2/create',
-        data: params,
-      })
-
-      // بررسی دریافت URL پرداخت
-      // sandbox url  :'https://panel.aqayepardakht.ir/startpay/sandbox/'
-      if (getUrl.status) {
-        // آپدیت سفارش
-        await updateOrderWithTransactionCode(trackingCode, 'AQAYEPARDAKHT', getUrl.data.transid)
-
-        return createSuccessResponseWithData({
-          authority: getUrl.data.transid,
-          url:
-            merchant === 'sandbox'
-              ? 'https://panel.aqayepardakht.ir/startpay/sandbox/' + getUrl.data.transid
-              : 'https://panel.aqayepardakht.ir/startpay/' + getUrl.data.transid,
+        // ارسال درخواست برای دریافت URL پرداخت
+        const getUrl = await callExternalApi({
+          method: 'POST',
+          url: 'https://panel.aqayepardakht.ir/api/v2/create',
+          data: params,
         })
-      } else {
-        return createErrorResponseWithMessage(getUrl.errorMessage)
+
+        // بررسی دریافت URL پرداخت
+        // sandbox url  :'https://panel.aqayepardakht.ir/startpay/sandbox/'
+        if (getUrl.status) {
+          // آپدیت سفارش
+          await updateOrderWithTransactionCode(trackingCode, 'AQAYEPARDAKHT', getUrl.data.transid)
+
+          return createSuccessResponseWithData({
+            authority: getUrl.data.transid,
+            url:
+              merchant === 'sandbox'
+                ? 'https://panel.aqayepardakht.ir/startpay/sandbox/' + getUrl.data.transid
+                : 'https://panel.aqayepardakht.ir/startpay/' + getUrl.data.transid,
+          })
+        } else {
+          return createErrorResponseWithMessage(getUrl.errorMessage)
+        }
+      }
+
+      if (gateway === 'IDPAY') {
+        return createErrorResponseWithMessage('درگاه غیرفعال است.')
+
+        /*      const params = {}
+          
+                                        // ارسال درخواست برای دریافت URL پرداخت
+                                        const getUrl = await callExternalApi({
+                                          method: 'POST',
+                                          url: "https://api.idpay.ir/v1.1/payment" ,
+                                          data: params,
+                                          headers: {
+                                              'X-API-KEY': merchant,
+                                          }
+                                        })
+          
+          
+                                        // بررسی دریافت URL پرداخت
+                                        // res.data.errors
+                                        if (getUrl.status) {
+          
+                              // آپدیت سفارش
+                              await updateOrderWithTransactionCode(trackingCode , getUrl.data.transid)
+          
+          
+                                          return createSuccessResponseWithData(getUrl)
+                                        } else {
+                                          return createErrorResponseWithMessage(getUrl.errorMessage)
+                                        }
+                                        */
       }
     }
-
-    if (gateway === 'IDPAY') {
-      return createErrorResponseWithMessage('درگاه غیرفعال است.')
-
-      /*      const params = {}
-
-                              // ارسال درخواست برای دریافت URL پرداخت
-                              const getUrl = await callExternalApi({
-                                method: 'POST',
-                                url: "https://api.idpay.ir/v1.1/payment" ,
-                                data: params,
-                                headers: {
-                                    'X-API-KEY': merchant,
-                                }
-                              })
-
-
-                              // بررسی دریافت URL پرداخت
-                              // res.data.errors
-                              if (getUrl.status) {
-
-                    // آپدیت سفارش
-                    await updateOrderWithTransactionCode(trackingCode , getUrl.data.transid)
-
-
-                                return createSuccessResponseWithData(getUrl)
-                              } else {
-                                return createErrorResponseWithMessage(getUrl.errorMessage)
-                              }
-                              */
-    }
-
     return createErrorResponseWithMessage('دسترسی به درگاه بانک مویثر نشد.')
   } catch (error: unknown) {
     return handlerRequestError(error)
@@ -243,16 +273,16 @@ export async function POST(request: Request) {
 // تابع کمکی برای آپدیت سفارش
 async function updateOrderWithTransactionCode(
   trackingCode: string,
-  bankName: TypeBankName,
-  transactionCode: string
+  method: TypeOrderMethod,
+  authority: string
 ) {
   return await prisma.orders.update({
     where: {
       trackingCode,
     },
     data: {
-      bankName: bankName,
-      bankTransactionCode: transactionCode,
+      method,
+      authority,
     },
   })
 }

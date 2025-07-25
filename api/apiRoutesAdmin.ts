@@ -39,10 +39,10 @@ export const ApiRoutesAdmin: TypeApiRoutesAdmin = {
   },
 
   Email: {
-    SendEmail: '/admin/email/SendEmail',
+    SendEmail: '/admin/email/sendEmail',
   },
   Sms: {
-    SendSms: '/admin/sms/SendSms',
+    SendSms: '/admin/sms/sendSms',
   },
   Setting: {
     GetSettings: '/admin/setting/getSettings',
@@ -79,10 +79,6 @@ export const ApiRoutesAdmin: TypeApiRoutesAdmin = {
   },
   Order: {
     GetOrders: '/admin/order/getOrders',
-  },
-  Draft: {
-    GetDrafts: '/admin/draft/getDrafts',
-    DeleteDrafts: '/admin/draft/deleteDrafts', // all drafts
   },
   Reservation: {
     AddReservation: '/admin/reservation/addReservation',

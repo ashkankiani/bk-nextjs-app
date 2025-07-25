@@ -14,7 +14,6 @@ interface TypeInitialState {
     endDate: string
   } | null
   cart: TypeCart[]
-  order: any
 }
 
 const initialState = (): TypeInitialState => ({
@@ -23,7 +22,6 @@ const initialState = (): TypeInitialState => ({
   permissions: null,
   searchQuery: null,
   cart: [],
-  order: [],
 })
 
 export const sliceUser = createSlice({
@@ -49,9 +47,6 @@ export const sliceUser = createSlice({
     deleteCart: (state, action) => {
       state.cart.splice(action.payload, 1)
     },
-    setOrder: (state, action) => {
-      state.order = action.payload
-    },
   },
 })
 
@@ -63,7 +58,6 @@ export const {
   setSearchQuery,
   setCart,
   deleteCart,
-  setOrder,
 } = sliceUser.actions
 
 export default sliceUser.reducer

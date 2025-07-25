@@ -3,13 +3,16 @@ import {
   checkRequiredFields,
   createErrorResponseWithMessage,
   createSuccessResponseWithData,
-  handlerRequestError, serializeBigIntToNumber,
+  handlerRequestError,
+  serializeBigIntToNumber,
 } from '@/app/api/_utils/handleRequest'
 import prisma from '@/prisma/client'
-import { TypeBankName, TypePaymentType, TypeReservationsStatus } from '@/types/typeConfig'
+import { TypeOrderMethod, TypeReservationsStatus } from '@/types/typeConfig'
 import { TypeApiConnection, TypeApiSetting } from '@/types/typeApiEntity'
 import { callExternalApi } from '@/app/api/_utils/callExternalApi'
 import { TypeApiVerifyPaymentReq } from '@/types/typeApiUser'
+import {fullStringToDateObjectP} from "@/libs/convertor";
+import {callInternalApi} from "@/app/api/_utils/callInternalApi";
 
 const allowedMethods = ['POST']
 
@@ -28,13 +31,13 @@ export async function POST(request: Request) {
   // دریافت اطلاعات داخل درخواست
   const body = await request.json()
 
-  const { authority, trackingCode, bankName, price, userId }: TypeApiVerifyPaymentReq = body
+  const { authority, trackingCode, method, price, userId }: TypeApiVerifyPaymentReq = body
 
   // بررسی وجود داده های ورودی مورد نیاز
   const errorMessage = checkRequiredFields({
     authority,
     trackingCode,
-    bankName,
+    method,
     price,
     userId,
   })
@@ -75,11 +78,22 @@ export async function POST(request: Request) {
     const status = settings[0].automaticConfirmation ? 'COMPLETED' : 'REVIEW'
 
     const merchant =
-      bankName === connections[0].bankName1
-        ? connections[0].merchantId1
-        : connections[0].merchantId2
+      method === connections[0].bankName1 ? connections[0].merchantId1 : connections[0].merchantId2
 
-    if (bankName === 'ZARINPAL') {
+    if (method === 'COD') {
+      const cardNumber = '' // خالی است چون تراکنش نداریم
+      return await updateOrder(
+        settings[0],
+        status,
+        trackingCode,
+        userId,
+        method,
+        authority,
+        price,
+        cardNumber
+      )
+    }
+    if (method === 'ZARINPAL') {
       const params = {
         merchant_id: merchant,
         amount: price,
@@ -98,7 +112,7 @@ export async function POST(request: Request) {
             ref_id: number
             fee_type: string
             fee: number
-            shaparak_fee: string,
+            shaparak_fee: string
             // order_id: null
           }
         }
@@ -114,8 +128,6 @@ export async function POST(request: Request) {
         url: 'https://payment.zarinpal.com/pg/v4/payment/verify.json',
         data: params,
       })
-
-      console.log(getUrl)
 
       // بررسی دریافت URL پرداخت
       // {
@@ -133,16 +145,23 @@ export async function POST(request: Request) {
 
       if (getUrl.status) {
         if (getUrl.data.data.code === 101) {
-          console.log(11111)
           return createErrorResponseWithMessage('تراکنش قبلا تایید شده است.')
         }
         if (getUrl.data.data.code === 100) {
           const cardNumber = getUrl.data.data.card_pan
-          return await updateOrder(settings[0] ,status, trackingCode, userId, bankName, authority, price, cardNumber)
+          return await updateOrder(
+            settings[0],
+            status,
+            trackingCode,
+            userId,
+            method,
+            authority,
+            price,
+            cardNumber
+          )
         }
 
-        if(getUrl.data.data.code !== 100 || getUrl.data.data.code !== 101){
-          console.log(333)
+        if (getUrl.data.data.code !== 100 || getUrl.data.data.code !== 101) {
           const errors: Record<string, string> = {
             '-9': 'خطای اعتبار سنجی - مرچنت کد یا آدرس بازگشت',
             '-10': 'ای پی یا مرچنت كد پذیرنده صحیح نیست.',
@@ -165,14 +184,14 @@ export async function POST(request: Request) {
           return createErrorResponseWithMessage(errors[getUrl?.errors.code])
         }
       } else {
-        console.log(44444)
         return createErrorResponseWithMessage(getUrl?.errorMessage)
       }
     }
 
-    if (bankName === 'ZIBAL') {
+    if (method === 'ZIBAL') {
+      console.log(111111111)
       const params = {
-        merchant_id: merchant,
+        merchant: merchant,
         trackId: parseInt(authority),
       }
 
@@ -201,16 +220,17 @@ export async function POST(request: Request) {
 
       // بررسی دریافت URL پرداخت
       // {
-      //     "paidAt": "2018-03-25T23:43:01.053000",
-      //     "amount": 1600,
-      //     "result": 100,
-      //     "status": 1,
-      //     "refNumber": 12312,
-      //     "description": "Hello World!",
-      //     "cardNumber": "62741****44",
-      //     "orderId": "2211",
-      //     "message" : "success"
-      // }
+      //     message: 'success',
+      //     result: 100,
+      //     refNumber: '128941868166',
+      //     paidAt: '2025-07-25T16:11:59.947000',
+      //     status: 1,
+      //     amount: 10000,
+      //     orderId: '1404053161119',
+      //     description: 'شماره سفارش: 1404053161119 برای: مدیریت کدملی: 4180317125',
+      //     cardNumber: '603799******5795',
+      //     multiplexingInfos: []
+      //   }
 
       if (getUrl.status) {
         if (getUrl.data.result === 201) {
@@ -218,7 +238,16 @@ export async function POST(request: Request) {
         }
         if (getUrl.data.result === 100) {
           const cardNumber = getUrl.data.cardNumber
-          return await updateOrder(settings[0] ,status, trackingCode, userId, bankName, authority, price, cardNumber)
+          return await updateOrder(
+            settings[0],
+            status,
+            trackingCode,
+            userId,
+            method,
+            authority,
+            price,
+            cardNumber
+          )
         } else {
           const errors: Record<string, string> = {
             102: 'مرچند یافت نشد.',
@@ -234,7 +263,7 @@ export async function POST(request: Request) {
       }
     }
 
-    if (bankName === 'AQAYEPARDAKHT') {
+    if (method === 'AQAYEPARDAKHT') {
       const params = {
         pin: merchant,
         amount: price,
@@ -269,7 +298,16 @@ export async function POST(request: Request) {
         }
         if (getUrl.data.code === '1') {
           const cardNumber = '' // خود درگاه نمیده
-          return await updateOrder(settings[0] , status, trackingCode, userId, bankName, authority, price, cardNumber)
+          return await updateOrder(
+            settings[0],
+            status,
+            trackingCode,
+            userId,
+            method,
+            authority,
+            price,
+            cardNumber
+          )
         } else {
           const errors: Record<string, string> = {
             '-1': 'amount نمی تواند خالی باشد',
@@ -294,7 +332,7 @@ export async function POST(request: Request) {
       }
     }
 
-    if (bankName === 'IDPAY') {
+    if (method === 'IDPAY') {
       return createErrorResponseWithMessage('درگاه غیرفعال است.')
     }
 
@@ -305,33 +343,118 @@ export async function POST(request: Request) {
 }
 
 // تابع کمکی برای آپدیت سفارش
+async function sendSms(trackingCode: string) {
+
+  // دریافت اطلاعات رزروهای نهایی
+  const reservations = await prisma.reservations.findMany({
+    where: {
+      orderId: trackingCode,
+    },
+    include: {
+      service: {
+        include: {
+          user: true,
+        },
+      },
+      provider: {
+        include: {
+          user: true,
+        },
+      },
+      user: true,
+    },
+  })
+
+
+  const sendSmsNotifications = async (paramsSms: object , mobile: string) => {
+    await callInternalApi('api/admin/sms/sendSms', {
+      method: 'POST',
+      body: { ...paramsSms, mobile },
+    })
+  }
+  const sendEmailNotifications = async (paramsEmail: object , email: string) => {
+    await callInternalApi('/admin/email/sendEmail', {
+      method: 'POST',
+      body: { ...paramsEmail, email },
+    })
+  }
+
+  for (const reservation of reservations) {
+    // ساخت پارامترهای پایه
+    const paramsSms = {
+      type: 'confirmReservation',
+      trackingCode: trackingCode,
+      dateName: fullStringToDateObjectP(reservation.date).weekDay.name,
+      date: reservation.date,
+      time: reservation.time.replace('-', ' تا '),
+      service: reservation.service.name,
+      provider: reservation.provider.user.fullName,
+    }
+    const paramsEmail = {
+      ...paramsSms,
+      title: 'تبریک! رزرو شما با موفقیت ثبت شد.',
+      subject: `رزرو جدید ${trackingCode}`,
+      text: 'تبریک! یک سفارش جدید ثبت شد.',
+    }
+
+    if (reservation.service.smsToAdminService) {
+      await sendSmsNotifications(paramsSms , reservation.service.user.mobile)
+    }
+    if (reservation.service.smsToAdminProvider) {
+      await sendSmsNotifications(paramsSms, reservation.provider.user.mobile)
+    }
+    if (reservation.service.smsToUserService) {
+      await sendSmsNotifications(paramsSms, reservation.user.mobile)
+    }
+
+    if (reservation.service.emailToAdminService) {
+      if (reservation.service.user.email) {
+        await sendEmailNotifications(paramsEmail , reservation.service.user.email)
+      }
+    }
+    if (reservation.service.emailToAdminProvider) {
+      if (reservation.provider.user.email) {
+        await sendEmailNotifications(paramsEmail , reservation.provider.user.email)
+      }
+    }
+    if (reservation.service.emailToUserService) {
+      if (reservation.user.email) {
+        await sendEmailNotifications(paramsEmail , reservation.user.email)
+      }
+    }
+  }
+}
+
 async function updateOrder(
   setting: TypeApiSetting,
   status: TypeReservationsStatus,
   trackingCode: string,
   userId: number,
-  bankName: TypeBankName,
+  method: TypeOrderMethod,
   authority: string,
   price: number,
   cardNumber: string
 ) {
-
-  // تراکنش ثبت می شود
-  const transaction = await prisma.transaction.create({
-    data: {
-      bankName: bankName,
-      authority: authority,
-      amount: price,
-      cardNumber: cardNumber,
-    },
-  })
+  let transactionId = null
+  if (method !== 'COD') {
+    // تراکنش ثبت می شود
+    const transaction = await prisma.transaction.create({
+      data: {
+        bankName: method,
+        authority: authority,
+        amount: price,
+        cardNumber: cardNumber,
+      },
+    })
+    transactionId = transaction.id
+  }
 
   // پرداخت ثبت می شود
   const payment = await prisma.payments.create({
     data: {
-      paymentType: 'OnlinePayment' as TypePaymentType,
+      paymentType: method !== 'COD' ? 'OnlinePayment' : 'UnknownPayment',
       userId: userId,
-      transactionId: transaction.id,
+      transactionId: transactionId,
       description: '1111111', // حذف به نظرم
     },
   })
@@ -374,7 +497,7 @@ async function updateOrder(
       service: {
         select: {
           name: true,
-          descriptionAfterPurchase: true
+          descriptionAfterPurchase: true,
         },
       },
       provider: {
@@ -389,9 +512,14 @@ async function updateOrder(
     },
   })
 
+  // ارسال sms
+  if (status === 'COMPLETED') {
+    await sendSms(trackingCode)
+  }
+
   return createSuccessResponseWithData({
     order: serializeBigIntToNumber(order),
     reservations: serializeBigIntToNumber(reservations),
-    automaticConfirmation: setting.automaticConfirmation
+    automaticConfirmation: setting.automaticConfirmation,
   })
 }

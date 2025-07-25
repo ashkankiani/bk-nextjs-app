@@ -28,21 +28,20 @@ export async function GET(request: Request) {
       query[key] = value
     })
 
+    const Type = 'OnlinePayment'
     const Status = query.Status === 'OK' ? TYPE_ONLINE_PAYMENT_STATUS.PAID : TYPE_ONLINE_PAYMENT_STATUS.UN_PAID
     const Authority = query.Authority
 
     // آماده کردن URL برای هدایت به داشبورد
     const redirectUrl = new URL(
       `/payment?${Qs.stringify({
+        Type,
         Status,
         Authority,
       })}`,
       process.env.NEXT_PUBLIC_FULL_PATH
     )
-    console.log({
-      Status,
-      Authority,
-    })
+
     return NextResponse.redirect(redirectUrl, { status: 302 })
   } catch (error) {
     return handlerRequestError(error)

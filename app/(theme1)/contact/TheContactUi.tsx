@@ -1,3 +1,5 @@
+'use client'
+
 import HeadPage from '@/components/layout/HeadPage'
 import TheHeader from '@/components/front-end/theme1/layout/TheHeader'
 import TheFooter from '@/components/front-end/theme1/layout/TheFooter'

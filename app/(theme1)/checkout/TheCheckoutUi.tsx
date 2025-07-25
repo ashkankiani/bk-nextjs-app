@@ -13,7 +13,7 @@ import Popup from 'reactjs-popup'
 import useHook from '@/hooks/controller/useHook'
 import ModalFastRegister from '@/app/(theme1)/checkout/component/ModalFastRegister'
 import { useAddReservations, useGetReservationsByUserId } from '@/hooks/user/useReservation'
-import { TypeBankName, TypeDiscountsType, TypeGender } from '@/types/typeConfig'
+import {TypeBankName, TypeDiscountsType, TypeGender, TypeOrderMethod} from '@/types/typeConfig'
 import { useCheckDiscount } from '@/hooks/user/useDiscount'
 import { TypeApiDiscount, TypeApiOrder } from '@/types/typeApiEntity'
 import { TypeApiAddOrderReq, TypeApiAddReservationsReq } from '@/types/typeApiUser'
@@ -21,9 +21,9 @@ import { useCreateAuthority, useGetGateways } from '@/hooks/user/useGateway'
 import { useAddOrder, useUpdateOrder } from '@/hooks/user/useOrder'
 
 export type TypePaymentType = {
-  key: TypeBankName | 'COD'
+  type: 'OnlinePayment' | 'UnknownPayment'
+  key: TypeBankName | TypeOrderMethod
   title: string
-  type: 'OnlinePayment' | 'COD'
 }
 export default function TheCheckoutUi() {
   const { dispatch, router, cart, searchQuery, isLogin, user, setting } = useHook()
@@ -169,17 +169,22 @@ export default function TheCheckoutUi() {
       // hint: باید بهش بگم ...
       bkToast('error', 'روش پرداخت آنلاین وجود ندارد.')
       return
-    } else if (paymentType?.key === 'COD') {
-      await mutateAsyncUpdateOrder({ trackingCode: order.trackingCode })
-        .then(() => {
-          // router.push('/payment')
-        })
-        .catch(errors => {
-          bkToast('error', errors.Reason)
-        })
-    } else {
+    }
+    // else if (paymentType?.type === 'UnknownPayment') {
+    //   await mutateAsyncUpdateOrder({ trackingCode: order.trackingCode })
+    //     .then(res => {
+    //       // bkToast('success', res.Message)
+    //       router.push(
+    //         `/payment?${Qs.stringify(res)}`
+    //       )
+    //     })
+    //     .catch(errors => {
+    //       bkToast('error', errors.Reason)
+    //     })
+    // } else {
       const params = {
-        gateway: paymentType?.key as TypeBankName,
+        type: paymentType?.type  as 'OnlinePayment' | 'UnknownPayment',
+        gateway: paymentType?.key as TypeBankName | 'COD',
         price: totalPrice,
         userId: user.id,
         orderId: order.trackingCode,
@@ -193,26 +198,15 @@ export default function TheCheckoutUi() {
           bkToast('error', errors.Reason)
         })
 
-      // dispatch(
-      //   setOrder({
-      //     trackingCode: trackingCode,
-      //     discountId: discountId,
-      //     discountPrice: discountPrice === 0 ? null : discountPrice,
-      //     totalPrice: initTotalPrice,
-      //     paymentType: paymentType,
-      //     merchantId: paymentType.type !== 'UnknownPayment' ? paymentType.merchantId : null,
-      //     authority: authority,
-      //     cart: cart,
-      //   })
-      // )
-    }
+
+    // }
   }
 
   const isCheckReservationsByUserId = isLogin && !!user
 
   const {
     data: dataGetReservationsByUserId,
-    isLoading: isLoadingGetReservationsByUserId,
+    // isLoading: isLoadingGetReservationsByUserId,
     isFetched: isFetchedGetReservationsByUserId,
   } = useGetReservationsByUserId(
     {
@@ -486,9 +480,9 @@ export default function TheCheckoutUi() {
                             <input
                               onChange={() =>
                                 setPaymentType({
+                                  type: 'UnknownPayment',
                                   key: 'COD',
                                   title: 'پرداخت در محل',
-                                  type: 'COD',
                                 })
                               }
                               id="codPayment"
@@ -510,10 +504,10 @@ export default function TheCheckoutUi() {
                         onClick={() => checkReservation()}
                         className={
                           'bk-button fa-sbold-18px cursor-pointer border border-white p-4 text-white max-sm:mx-auto ' +
-                          (isPendingCreateAuthority ? 'disable-action' : '')
+                          (isPendingCreateAuthority || isPendingAddOrder || isPendingAddReservations || isPendingUpdateOrder ? 'disable-action' : '')
                         }
                       >
-                        {isPendingCreateAuthority ? <TheSpinner /> : 'تکمیل سفارش'}
+                        {isPendingCreateAuthority || isPendingAddOrder || isPendingAddReservations || isPendingUpdateOrder ? <TheSpinner /> : 'تکمیل سفارش'}
                       </div>
                     </>
                   )}

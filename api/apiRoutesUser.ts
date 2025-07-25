@@ -1,5 +1,4 @@
 import { TypeApiRoutesUser } from '@/types/typeConfig'
-import { GetOrderByBankTransactionCode, ShowOrder } from '@/api/apisUser'
 
 export const ApiRoutesUser: TypeApiRoutesUser = {
   Setting: {
@@ -39,10 +38,10 @@ export const ApiRoutesUser: TypeApiRoutesUser = {
     AddOrder: '/user/order/addOrder',
     ShowOrder: '/user/order/showOrder?',
     UpdateOrder: '/user/order/updateOrder',
-    GetOrderByBankTransactionCode: '/user/order/getOrderByBankTransactionCode?',
+    GetOrderByAuthority: '/user/order/getOrderByAuthority?',
   },
   Faq: {
-    GetFaqs: '/admin/faq/getFaqs',
+    GetFaqs: '/user/faq/getFaqs',
   },
   // Holiday: {
   //     GetHolidays: '/user/holiday/getHolidays',

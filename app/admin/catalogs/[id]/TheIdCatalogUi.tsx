@@ -1,7 +1,7 @@
 'use client'
 import Link from 'next/link'
 import { MdOutlineKeyboardBackspace } from 'react-icons/md'
-import { bkToast } from '@/libs/utility'
+import { bkToast, textPermissionType } from '@/libs/utility'
 import { useForm } from 'react-hook-form'
 import TheSpinner from '@/components/layout/TheSpinner'
 import HeaderPage from '@/components/back-end/section/HeaderPage'
@@ -12,6 +12,7 @@ import { useShowPermission } from '@/hooks/admin/usePermission'
 import { useUpdatePermission } from '@/hooks/admin/usePermission'
 import { TypeApiUpdatePermissionReq } from '@/types/typeApiAdmin'
 import { useEffect } from 'react'
+import { TypePermissionKeys } from '@/types/typeConfig'
 
 export default function TheIdCatalogUi() {
   const params = useParams()
@@ -71,29 +72,34 @@ export default function TheIdCatalogUi() {
           <form className="panel-boxed" onSubmit={handleSubmit(onSubmit)}>
             <div className="flex-center-start mb-4 flex-wrap gap-4" dir="ltr">
               {dataPermission &&
-                Object.entries(dataPermission).map(([key, value], index) => {
-                  if (key !== 'id' && key !== 'catalogId') {
-                    return (
-                      <div
-                        key={key + index}
-                        className="fa-regular-18px rounded-md border border-neutral-400 bg-white p-2 dark:border-darkNavy3 dark:bg-darkNavy2 dark:text-white"
-                      >
-                        <label className="flex cursor-pointer items-center gap-2">
-                          <input
-                            {...register(key, {})}
-                            type="checkbox"
-                            className="bk-checkbox"
-                            defaultChecked={!!value}
-                          />
-                          <span className="truncate" title={key}>
-                            {key}
-                          </span>
-                        </label>
-                      </div>
-                    )
+                (Object.entries(dataPermission) as [TypePermissionKeys, boolean][]).map(
+                  ([key, value], index) => {
+                    if (key !== 'id' && key !== 'catalogId') {
+                      return (
+                        <div
+                          key={key + index}
+                          className="fa-regular-18px rounded-md border border-neutral-400 bg-white p-2 dark:border-darkNavy3 dark:bg-darkNavy2 dark:text-white"
+                        >
+                          <label className="flex cursor-pointer items-center gap-2">
+                            <input
+                              {...register(key, {})}
+                              type="checkbox"
+                              className="bk-checkbox"
+                              defaultChecked={value}
+                            />
+                            <span className="flex-start-start-column gap-1">
+                              <span className="fa-sbold-14px truncate">
+                                {textPermissionType(key)}
+                              </span>
+                              <span className="en-regular-12px truncate">{key}</span>
+                            </span>
+                          </label>
+                        </div>
+                      )
+                    }
+                    return null
                   }
-                  return null
-                })}
+                )}
             </div>
 
             <div className="panel-col-100">

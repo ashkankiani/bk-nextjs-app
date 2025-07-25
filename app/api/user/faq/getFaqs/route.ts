@@ -3,8 +3,6 @@ import {
   createSuccessResponseWithData,
   handlerRequestError,
   checkMethodAllowed,
-  getQueryStringByUrl,
-  createErrorResponseWithMessage, serializeBigIntToNumber,
 } from '@/app/api/_utils/handleRequest'
 
 const allowedMethods = ['GET']
@@ -21,25 +19,11 @@ export async function GET(request: Request) {
   //     return createErrorResponse(authResponse?.message);
   // }
 
-  // دریافت Id درخواست
-  const id = getQueryStringByUrl(request.url)
-
-  // بررسی وجود ID
-  if (!id) {
-    return createErrorResponseWithMessage('آیدی ضروری است.')
-  }
-
   try {
-    // دریافت سرویس
-    const order = await prisma.orders.findUnique({
-      where: { bankTransactionCode: id },
-    })
+    // دریافت لیست سوالات متداول
+    const faqs = await prisma.faqs.findMany()
 
-    if(order){
-      createErrorResponseWithMessage('سفارش یافت نشد')
-    }
-
-    return createSuccessResponseWithData(serializeBigIntToNumber(order))
+    return createSuccessResponseWithData(faqs)
   } catch (error) {
     return handlerRequestError(error)
   }

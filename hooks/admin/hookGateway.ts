@@ -58,7 +58,6 @@ export const hookIdPayGetVerify = async (data, callback) => {
   await bkRequestZarinpal
     .post('/verify.json', data)
     .then(res => {
-      console.log(res.data)
       if (
         (res.status === 200 && res.data.data.code === 100) ||
         (res.status === 200 && res.data.data.code === 101)

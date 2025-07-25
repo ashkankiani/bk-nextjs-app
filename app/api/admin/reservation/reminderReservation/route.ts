@@ -67,25 +67,25 @@ export async function POST(request: Request) {
 
     const sendNotifications = async () => {
       if (body.smsReminderToAdminProvider) {
-        await callInternalApi('/admin/sms/send-sms', {
+        await callInternalApi('/admin/sms/sendSms', {
           method: 'POST',
           body: { ...paramsSms, mobile: body.reserve.order.provider.user.mobile },
         })
       }
       if (body.smsReminderToUserService) {
-        await callInternalApi('/admin/sms/send-sms', {
+        await callInternalApi('/admin/sms/sendSms', {
           method: 'POST',
           body: { ...paramsSms, mobile: body.reserve.order.user.mobile },
         })
       }
       if (body.emailReminderToAdminProvider) {
-        await callInternalApi('/admin/email/send-email', {
+        await callInternalApi('/admin/email/sendEmail', {
           ...paramsEmail,
           email: body.reserve.order.provider.user.email,
         })
       }
       if (body.emailReminderToUserService && body.reserve.order.user.email) {
-        await callInternalApi('/admin/email/send-email', {
+        await callInternalApi('/admin/email/sendEmail', {
           ...paramsEmail,
           email: body.reserve.order.user.email,
         })

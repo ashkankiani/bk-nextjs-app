@@ -1,8 +1,10 @@
 import prisma from '@/prisma/client'
 import {
-  checkMethodAllowed,
   createSuccessResponseWithData,
   handlerRequestError,
+  checkMethodAllowed,
+  getQueryStringByUrl,
+  createErrorResponseWithMessage, serializeBigIntToNumber,
 } from '@/app/api/_utils/handleRequest'
 
 const allowedMethods = ['GET']
@@ -19,9 +21,25 @@ export async function GET(request: Request) {
   //     return createErrorResponse(authResponse?.message);
   // }
 
+  // دریافت Id درخواست
+  const id = getQueryStringByUrl(request.url)
+
+  // بررسی وجود ID
+  if (!id) {
+    return createErrorResponseWithMessage('آیدی ضروری است.')
+  }
+
   try {
-    const faqs = await prisma.faqs.findMany()
-    return createSuccessResponseWithData(faqs)
+    // دریافت سرویس
+    const order = await prisma.orders.findUnique({
+      where: { authority: id },
+    })
+
+    if(order){
+      createErrorResponseWithMessage('سفارش یافت نشد')
+    }
+
+    return createSuccessResponseWithData(serializeBigIntToNumber(order))
   } catch (error) {
     return handlerRequestError(error)
   }

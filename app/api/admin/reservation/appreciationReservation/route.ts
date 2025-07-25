@@ -72,25 +72,25 @@ export async function POST(request: Request) {
 
     const sendNotifications = async () => {
       if (body.smsAppreciationToAdminProvider) {
-        await callInternalApi('/admin/sms/send-sms', {
+        await callInternalApi('/admin/sms/sendSms', {
           method: 'POST',
           body: { ...params, mobile: body.reserve.order.provider.user.mobile },
         })
       }
       if (body.smsAppreciationToUserService) {
-        await callInternalApi('/admin/sms/send-sms', {
+        await callInternalApi('/admin/sms/sendSms', {
           method: 'POST',
           body: { ...params, mobile: body.reserve.order.user.mobile },
         })
       }
       if (body.emailAppreciationToAdminProvider) {
-        await callInternalApi('/admin/email/send-email', {
+        await callInternalApi('/admin/email/sendEmail', {
           ...paramsEmail,
           email: body.reserve.order.provider.user.email,
         })
       }
       if (body.emailAppreciationToUserService && body.reserve.order.user.email) {
-        await callInternalApi('/admin/email/send-email', {
+        await callInternalApi('/admin/email/sendEmail', {
           ...paramsEmail,
           email: body.reserve.order.user.email,
         })

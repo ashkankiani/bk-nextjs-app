@@ -56,7 +56,7 @@ export default function useMenu() {
       permission: permissions.viewHolidays,
     },
     discounts: {
-      title: 'تخفیف',
+      title: 'کد تخفیف',
       name: 'discounts',
       icon: <TbDiscount className="text-primary-900 dark:text-primary-700" size="30px" />,
       permission: permissions.viewDiscounts,

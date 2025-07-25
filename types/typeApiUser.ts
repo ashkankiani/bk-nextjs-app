@@ -1,7 +1,14 @@
-import { TypeBankName, TypeGender, TypeReservationsStatus } from '@/types/typeConfig'
+import {
+  TypeBankName,
+  TypeGender,
+  TypeOrderMethod,
+  TypePay,
+  TypeReservationsStatus,
+} from '@/types/typeConfig'
 import {
   TypeApiConnection,
   TypeApiDiscount,
+  TypeApiFaq,
   TypeApiOrder,
   TypeApiPermission,
   TypeApiProvider,
@@ -180,7 +187,8 @@ export type TypeApiGetGatewaysRes = {
   type: 'OnlinePayment'
 }
 export type TypeApiCreateAuthorityReq = {
-  gateway: TypeBankName
+  type: 'OnlinePayment' | 'UnknownPayment'
+  gateway: TypeBankName | 'COD'
   price: number
   userId: number
   orderId: string
@@ -192,14 +200,14 @@ export type TypeApiCreateAuthorityRes = {
 export type TypeApiVerifyPaymentReq = {
   authority: string
   trackingCode: string
-  bankName: TypeBankName
+  method: TypeOrderMethod
   price: number
   userId: number
 }
 export type TypeApiVerifyPaymentRes = {
   order: TypeApiOrder
   automaticConfirmation: boolean
-  reservations: TypeApiReservation & {
+  reservations: (TypeApiReservation & {
     service: {
       name: string
       descriptionAfterPurchase: string
@@ -209,7 +217,7 @@ export type TypeApiVerifyPaymentRes = {
         fullName: string
       }
     }
-  }[]
+  })[]
 }
 
 /*<====================================>*/
@@ -235,11 +243,17 @@ export type TypeApiUpdateOrderReq = {
   trackingCode: string
 }
 export type TypeApiUpdateOrderRes = {
-  message: string
+  Authority: string
+  Status: TypePay
 }
 
-export type TypeApiGetOrderByBankTransactionCodeReq = {
+export type TypeApiGetOrderByAuthorityReq = {
   id: string
 }
 
-export type TypeApiGetOrderByBankTransactionCodeRes = TypeApiOrder
+export type TypeApiGetOrderByAuthorityRes = TypeApiOrder
+
+/*<====================================>*/
+// Order
+/*<====================================>*/
+export type TypeApiGetFaqsRes = TypeApiFaq

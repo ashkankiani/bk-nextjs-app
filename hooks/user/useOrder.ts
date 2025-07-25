@@ -1,30 +1,28 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQuery } from '@tanstack/react-query'
 import {
   AddOrder,
-  DeleteOrder, GetOrderByBankTransactionCode,
-  GetOrders,
+  GetOrderByAuthority,
   ShowOrder,
   UpdateOrder,
 } from '@/api/apisUser'
 import {
   TypeApiAddOrderReq,
-  TypeApiDeleteOrderReq, TypeApiGetOrderByBankTransactionCodeReq,
+   TypeApiGetOrderByAuthorityReq,
   TypeApiUpdateOrderReq,
 } from '@/types/typeApiUser'
-import {GetProvidersByServiceId} from "@/api/apisAdmin";
 
-function useGetOrders(Optional?: object) {
-  const { data, isLoading, isFetched } = useQuery({
-    queryKey: ['GetOrders'],
-    queryFn: () => GetOrders(),
-    ...Optional,
-  })
-  return {
-    data,
-    isLoading,
-    isFetched,
-  }
-}
+// function useGetOrders(Optional?: object) {
+//   const { data, isLoading, isFetched } = useQuery({
+//     queryKey: ['GetOrders'],
+//     queryFn: () => GetOrders(),
+//     ...Optional,
+//   })
+//   return {
+//     data,
+//     isLoading,
+//     isFetched,
+//   }
+// }
 
 function useShowOrder(id: number, Optional?: object) {
   const { data, isLoading, isFetched, refetch , isRefetching } = useQuery({
@@ -42,12 +40,8 @@ function useShowOrder(id: number, Optional?: object) {
 }
 
 function useAddOrder(Optional?: object) {
-  const client = useQueryClient()
   const { mutateAsync, isPending } = useMutation({
     mutationFn: (data: TypeApiAddOrderReq) => AddOrder(data),
-    onSuccess: () => {
-      // client.invalidateQueries({ queryKey: ['GetOrders'] }) // hint
-    },
     ...Optional,
   })
   return {
@@ -56,7 +50,7 @@ function useAddOrder(Optional?: object) {
   }
 }
 
-function useDeleteOrder(Optional?: object) {
+/*function useDeleteOrder(Optional?: object) {
   const client = useQueryClient()
   const { mutateAsync, isPending } = useMutation({
     mutationFn: (data: TypeApiDeleteOrderReq) => DeleteOrder(data),
@@ -69,15 +63,11 @@ function useDeleteOrder(Optional?: object) {
     mutateAsync,
     isPending,
   }
-}
+}*/
 
 function useUpdateOrder(Optional?: object) {
-  const client = useQueryClient()
   const { mutateAsync, isPending } = useMutation({
     mutationFn: (data: TypeApiUpdateOrderReq) => UpdateOrder(data),
-    onSuccess: (data, variables, context) => {
-      // client.invalidateQueries({ queryKey: ['ShowOrder', variables.id] })
-    },
     ...Optional,
   })
   return {
@@ -87,9 +77,9 @@ function useUpdateOrder(Optional?: object) {
 }
 
 
-function useGetOrderByBankTransactionCode(Optional?: object) {
+function useGetOrderByAuthority(Optional?: object) {
   const { mutateAsync, isPending } = useMutation({
-    mutationFn: (data: TypeApiGetOrderByBankTransactionCodeReq) => GetOrderByBankTransactionCode(data),
+    mutationFn: (data: TypeApiGetOrderByAuthorityReq) => GetOrderByAuthority(data),
     ...Optional,
   })
   return {
@@ -100,4 +90,4 @@ function useGetOrderByBankTransactionCode(Optional?: object) {
 
 
 
-export { useGetOrders, useShowOrder, useAddOrder, useDeleteOrder, useUpdateOrder , useGetOrderByBankTransactionCode}
+export { useShowOrder, useAddOrder, useUpdateOrder , useGetOrderByAuthority}

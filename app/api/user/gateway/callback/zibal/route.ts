@@ -26,6 +26,7 @@ export async function GET(request: Request) {
       query[key] = value
     })
 
+    const Type = 'OnlinePayment'
     const Status =
       query.success === '1' ? TYPE_ONLINE_PAYMENT_STATUS.PAID : TYPE_ONLINE_PAYMENT_STATUS.UN_PAID
     const Authority = query.trackId
@@ -33,6 +34,7 @@ export async function GET(request: Request) {
     // آماده کردن URL برای هدایت به داشبورد
     const redirectUrl = new URL(
       `/payment?${Qs.stringify({
+        Type,
         Status,
         Authority,
       })}`,

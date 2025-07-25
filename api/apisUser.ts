@@ -32,10 +32,10 @@ import {
   TypeApiAddOrderRes,
   TypeApiUpdateOrderReq,
   TypeApiUpdateOrderRes,
-  TypeApiGetOrderByBankTransactionCodeReq,
-  TypeApiGetOrderByBankTransactionCodeRes,
+  TypeApiGetOrderByAuthorityReq,
+  TypeApiGetOrderByAuthorityRes,
   TypeApiShowOrderReq,
-  TypeApiShowOrderRes,
+  TypeApiShowOrderRes, TypeApiGetFaqsRes,
 } from '@/types/typeApiUser'
 import { ApiRoutesUser } from '@/api/apiRoutesUser'
 import { TypeApiSetting } from '@/types/typeApiEntity'
@@ -125,8 +125,14 @@ export const ShowOrder = (params: TypeApiShowOrderReq) =>
   getRequest<TypeApiShowOrderRes>(ApiRoutesUser.Order.ShowOrder, params)
 export const UpdateOrder = (params: TypeApiUpdateOrderReq) =>
   putRequest<TypeApiUpdateOrderRes>(ApiRoutesUser.Order.UpdateOrder, params)
-export const GetOrderByBankTransactionCode = (params: TypeApiGetOrderByBankTransactionCodeReq) =>
-  getRequest<TypeApiGetOrderByBankTransactionCodeRes>(
-    ApiRoutesUser.Order.GetOrderByBankTransactionCode,
+export const GetOrderByAuthority = (params: TypeApiGetOrderByAuthorityReq) =>
+  getRequest<TypeApiGetOrderByAuthorityRes>(
+    ApiRoutesUser.Order.GetOrderByAuthority,
     params
   )
+
+/*<====================================>*/
+// Faq
+/*<====================================>*/
+export const GetFaqs = () =>
+    getRequest<TypeApiGetFaqsRes[]>(ApiRoutesUser.Faq.GetFaqs)

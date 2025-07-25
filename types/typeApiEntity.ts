@@ -3,7 +3,7 @@ import {
   TypeCancellationReservation,
   TypeDiscountsType,
   TypeEmailStatus,
-  TypeGender, TypeOrderStatus,
+  TypeGender, TypeOrderMethod, TypeOrderStatus,
   TypePaymentType,
   TypeReservationsStatus,
   TypeSmsName,
@@ -88,8 +88,8 @@ export interface TypeApiPermission {
   addCatalogs: boolean
   editCatalogs: boolean
   deleteCatalogs: boolean
-  getSms: boolean
-  getEmail: boolean
+  // getSms: boolean
+  // getEmail: boolean
 }
 export interface TypeApiConnection {
   id: number
@@ -252,9 +252,9 @@ export interface TypeApiOrder {
   id: number
   trackingCode: string
 
-  bankName: TypeBankName
+  method: TypeOrderMethod
 
-  bankTransactionCode: string | null
+  authority: string | null
 
   status: TypeOrderStatus
 
@@ -297,11 +297,7 @@ export interface TypeApiPayment {
 export interface TypeApiReservation {
   id: number
 
-  orderId: number | null
-
-  paymentId: number | null
-
-  transactionId: number | null
+  orderId: string | null
 
   serviceId: number
 
@@ -315,8 +311,6 @@ export interface TypeApiReservation {
   time: string
 
   status: TypeReservationsStatus
-
-  expiresAt:  number | null
 
   createdAt: Date
   updatedAt: Date

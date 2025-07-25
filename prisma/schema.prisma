@@ -38,9 +38,9 @@ model Orders {
 
   trackingCode String @unique
 
-  bankName ConnectionsBankName @default(NONE)
+  method OrdersMethod @default(NONE)
 
-  bankTransactionCode String? @unique
+  authority String? @unique
 
   status OrdersStatus @default(PENDING)
 
@@ -304,8 +304,8 @@ model Permissions {
   addCatalogs       Boolean  @default(false)
   editCatalogs      Boolean  @default(false)
   deleteCatalogs    Boolean  @default(false)
-  getSms            Boolean  @default(true)
-  getEmail          Boolean  @default(true)
+  // getSms            Boolean  @default(true)
+  // getEmail          Boolean  @default(true)
 }
 
 model Sessions {
@@ -450,6 +450,15 @@ enum ConnectionsBankName {
   AQAYEPARDAKHT
 }
 
+enum OrdersMethod {
+  NONE
+  ZARINPAL
+  IDPAY
+  ZIBAL
+  AQAYEPARDAKHT
+  COD
+}
+
 enum ConnectionsSmsName {
   NONE
   IPPANEL
@@ -477,6 +486,7 @@ enum ReservationsStatus {
   CANCELED // لغو شده
   REJECTED // رد شده توسط مدیریت
   PENDING // در حال پردازش (قبل از تکمیل پرداخت)
+  RESET // در حال استراحت
 }
 
 enum ReservationsPaymentType {

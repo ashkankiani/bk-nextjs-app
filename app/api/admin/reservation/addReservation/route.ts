@@ -143,18 +143,21 @@ export async function POST(request: Request) {
 
     if (body.status === 'COMPLETED') {
       const sendSmsNotifications = async (mobile: string) => {
-        await callInternalApi('/admin/sms/send-sms', {
+        await callInternalApi('/admin/sms/sendSms', {
           method: 'POST',
           body: { ...params, mobile },
         })
       }
       const sendEmailNotifications = async (email: string) => {
-        await callInternalApi('/admin/email/send-email', {
-          ...params,
-          email,
-          title: 'تبریک! رزرو شما با موفقیت ثبت شد.',
-          subject: `رزرو جدید ${body.trackingCode}`,
-          text: 'تبریک! یک سفارش جدید ثبت شد.',
+        await callInternalApi('/admin/email/sendEmail', {
+          method: 'POST',
+          body: {
+            ...params,
+            email,
+            title: 'تبریک! رزرو شما با موفقیت ثبت شد.',
+            subject: `رزرو جدید ${body.trackingCode}`,
+            text: 'تبریک! یک سفارش جدید ثبت شد.',
+          },
         })
       }
 

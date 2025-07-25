@@ -4,9 +4,11 @@ import {
   checkMethodAllowed,
   checkRequiredFields,
   createErrorResponseWithMessage,
-  createSuccessResponseWithMessage,
+  createSuccessResponseWithMessage, createSuccessResponseWithData,
 } from '@/app/api/_utils/handleRequest'
 import {dateNowP} from "@/libs/convertor";
+import {generateCode} from "@/libs/utility";
+import {TYPE_ONLINE_PAYMENT_STATUS} from "@/libs/constant";
 
 const allowedMethods = ['PUT']
 
@@ -45,12 +47,18 @@ export async function PUT(request: Request) {
       return createErrorResponseWithMessage('دسترسی به تنظیمات مویثر نشد.')
     }
 
+    // ایجاد یک اتوریتی برای پرداخت های COD
+    const Type = 'UnknownPayment'
+    const Status = TYPE_ONLINE_PAYMENT_STATUS.PAID
+    const Authority = generateCode().toString()
+
     // آپدیت سفارش
     await prisma.orders.update({
       where: {
         trackingCode,
       },
       data: {
+        authority: Authority,
         status: 'COMPLETED',
         expiresAt: null,
       },
@@ -67,7 +75,11 @@ export async function PUT(request: Request) {
       },
     })
 
-    return createSuccessResponseWithMessage('سفارش آپدیت شد.')
+    return createSuccessResponseWithData({
+      Type,
+      Status,
+      Authority
+    })
   } catch (error) {
     return handlerRequestError(error)
   }

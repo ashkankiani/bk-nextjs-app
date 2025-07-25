@@ -105,33 +105,7 @@ export async function GET(request: Request) {
       },
     })
 
-    // حداقل مدت زمان قفل نوبت انتخاب شده
-    const minReservationLock = settings[0].minReservationLock * 60000 // 1min === 60000
-
-    // // حذف در حال رزروهای گذشته
-    // await prisma.drafts.deleteMany({
-    //   where: {
-    //     createEpoch: {
-    //       lte: dateNowP().valueOf() - minReservationLock,
-    //     },
-    //   },
-    // })
-
-    // دریافت لیست در حال رزروها
-
-    // const drafts = await prisma.drafts.findMany({
-    //   where: {
-    //     // اضافه شود
-    //     // ...(user && {userId: user.id}),
-    //     //
-    //     // userId: {
-    //     //     not: userId,
-    //     // },
-    //   },
-    // })
-
-    // ادغام درحال رزروها و رزرو شده ها
-    // const merge = reservations.concat(drafts)
+    // ساخت گروهی آبجکت رزوها بر اساس تاریخ
     const reserveList = groupReservationsTimesByDate(reservations)
 
     // دریافت لیست تعطیلات
@@ -146,12 +120,6 @@ export async function GET(request: Request) {
         serviceId: parseInt(serviceId),
         providerId: parseInt(providerId),
       },
-      // select: {
-      //     dayName: true,
-      //     dayIndex: true,
-      //     startTime: true,
-      //     endTime: true,
-      // }
     })
 
     if (timeSheets.length === 0) {

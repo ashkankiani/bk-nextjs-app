@@ -4,7 +4,7 @@ import {
   handlerRequestError,
   checkMethodAllowed,
   getQueryStringByUrl,
-  createErrorResponseWithMessage,
+  createErrorResponseWithMessage, serializeBigIntToNumber,
 } from '@/app/api/_utils/handleRequest'
 import { dateNowP } from '@/libs/convertor'
 
@@ -80,7 +80,7 @@ export async function GET(request: Request) {
       },
     })
 
-    return createSuccessResponseWithData(reservations)
+    return createSuccessResponseWithData(serializeBigIntToNumber(reservations))
   } catch (error) {
     return handlerRequestError(error)
   }

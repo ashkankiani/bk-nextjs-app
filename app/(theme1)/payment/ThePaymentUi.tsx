@@ -2,34 +2,31 @@
 import TheHeader from '@/components/front-end/theme1/layout/TheHeader'
 import TheFooter from '@/components/front-end/theme1/layout/TheFooter'
 import { useEffect, useState } from 'react'
-import {bkToast, textReservationsStatus} from '@/libs/utility'
+import { bkToast, textReservationsStatus } from '@/libs/utility'
 import Link from 'next/link'
 import TheSpinner from '@/components/layout/TheSpinner'
 import { useSearchParams } from 'next/navigation'
 import { useVerifyPayment } from '@/hooks/user/useGateway'
 import { TYPE_ONLINE_PAYMENT_STATUS } from '@/libs/constant'
-import { useGetOrderByBankTransactionCode } from '@/hooks/user/useOrder'
+import { useGetOrderByAuthority } from '@/hooks/user/useOrder'
 import { TypeApiVerifyPaymentRes } from '@/types/typeApiUser'
+import { TypePay } from '@/types/typeConfig'
+import { setCart } from '@/store/slice/user'
 
 export default function ThePaymentUi() {
   const searchParams = useSearchParams()
 
-  const Status: string = searchParams.get('Status')
-  const Authority: string = searchParams.get('Authority')
+  // : TypePaymentType | null
+  const Type = searchParams.get('Type') as string
+  const Status = searchParams.get('Status') as TypePay
+  const Authority = searchParams.get('Authority') as string
 
   const [message, setMessage] = useState<string>('')
   const [hasError, setHasError] = useState<boolean>(false)
   const [order, setOrder] = useState<TypeApiVerifyPaymentRes | null>(null)
-  // const [checkGateway, setCheckGateway] = useState(false)
-  // const [statusPayment, setStatusPayment] = useState(false)
 
-  // const [paymentId, setPaymentId] = useState(false)
-  // const [transferId, setTransferId] = useState(false)
-
-  const {
-    mutateAsync: mutateAsyncOrderByBankTransactionCode,
-    isPending: isPendingOrderByBankTransactionCode,
-  } = useGetOrderByBankTransactionCode()
+  const { mutateAsync: mutateAsyncOrderByAuthority, isPending: isPendingOrderByAuthority } =
+    useGetOrderByAuthority()
 
   const { mutateAsync: mutateAsyncVerifyPayment, isPending: isPendingVerifyPayment } =
     useVerifyPayment()
@@ -53,12 +50,12 @@ export default function ThePaymentUi() {
     }
 
     if (Status === TYPE_ONLINE_PAYMENT_STATUS.PAID) {
-      await mutateAsyncOrderByBankTransactionCode({ id: Authority })
+      await mutateAsyncOrderByAuthority({ id: Authority })
         .then(async order => {
           const params = {
             authority: Authority,
             trackingCode: order.trackingCode,
-            bankName: order.bankName,
+            method: order.method,
             price: order.price,
             userId: order.userId,
           }
@@ -72,12 +69,25 @@ export default function ThePaymentUi() {
               setMessage(errors.Reason)
               bkToast('error', errors.Reason)
             })
+            .finally(() => {
+              setCart([])
+            })
         })
         .catch(errors => {
           setHasError(true)
           setMessage(errors.Reason)
           bkToast('error', errors.Reason)
         })
+    } else {
+      // await mutateAsyncOrderByAuthority({ id: Authority })
+      //     .then(async res => {
+      //       setOrder(res)
+      //     })
+      //     .catch(errors => {
+      //       setHasError(true)
+      //       setMessage(errors.Reason)
+      //       bkToast('error', errors.Reason)
+      //     })
     }
 
     //       bkToast('error', 'رزرو ثبت شده است. کد پیگیری را یادداشت کنید.')
@@ -115,7 +125,7 @@ export default function ThePaymentUi() {
           </div>
         )}
 
-        {Status === TYPE_ONLINE_PAYMENT_STATUS.PAID && isPendingOrderByBankTransactionCode && (
+        {Status === TYPE_ONLINE_PAYMENT_STATUS.PAID && isPendingOrderByAuthority && (
           <>
             <p className="mb-4 text-center text-lg">در حال پردازش رزرو...</p>
             <TheSpinner />
@@ -134,7 +144,7 @@ export default function ThePaymentUi() {
           </>
         ) : (
           order &&
-          !isPendingOrderByBankTransactionCode &&
+          !isPendingOrderByAuthority &&
           !isPendingVerifyPayment && (
             <>
               <p className="mb-4 text-center text-lg">عملیات بانکی با موفقیت انجام شد.</p>
@@ -147,7 +157,7 @@ export default function ThePaymentUi() {
               {/*<div className="flex-center-center my-8 flex-col">*/}
               {/*  <p className="mb-4 text-center text-lg">شماره تراکنش بانکی</p>*/}
               {/*  <p className="mb-4 rounded-md border border-green-700 bg-white px-8 text-center font-poppins text-5xl font-bold leading-normal text-green-700 dark:text-green-600">*/}
-              {/*    {order.order.bankTransactionCode}*/}
+              {/*    {order.order.Authority}*/}
               {/*  </p>*/}
               {/*</div>*/}
               {!order.automaticConfirmation && (
@@ -161,42 +171,41 @@ export default function ThePaymentUi() {
                 <table className="w-full text-left text-sm text-gray-500 dark:text-gray-400">
                   <thead className="fa-sbold-18px bg-gray-700 text-center text-white dark:bg-darkNavy1 dark:text-gray-400">
                     <tr>
-                      {['#', 'خدمت', 'ارائه دهنده', 'تاریخ', 'ساعت','وضعیت', 'یادداشت'].map(item => (
-                        <th key={item} scope="col" className="px-6 py-3">
-                          {item}
-                        </th>
-                      ))}
+                      {['#', 'خدمت', 'ارائه دهنده', 'تاریخ', 'ساعت', 'وضعیت', 'یادداشت'].map(
+                        item => (
+                          <th key={item} scope="col" className="px-6 py-3">
+                            {item}
+                          </th>
+                        )
+                      )}
                     </tr>
                   </thead>
                   <tbody className="fa-sbold-16px bg-white text-center dark:bg-gray-800">
-
-                              {order.reservations.map((item, index) =>
-                                      <tr key={index}>
-                                          <td className="px-6 py-3">{index + 1}</td>
-                                          <td className="px-6 py-3">
-                                              {item.service.name}
-                                          </td>
-                                          <td className="px-6 py-3">{item.provider.user.fullName}</td>
-                                          <td className="px-6 py-3"> {item.date}</td>
-                                          <td className="px-6 py-3">
-                                              {/*{item.time.split("-").[0]} تا {item.time.split("-").[1]}*/}
-                                            {item.time}
-                                          </td>
-                                          <td className="px-6 py-3"> {textReservationsStatus(item.status)}</td>
-                                          <td className="px-6 py-3">
-                                              {item.service.descriptionAfterPurchase &&
-                                                  item.service.descriptionAfterPurchase.length > 0 &&
-                                                  // <div className="rounded-md bg-white bg-opacity-50 p-4 dark:bg-opacity-5">
-                                                  //     <h2 className="mb-4 text-center text-xl font-semibold">دستورالعمل</h2>
-                                                  //     <p className="mb-0 text-center text-lg leading-10">
-                                                          item.service.descriptionAfterPurchase
-                                                      // </p>
-                                                  // </div>
-                                              }
-                                          </td>
-                                      </tr>
-                              )}
-
+                    {order.reservations.map((item, index) => (
+                      <tr key={index}>
+                        <td className="px-6 py-3">{index + 1}</td>
+                        <td className="px-6 py-3">{item.service.name}</td>
+                        <td className="px-6 py-3">{item.provider.user.fullName}</td>
+                        <td className="px-6 py-3"> {item.date}</td>
+                        <td className="px-6 py-3">
+                          {/*{item.time.split("-").[0]} تا {item.time.split("-").[1]}*/}
+                          {item.time}
+                        </td>
+                        <td className="px-6 py-3"> {textReservationsStatus(item.status)}</td>
+                        <td className="px-6 py-3">
+                          {
+                            item.service.descriptionAfterPurchase &&
+                              item.service.descriptionAfterPurchase.length > 0 &&
+                              // <div className="rounded-md bg-white bg-opacity-50 p-4 dark:bg-opacity-5">
+                              //     <h2 className="mb-4 text-center text-xl font-semibold">دستورالعمل</h2>
+                              //     <p className="mb-0 text-center text-lg leading-10">
+                              item.service.descriptionAfterPurchase
+                            // </p>
+                            // </div>
+                          }
+                        </td>
+                      </tr>
+                    ))}
                   </tbody>
                 </table>
               </div>

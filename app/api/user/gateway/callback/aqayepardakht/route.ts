@@ -52,6 +52,7 @@ export async function POST(request: Request) {
   try {
     // ?transid=123&cardnumber=12323&tracking_number=213123&invoice_id=12321&bank=OK&status=1
 
+    const Type = 'OnlinePayment'
     const Status =
       status === '1' ? TYPE_ONLINE_PAYMENT_STATUS.PAID : TYPE_ONLINE_PAYMENT_STATUS.UN_PAID
     const Authority = transid
@@ -59,6 +60,7 @@ export async function POST(request: Request) {
     // آماده کردن URL برای هدایت به داشبورد
     const redirectUrl = new URL(
       `/payment?${Qs.stringify({
+        Type,
         Status,
         Authority,
       })}`,

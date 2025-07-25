@@ -16,7 +16,7 @@ import {
   kaveNegarURL,
   meliPayamakURL,
   smsIrURL,
-} from '@/app/api/admin/sms/send-sms/route'
+} from '@/app/api/admin/sms/sendSms/route'
 
 const allowedMethods = ['POST']
 

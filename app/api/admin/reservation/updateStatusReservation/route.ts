@@ -131,20 +131,20 @@ export async function PUT(request: Request) {
 
     const sendNotifications = async () => {
       if (body.smsChangeStatusToAdminProvider || body.smsStatusDoneToAdminProvider) {
-        await callInternalApi('/admin/sms/send-sms', {
+        await callInternalApi('/admin/sms/sendSms', {
           method: 'POST',
           body: { ...paramsSms, mobile: body.reserve.order.provider.user.mobile },
         })
       }
       if (body.smsChangeStatusToUserService || body.smsStatusDoneToUserService) {
-        await callInternalApi('/admin/sms/send-sms', {
+        await callInternalApi('/admin/sms/sendSms', {
           method: 'POST',
           body: { ...paramsSms, mobile: body.reserve.order.user.mobile },
         })
       }
       if (body.emailChangeStatusToAdminProvider || body.emailStatusDoneToAdminProvider) {
         if (body.reserve.order.provider.user.email) {
-          await callInternalApi('/admin/email/send-email', {
+          await callInternalApi('/admin/email/sendEmail', {
             ...paramsEmail,
             email: body.reserve.order.provider.user.email,
           })
@@ -152,7 +152,7 @@ export async function PUT(request: Request) {
       }
       if (body.emailChangeStatusToUserService || body.emailStatusDoneToUserService) {
         if (body.reserve.order.user.email) {
-          await callInternalApi('/admin/email/send-email', {
+          await callInternalApi('/admin/email/sendEmail', {
             ...paramsEmail,
             email: body.reserve.order.user.email,
           })

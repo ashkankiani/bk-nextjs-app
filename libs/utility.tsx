@@ -142,6 +142,10 @@ export function generateCode(): number {
   return Math.floor(Math.random() * (max - min + 1)) + min
 }
 
+
+/*<====================================>*/
+// ترجمه نوع پرداخت
+/*<====================================>*/
 export function textPaymentType(value: TypePaymentType): string {
   switch (value) {
     case 'OnlinePayment':
@@ -161,6 +165,9 @@ export function textPaymentType(value: TypePaymentType): string {
   }
 }
 
+/*<====================================>*/
+// ترجمه وضعیت رزروها
+/*<====================================>*/
 export function textReservationsStatus(value: TypeReservationsStatus): string {
   switch (value) {
     case 'REVIEW':
@@ -175,11 +182,16 @@ export function textReservationsStatus(value: TypeReservationsStatus): string {
       return 'رد شده'
     case 'PENDING':
       return 'در حال رزرو'
+    case 'RESET':
+      return 'در حال استراحت'
     default:
       return 'تعریف نشده'
   }
 }
 
+/*<====================================>*/
+// ترجمه نام بانک
+/*<====================================>*/
 export function textBankName(value: TypeBankName | 'COD'): string {
   switch (value) {
     case 'ZARINPAL':
@@ -197,6 +209,9 @@ export function textBankName(value: TypeBankName | 'COD'): string {
   }
 }
 
+/*<====================================>*/
+// ترجمه نوع تخفیف
+/*<====================================>*/
 export function textDiscountsType(value: TypeDiscountsType): string {
   switch (value) {
     case 'CONSTANT':
@@ -221,6 +236,108 @@ export function textGenderType(value: TypeGender): string {
       return 'مرد'
     default:
       return 'تعریف نشده'
+  }
+}
+
+/*<====================================>*/
+// ترجمه دسترسی ها
+/*<====================================>*/
+export function textPermissionType(value: string): string {
+  switch (value) {
+    case 'admin':
+      return 'مدیریت';
+    case 'viewDashboard':
+      return 'مشاهده داشبورد';
+    case 'viewReservation':
+      return 'مشاهده رزروها';
+    case 'addReservation':
+      return 'افزودن رزرو';
+    case 'editReservation':
+      return 'ویرایش رزرو';
+    case 'deleteReservation':
+      return 'حذف رزرو';
+    case 'viewDraft':
+      return 'مشاهده درحال رزروها';
+    case 'deleteDraft':
+      return 'حذف درحال رزروها';
+    case 'viewServices':
+      return 'مشاهده خدمات';
+    case 'addServices':
+      return 'افزودن خدمت';
+    case 'editServices':
+      return 'ویرایش خدمت';
+    case 'deleteServices':
+      return 'حذف خدمت';
+    case 'viewProviders':
+      return 'مشاهده ارائه‌دهندگان';
+    case 'addProviders':
+      return 'افزودن ارائه‌دهنده';
+    case 'editProviders':
+      return 'ویرایش ارائه‌دهنده';
+    case 'deleteProviders':
+      return 'حذف ارائه‌دهنده';
+    case 'viewTimesheets':
+      return 'مشاهده تقویم کاری';
+    case 'addTimesheets':
+      return 'افزودن تقویم کاری';
+    case 'deleteTimesheets':
+      return 'حذف تقویم کاری';
+    case 'viewFinancial':
+      return 'مشاهده مالی';
+    case 'viewHolidays':
+      return 'مشاهده تعطیلات';
+    case 'addHolidays':
+      return 'افزودن تعطیلی';
+    case 'editHolidays':
+      return 'ویرایش تعطیلی';
+    case 'deleteHolidays':
+      return 'حذف تعطیلی';
+    case 'viewDiscounts':
+      return 'مشاهده تخفیف‌ها';
+    case 'addDiscounts':
+      return 'افزودن تخفیف';
+    case 'editDiscounts':
+      return 'ویرایش تخفیف';
+    case 'deleteDiscounts':
+      return 'حذف تخفیف';
+    case 'viewUsers':
+      return 'مشاهده کاربران';
+    case 'addUsers':
+      return 'افزودن کاربر';
+    case 'editUsers':
+      return 'ویرایش کاربر';
+    case 'deleteUsers':
+      return 'حذف کاربر';
+    case 'exportUsers':
+      return 'درون ریزی کاربران';
+    case 'importUsers':
+      return 'برون بری کاربران';
+    case 'viewFaqs':
+      return 'مشاهده سوالات متداول';
+    case 'addFaqs':
+      return 'افزودن سوال متداول';
+    case 'editFaqs':
+      return 'ویرایش سوال متداول';
+    case 'deleteFaqs':
+      return 'حذف سوال متداول';
+    case 'viewSettings':
+      return 'مشاهده تنظیمات';
+    case 'editSettings':
+      return 'ویرایش تنظیمات';
+    case 'viewConnections':
+      return 'مشاهده ارتباطات';
+    case 'editConnections':
+      return 'ویرایش ارتباطات';
+    case 'viewCatalogs':
+      return 'مشاهده سطوح دسترسی';
+    case 'addCatalogs':
+      return 'افزودن سطوح دسترسی';
+    case 'editCatalogs':
+      return 'ویرایش سطوح دسترسی';
+    case 'deleteCatalogs':
+      return 'حذف سطوح دسترسی';
+    default:
+      return 'تعریف نشده';
   }
 }
 
@@ -269,8 +386,8 @@ export function slotGenerator({
   // dayHolidays = [["1403/01/02" , "رحلت امام"] , ...] // آبجکت لیست تعطیلات
   // workHolidays = true/false // آیا ارائه دهنده ر.ز تعطیل کار میکند یا خیر
   // reserveList =  {
-  //          "1402-08-28": [["10:00", "11:00"], ["14:49", "16:00"]],
-  //          "1402-08-29": [[ "17:00", "17:50" ],[ "18:00", "18:50" ],[ "19:00", "19:50" ]]
+  //          "1402-08-28": [["10:00", "11:00" , "COMPLETED"], ["14:49", "16:00" , "PENDING"]],
+  //          "1402-08-29": [[ "17:00", "17:50"  , "REVIEW"],[ "18:00", "18:50" , "DONE" ],[ "19:00", "19:50" , "COMPLETED" ]]
   //      }
   // لیست رزروهای انجام شده + رزروهای در حال رزرو کرده
   // slotTimeRest = [ "10:00", "11:00" ] || [] // بازه ساعتی استراحت ثابت
@@ -287,7 +404,7 @@ export function slotGenerator({
     dayIsHoliday: boolean
     title: string
     timeSheet: TypeTimeSlotGenerator
-    is: boolean
+    is: boolean // آیا در روز جاری هستیم؟
   }[] = []
 
   // بازه های زمانی تایم کاری را هماهنگ و مرتب میکنیم.
@@ -310,11 +427,11 @@ export function slotGenerator({
 
     // تاریخ امروز
     // 1403/06/17
-    const today: string = PNtoEN(dateNowP().format('YYYY/MM/DD'))
+    const today: string = PNtoEN(dateNowP().format())
 
     // 1403/06/17
     // تبدیل دیت ابجکت تاریخ جاری حلقه به تاریخ
-    const currentDay: string = PNtoEN(startDateDateObject.format('YYYY/MM/DD'))
+    const currentDay: string = PNtoEN(startDateDateObject.format())
 
     // [ ["10:00","16:00"],["20:00","22:00"]]
     // بدست اوردن ساعت های کاری در ان روز توسط ایندکس روز هفته
@@ -323,11 +440,11 @@ export function slotGenerator({
     // بررسی آیا ارئه دهنده روز های تعطیل کار می کند یا نه.
     if (!workInHolidays) {
       // بررسی که روز جاری ایا در روزهای تعطیل ما می باشد یا خیر
-      dayIsHoliday = listDateHoliday.includes(PNtoEN(startDateDateObject.format('"YYYY/MM/DD"')))
+      dayIsHoliday = listDateHoliday.includes(PNtoEN(startDateDateObject.format()))
       // بدست اوردن عنوان روز تعطیل
       titleDayHoliday =
         listTitleHoliday[
-          listDateHoliday.indexOf(PNtoEN(startDateDateObject.format('"YYYY/MM/DD"')))
+          listDateHoliday.indexOf(PNtoEN(startDateDateObject.format()))
         ]
     }
 
@@ -353,14 +470,16 @@ export function slotGenerator({
 
     // مقایسه بین اسلات بازه های زمانی بدست آمده با رزروهای قبل تر رزرو شده + در حال رزرو
     for (const date in reserveList) {
-      if (PNtoEN(startDateDateObject.format('YYYY/MM/DD')) === PNtoEN(date)) {
+      if (PNtoEN(startDateDateObject.format()) === PNtoEN(date)) {
         // بازه زمانی در آن تاریخ
-        // [startTime: string, endTime: string, reserved: boolean]
+        // [startTime: string, endTime: string, status: TypeReservationsStatus]
         const times = reserveList[date]
 
         // ادغام رزروها و درج ظرفیت ها و وضعیت رزرو
         const mergedTimes: TypeTimeRecord[] = []
 
+        // یک ظرفیت به رزرو اضافه میکنیم
+        //     [startTime: string, endTime: string, status: TypeReservationsStatus , capacity: number]
         times.forEach(time => {
           const found = mergedTimes.find(t => t[0] === time[0] && t[1] === time[1])
           if (found) {
@@ -370,13 +489,14 @@ export function slotGenerator({
           }
         })
 
+        // مدیریت تعداد ظرفیت های آن نوبت به اندازه تعداد ظرفیت مانده سرویس انتخابی
         for (let i = 0; i < mergedTimes.length; i++) {
           if (capacity <= mergedTimes[i][3]) {
             replaceTime(
               currentTimeSheet,
               mergedTimes[i],
               true,
-              mergedTimes[i][2] ? 'رزرو شده.' : 'کاربر دیگر در حال رزرو...',
+              textReservationsStatus(mergedTimes[i][2]),
               capacity - mergedTimes[i][3]
             )
           } else {
@@ -393,8 +513,8 @@ export function slotGenerator({
     }
 
     // اعمال روز استراحت ثابت روی تقویم کاری
-    const createSlotTimeRest: TypeTimeRecord = [slotTimeRest[0], slotTimeRest[1], true, 0]
-    replaceTime(currentTimeSheet, createSlotTimeRest, true, 'زمان استراحت', 0)
+    const createSlotTimeRest: TypeTimeRecord = [slotTimeRest[0], slotTimeRest[1], 'RESET', 0]
+    replaceTime(currentTimeSheet, createSlotTimeRest, true, textReservationsStatus('RESET'), 0)
 
     result.push({
       date: currentDay,
@@ -511,7 +631,7 @@ function convertToMinutes(time: string): number {
 export type TypeTimeRecord = [
   startTime: string,
   endTime: string,
-  reserved: boolean,
+  status: TypeReservationsStatus,
   capacity: number,
 ]
 
@@ -615,7 +735,7 @@ export function groupTimesByDay(timeSheetArray: TypeApiTimeSheet[]): TypeGroupTi
 /*<====================================>*/
 export type TypeGroupReservationsTimesByDate = Record<
   string,
-  [startTime: string, endTime: string, reserved: boolean][]
+  [startTime: string, endTime: string, status: TypeReservationsStatus][]
 >
 
 export function groupReservationsTimesByDate(
@@ -624,15 +744,16 @@ export function groupReservationsTimesByDate(
   const result: TypeGroupReservationsTimesByDate = {}
 
   for (const item of OBJ) {
-    const date = PNtoEN(fullStringToDateObjectP(item.date).format('YYYY-MM-DD')) as string
+    const date = PNtoEN(fullStringToDateObjectP(item.date).format()) as string
     const time = item.time
+    const status = item.status
 
     if (!result[date]) {
       result[date] = []
     }
 
     const [startTime, endTime] = time.split('-')
-    result[date].push([startTime, endTime, !!item.orderId]) // true: reserved, false: draft
+    result[date].push([startTime, endTime, status])
   }
 
   return result
