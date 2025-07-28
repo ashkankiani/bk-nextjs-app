@@ -1,5 +1,4 @@
 'use client'
-import HeadPage from '@/components/layout/HeadPage'
 import Link from 'next/link'
 import { MdOutlineKeyboardBackspace } from 'react-icons/md'
 import { AiOutlineSave } from 'react-icons/ai'
@@ -64,7 +63,6 @@ export default function TheIdHolidayUi() {
 
   return (
     <>
-      <HeadPage title="ویرایش روز تعطیل" />
       <HeaderPage title="ویرایش روز تعطیل" description="روز تعطیل خود را ویرایش کنید.">
         <Link href="/admin/holidays" className="back">
           <MdOutlineKeyboardBackspace size="24px" className="ml-2 inline-flex align-middle" />

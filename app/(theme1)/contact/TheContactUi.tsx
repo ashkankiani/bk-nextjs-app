@@ -1,6 +1,5 @@
 'use client'
 
-import HeadPage from '@/components/layout/HeadPage'
 import TheHeader from '@/components/front-end/theme1/layout/TheHeader'
 import TheFooter from '@/components/front-end/theme1/layout/TheFooter'
 import useHook from '@/hooks/controller/useHook'
@@ -10,7 +9,6 @@ export default function TheContactUi() {
 
   return (
     <>
-      <HeadPage title="تماس با ما" />
       <div className="bk-box md:w-8/12 lg:w-7/12">
         <TheHeader />
         <div className="bk-box-wrapper">

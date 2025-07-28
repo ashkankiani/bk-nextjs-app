@@ -1,5 +1,4 @@
 'use client'
-import HeadPage from '@/components/layout/HeadPage'
 import Link from 'next/link'
 import { MdOutlineKeyboardBackspace } from 'react-icons/md'
 import { AiOutlineSave } from 'react-icons/ai'
@@ -153,7 +152,6 @@ export default function TheIdDiscountUi() {
 
   return (
     <>
-      <HeadPage title="ویرایش کد تخفیف" />
       <HeaderPage title="ویرایش کد تخفیف" description="کد تخفیف خود را ویرایش کنید.">
         <Link href="/admin/discounts" className="back">
           <MdOutlineKeyboardBackspace size="24px" className="ml-2 inline-flex align-middle" />

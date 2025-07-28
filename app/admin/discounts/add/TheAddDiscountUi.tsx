@@ -1,5 +1,4 @@
 'use client'
-import HeadPage from '@/components/layout/HeadPage'
 import Link from 'next/link'
 import { MdOutlineKeyboardBackspace } from 'react-icons/md'
 import { AiOutlineSave } from 'react-icons/ai'
@@ -93,7 +92,6 @@ export default function TheAddDiscountUi() {
 
   return (
     <>
-      <HeadPage title="افزودن کد تخفیف جدید" />
       <HeaderPage
         title="افزودن کد تخفیف جدید"
         description="کدتخفیف یک راه عالی برای ارائه تخفیف و پاداش به مشتریان شماست."

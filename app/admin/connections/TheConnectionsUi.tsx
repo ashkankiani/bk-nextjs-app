@@ -1,5 +1,4 @@
 'use client'
-import HeadPage from '@/components/layout/HeadPage'
 import { AiOutlineSave, AiOutlineSetting } from 'react-icons/ai'
 import React, { useEffect } from 'react'
 import { bkToast, onlyTypeNumber } from '@/libs/utility'
@@ -10,9 +9,9 @@ import HeaderPage from '@/components/back-end/section/HeaderPage'
 import Link from 'next/link'
 import useHook from '@/hooks/controller/useHook'
 import { useGetConnections, useUpdateConnection } from '@/hooks/admin/useConnection'
-import { TypeApiConnection } from '@/types/typeApiAdmin'
 import DocumentWebServiceSms from '@/app/admin/connections/components/DocumentWebServiceSms'
 import ConnectionTest from '@/app/admin/connections/components/ConnectionTest'
+import {TypeApiConnection} from "@/types/typeApiEntity";
 
 export default function TheConnectionsUi() {
   const { permissions } = useHook()
@@ -88,7 +87,6 @@ export default function TheConnectionsUi() {
 
   return (
     <>
-      <HeadPage title="ارتباطات" />
       <HeaderPage title="ارتباطات" description="ارتباطات و پیگربندی وب سرویس خود را انجام دهید.">
         {permissions.viewSettings && (
           <Link href="/admin/connections" className="action">

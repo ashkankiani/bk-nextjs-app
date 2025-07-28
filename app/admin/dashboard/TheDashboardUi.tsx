@@ -1,5 +1,4 @@
 'use client'
-import HeadPage from '@/components/layout/HeadPage'
 import Link from 'next/link'
 import { AiFillPlusCircle } from 'react-icons/ai'
 import { hookListReservations } from '@/hooks/admin/hookReservation'
@@ -117,7 +116,6 @@ export default function TheDashboardUi() {
 
   return (
     <>
-      <HeadPage title="داشبورد" />
       <HeaderPage title="داشبورد" description="خلاصه اطلاعات سامانه را مشاهده نمایید.">
         {permissions.addServices && (
           <Link href="/admin/services/add/TheAddServiceUi" className="action">

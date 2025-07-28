@@ -1,5 +1,4 @@
 'use client'
-import HeadPage from '@/components/layout/HeadPage'
 import Link from 'next/link'
 import { MdOutlineKeyboardBackspace } from 'react-icons/md'
 import { AiOutlineSave } from 'react-icons/ai'
@@ -156,7 +155,6 @@ export default function TheIdServiceUi() {
 
   return (
     <>
-      <HeadPage title="ویرایش خدمت" />
       <HeaderPage title="ویرایش خدمت" description="خدمت خود را ویرایش کنید.">
         <Link href="/admin/services" className="back">
           <MdOutlineKeyboardBackspace size="24px" className="ml-2 inline-flex align-middle" />

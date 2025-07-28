@@ -1,5 +1,4 @@
 'use client'
-import HeadPage from '@/components/layout/HeadPage'
 import { AiFillPlusCircle } from 'react-icons/ai'
 import Link from 'next/link'
 import { RiDeleteBin5Line, RiUserLine } from 'react-icons/ri'
@@ -35,7 +34,6 @@ export default function TheServicesUi() {
 
   return (
     <>
-      <HeadPage title="خدمات" />
       <HeaderPage title="خدمات" description="در اینجا لیست خدمات خود را مشاهده کنید.">
         {permissions.deleteDraft && (
           <Link href="/admin/services/add" className="action">

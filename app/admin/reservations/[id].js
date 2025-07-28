@@ -1,4 +1,3 @@
-import HeadPage from '@/components/layout/HeadPage'
 import Link from 'next/link'
 import { MdOutlineKeyboardBackspace } from 'react-icons/md'
 import { AiOutlineSave } from 'react-icons/ai'
@@ -318,7 +317,6 @@ export default function EditReservation({ id }) {
 
   return (
     <>
-      <HeadPage title="ویرایش رزرو" />
       <HeaderPage title="ویرایش رزرو" description="رزرو خود را ویرایش نمایید.">
         <Link href="/admin/reservation" className="back">
           <MdOutlineKeyboardBackspace size="24px" className="ml-2 inline-flex align-middle" />

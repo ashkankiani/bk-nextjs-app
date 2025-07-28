@@ -1,5 +1,4 @@
 'use client'
-import HeadPage from '@/components/layout/HeadPage'
 import Link from 'next/link'
 import { FiEdit } from 'react-icons/fi'
 import { RiDeleteBin5Line } from 'react-icons/ri'
@@ -33,7 +32,6 @@ export default function TheHolidaysUi() {
 
   return (
     <>
-      <HeadPage title="تعطیلات" />
       <HeaderPage
         title="تعطیلات"
         description="روزهای تعطیل رسمی کشور و روزهای دلخواه را مشاهده کنید."

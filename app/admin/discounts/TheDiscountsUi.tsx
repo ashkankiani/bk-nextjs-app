@@ -1,5 +1,4 @@
 'use client'
-import HeadPage from '@/components/layout/HeadPage'
 import Link from 'next/link'
 import { FiEdit } from 'react-icons/fi'
 import { RiDeleteBin5Line } from 'react-icons/ri'
@@ -33,7 +32,6 @@ export default function TheDiscountsUi() {
 
   return (
     <>
-      <HeadPage title="کد تخفیف" />
       <HeaderPage title="کد تخفیف" description="کدهای تخفیف برای مشتریان خود ایجاد کنید.">
         {permissions.addDiscounts && (
           <Link href="/admin/discounts/add" className="action">

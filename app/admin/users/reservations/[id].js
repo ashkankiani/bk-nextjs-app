@@ -1,4 +1,3 @@
-import HeadPage from '@/components/layout/HeadPage'
 import Link from 'next/link'
 import { MdOutlineKeyboardBackspace } from 'react-icons/md'
 import { bkToast, PNtoEN, textPaymentType, textReservationsStatus } from '@/libs/utility'
@@ -74,7 +73,6 @@ export default function UserReservations({ id }) {
   }
   return (
     <>
-      <HeadPage title="لیست رزروهای کاربر" />
       <HeaderPage title="لیست رزروهای کاربر" description="رزروهای کاربر خود را مدیریت کنید.">
         <Link href="/admin/users" className="back">
           <MdOutlineKeyboardBackspace size="24px" className="ml-2 inline-flex align-middle" />

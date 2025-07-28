@@ -1,4 +1,3 @@
-import HeadPage from '@/components/layout/HeadPage'
 import Link from 'next/link'
 import { MdOutlineKeyboardBackspace } from 'react-icons/md'
 import { AiOutlineSave } from 'react-icons/ai'
@@ -99,7 +98,6 @@ export default function TheIdUserUi() {
 
   return (
     <>
-      <HeadPage title="ویرایش کاربر" />
       <HeaderPage title="ویرایش کاربر" description="کاربر خود را ویرایش کنید.">
         <Link href="/admin/users" className="back">
           <MdOutlineKeyboardBackspace size="24px" className="ml-2 inline-flex align-middle" />
