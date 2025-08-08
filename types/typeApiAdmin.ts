@@ -606,31 +606,22 @@ export type TypeApiGetOrdersRes = TypeApiOrder & {
 /*<====================================>*/
 
 export interface TypeApiAddReservationReq {
-  shouldExecuteTransaction: boolean
-  trackingCode: string
+  orderId: string
+  serviceId: number
+  providerId: number
+  userId: string
+  dateTimeStartEpoch?: number // bigint
+  dateTimeEndEpoch?: number // bigint
+  date: string
+  time: string[]
   paymentType: TypePaymentType
   status: TypeReservationsStatus
-
-  service: TypeApiService
-  provider: TypeApiProvider
-  user: TypeApiUser
-
-  price: number
-  totalPrice: number
-
-  date: string
-  time: string
-
-  description: string | null
-
-  discountId?: number
-  discountPrice?: number
-
-  bankName?: string
-  trackId?: string
-  amount?: string
-  cardNumber?: string
-  authority?: string
+  smsToAdminService: boolean
+  smsToAdminProvider: boolean
+  smsToUserService: boolean
+  emailToAdminService: boolean
+  emailToAdminProvider: boolean
+  emailToUserService: boolean
 }
 
 export interface TypeApiAddReservationRes {

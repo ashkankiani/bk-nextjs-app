@@ -93,10 +93,10 @@ export async function GET(request: Request) {
         },
         dateTimeEndEpoch: {
           lte: fullStringToDateObjectP(endDate)
-            .setHour(0)
-            .setMinute(0)
-            .setSecond(0)
-            .setMillisecond(0)
+            .setHour(23)
+            .setMinute(59)
+            .setSecond(59)
+            .setMillisecond(999)
             .valueOf(),
         },
         status: {

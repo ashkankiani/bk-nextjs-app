@@ -2,12 +2,12 @@ import {
   checkMethodAllowed,
   checkRequiredFields,
   createErrorResponseWithMessage,
-  createSuccessResponseWithMessage,
+  createSuccessResponseWithData,
   handlerRequestError,
 } from '@/app/api/_utils/handleRequest'
-import prisma from '@/prisma/client'
 import { fullStringToDateObjectP } from '@/libs/convertor'
-import { callInternalApi } from '@/app/api/_utils/callInternalApi'
+import prisma from '@/prisma/client'
+import { TypeApiAddReservationReq } from '@/types/typeApiAdmin'
 
 const allowedMethods = ['POST']
 
@@ -24,178 +24,141 @@ export async function POST(request: Request) {
   // }
 
   // دریافت اطلاعات داخل درخواست
-  const body = await request.json()
-  const { shouldExecuteTransaction } = body
+  const body: TypeApiAddReservationReq = await request.json()
 
-  // بررسی وجود داده های ورودی مورد نیاز
-  const errorMessage = checkRequiredFields({
-    shouldExecuteTransaction,
-  })
-
-  if (errorMessage) {
-    return createErrorResponseWithMessage(errorMessage)
+  if (!Array.isArray(body)) {
+    return createErrorResponseWithMessage('داده دریافتی باید آرایه‌ای از آبجکت‌ها باشد.')
   }
 
-  try {
-    let responseTransaction = null
+  // بررسی وجود داده های ورودی مورد نیاز
+  const allPreReserve: TypeApiAddReservationReq[] = []
+  const results = await Promise.all(
+    body.map(async (item, index) => {
+      const {
+        orderId,
+        serviceId,
+        providerId,
+        userId,
+        date,
+        time,
+        paymentType,
+        status,
+        smsToAdminService,
+        smsToAdminProvider,
+        smsToUserService,
+        emailToAdminService,
+        emailToAdminProvider,
+        emailToUserService,
+      } = item
 
-    if (body.shouldExecuteTransaction) {
-      const { bankName, trackId, amount, cardNumber, authority } = body
-
-      // بررسی وجود داده های ورودی مورد نیاز
       const errorMessage = checkRequiredFields({
-        bankName,
-        trackId,
-        amount,
-        cardNumber,
-        authority,
+        orderId,
+        serviceId,
+        providerId,
+        userId,
+        date,
+        time,
       })
 
       if (errorMessage) {
-        return createErrorResponseWithMessage(errorMessage)
+        return {
+          index,
+          success: false,
+          message: `خطا در آیتم ${index + 1} (serviceId=${serviceId ?? 'نامشخص'}): ${errorMessage}`,
+        }
       }
 
-      const paramsTransaction = {
-        bankName: body.bankName,
-        trackId: body.trackId,
-        amount: body.amount,
-        cardNumber: body.cardNumber,
-        authority: body.authority,
-      }
+      try {
+        // محاسبه زمان شروع و پایان
+        const [startHour, startMinute] = time[0].split(':').map(Number)
+        const [endHour, endMinute] = time[1].split(':').map(Number)
 
-      responseTransaction = await prisma.transaction.create({
-        data: paramsTransaction,
+        const dateTimeStartEpoch = fullStringToDateObjectP(
+          `${date} ${startHour}:${startMinute}`,
+          'YYYY/MM/DD HH:mm'
+        ).valueOf()
+        const dateTimeEndEpoch = fullStringToDateObjectP(
+          `${date} ${endHour}:${endMinute}`,
+          'YYYY/MM/DD HH:mm'
+        ).valueOf()
+
+        const params: TypeApiAddReservationReq = {
+          orderId,
+          serviceId,
+          providerId,
+          userId,
+          dateTimeStartEpoch,
+          dateTimeEndEpoch,
+          date,
+          time: time.join('-'), // "15:00-16:00"
+          paymentType,
+          status,
+          smsToAdminService,
+          smsToAdminProvider,
+          smsToUserService,
+          emailToAdminService,
+          emailToAdminProvider,
+          emailToUserService,
+        }
+
+        // افزودن به لیست
+        allPreReserve.push(params)
+
+        return {
+          index,
+          success: true,
+          message: `آیتم ${index + 1} با موفقیت پردازش شد.`,
+        }
+      } catch (e) {
+        return {
+          index,
+          success: false,
+          message: `خطای داخلی هنگام پردازش آیتم ${index + 1}: ${(e as Error).message}`,
+        }
+      }
+    })
+  )
+
+  const successes = results.filter(r => r.success)
+  const errors = results.filter(r => !r.success)
+
+  try {
+    // اگر کاربر draft قبلی دارد حذف شود تا آزاد شود.
+    // await prisma.drafts.deleteMany({
+    //   where: {
+    //     userId: body[0].userId,
+    //   },
+    // })
+
+    // رزروهایی که تاریخشون رد شده رو حذف میکنه ابتدا
+
+    try {
+      // ایجاد در حال رزرو برای زمان مورد نیاز
+      await prisma.reservations.createMany({
+        data: allPreReserve,
+        // data: Object.values(allPreReserve),
       })
+    } catch (error) {
+      if (error.meta?.target === 'PRIMARY') {
+        return createErrorResponseWithMessage(
+          'یک یا چندتا از نوبت های شما در حال رزرو توسط کاربر دیگری هستند.'
+        )
+      } else {
+        return handlerRequestError(error)
+      }
     }
 
-    const paramsPayment = {
-      paymentType: body.paymentType,
-      userId: body.user.id,
-      description: body.description,
-      transactionId:
-        body.shouldExecuteTransaction && responseTransaction ? responseTransaction.id : null,
-    }
-
-    const responsePayments = await prisma.payments.create({
-      data: paramsPayment,
+    return createSuccessResponseWithData({
+      // success: errors.length === 0,
+      results,
+      status: errors.length === 0,
+      successes: successes.length,
+      errors: errors.length,
+      message:
+        errors.length === 0
+          ? 'در حال رزرو ثبت شد.'
+          : `پردازش کامل شد. موفق: ${successes.length}، ناموفق: ${errors.length}`,
     })
-    const paramsOrder = {
-      // trackingCode: body.trackingCode ? body.trackingCode : customTrackingCode,
-      trackingCode: body.trackingCode,
-      status: body.status,
-      userId: body.user.id,
-      serviceId: body.service.id,
-      providerId: body.provider.id,
-      discountId: body.discountId,
-      paymentId: responsePayments.id,
-      price: body.price,
-      discountPrice: body.discountPrice,
-      totalPrice: body.totalPrice,
-      // discountCode: body.discountCode,
-      // discountType: body.discountType,
-    }
-
-    const responseOrders = await prisma.orders.create({
-      data: paramsOrder,
-    })
-    // eslint-disable-next-line no-undef
-    BigInt.prototype.toJSON = function () {
-      const int = Number.parseInt(this.toString())
-      return int ?? this.toString()
-    }
-    let time = body.time.split('-')
-    let paramsReservation = {
-      userId: body.user.id,
-      orderId: responseOrders.id,
-      paymentId: responsePayments.id,
-      serviceId: body.service.id,
-      providerId: body.provider.id,
-      transactionId: body.shouldExecuteTransaction ? responseTransaction.id : null,
-      dateTimeStartEpoch: parseInt(
-        fullStringToDateObjectP(
-          body.date + ' ' + parseInt(time[0].split(':')[0]) + ':' + parseInt(time[0].split(':')[1]),
-          'YYYY/MM/DD HH:mm'
-        ).valueOf()
-      ),
-      dateTimeEndEpoch: parseInt(
-        fullStringToDateObjectP(
-          body.date + ' ' + parseInt(time[1].split(':')[0]) + ':' + parseInt(time[1].split(':')[1]),
-          'YYYY/MM/DD HH:mm'
-        ).valueOf()
-      ),
-      date: body.date, // format "1403/04/13"
-      time: body.time, // format "15:00-16:00"
-      status: body.status,
-    }
-    const responseReservations = await prisma.reservations.create({
-      data: paramsReservation,
-    })
-
-    const params = {
-      type: 'confirmReservation',
-      trackingCode: body.trackingCode,
-      dateName: fullStringToDateObjectP(body.date).weekDay.name,
-      date: body.date,
-      time: body.time.replace('-', ' تا '),
-      service: body.service.name,
-      provider: body.provider.user.fullName,
-    }
-
-    if (body.status === 'COMPLETED') {
-      const sendSmsNotifications = async (mobile: string) => {
-        await callInternalApi('api/admin/sms/sendSms', {
-          method: 'POST',
-          body: { ...params, mobile },
-        })
-      }
-      const sendEmailNotifications = async (email: string) => {
-        await callInternalApi('/admin/email/sendEmail', {
-          method: 'POST',
-          body: {
-            ...params,
-            email,
-            title: 'تبریک! رزرو شما با موفقیت ثبت شد.',
-            subject: `رزرو جدید ${body.trackingCode}`,
-            text: 'تبریک! یک سفارش جدید ثبت شد.',
-          },
-        })
-      }
-
-      if (body.smsToAdminService) {
-        await sendSmsNotifications(body.service.user.mobile)
-      }
-      if (body.smsToAdminProvider) {
-        await sendSmsNotifications(body.provider.user.mobile)
-      }
-      if (body.smsToUserService) {
-        await sendSmsNotifications(body.user.mobile)
-      }
-
-      if (body.emailToAdminService) {
-        await sendEmailNotifications(body.service.user.email)
-      }
-      if (body.emailToAdminProvider) {
-        await sendEmailNotifications(body.provider.user.email)
-      }
-      if (body.emailToUserService) {
-        await sendEmailNotifications(body.user.email)
-      }
-    }
-
-    const paramsDraft = {
-      userId: body.user.id,
-      serviceId: body.service.id,
-      providerId: body.provider.id,
-      date: body.date, // format "1403/04/13"
-      time: body.time, // format "15:00-16:00"
-    }
-
-    await prisma.drafts.deleteMany({
-      where: paramsDraft,
-    })
-    // res.status(200).json(responseReservations);
-
-    return createSuccessResponseWithMessage('رزرو ثبت شد.')
   } catch (error: unknown) {
     return handlerRequestError(error)
   }
