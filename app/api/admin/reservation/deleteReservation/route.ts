@@ -22,16 +22,14 @@ export async function DELETE(request: Request) {
   // }
 
   // دریافت Id درخواست
-  const id = getQueryStringByUrl(request.url)
+  const reserveId = getQueryStringByUrl(request.url)
 
   // بررسی وجود ID
-  if (!id) {
+  if (!reserveId) {
     return createErrorResponseWithMessage('آیدی ضروری است.')
   }
 
   try {
-    // شناسه رزرو
-    const reserveId = parseInt(id)
 
     // پیدا کردن رزرو
     const reservation = await prisma.reservations.findUnique({
@@ -41,25 +39,63 @@ export async function DELETE(request: Request) {
     })
 
     // بررسی آیا رزرو وجود دارد
-    if (!reservation) {
+    if (!reservation || !reservation.orderId ) {
+      console.log(2222222222)
       return createErrorResponseWithMessage('رزرو یافت نشد.')
     }
 
-    // استخراج داده های رزرو
-    const { orderId, paymentId, transactionId } = reservation
+    // پیدا کردن تعداد رزروها
+    const reservations = await prisma.reservations.count({
+      where: {
+        orderId: reservation.orderId,
+      },
+    })
 
-    const transactionOperations = [
-      prisma.reservations.delete({ where: { id: reserveId } }),
-      prisma.orders.delete({ where: { id: orderId } }),
-      prisma.payments.delete({ where: { id: paymentId } }),
-    ]
-
-    if (transactionId) {
-      transactionOperations.push(prisma.transaction.delete({ where: { id: transactionId } }))
+    // بررسی آیا رزروها وجود دارد
+    if (!reservations ) {
+      return createErrorResponseWithMessage('رزرو یافت نشد.')
     }
 
-    // حذف رزرو
-    await prisma.$transaction(transactionOperations)
+
+    if(reservations > 1){
+      await prisma.reservations.delete({ where: { id: reserveId } })
+    }else{
+
+      // دریافت سفارش
+      const order = await prisma.orders.findUnique({
+        where: {
+          trackingCode: reservation.orderId,
+        },
+      })
+
+      // بررسی آیا سفارش وجود دارد
+      if (!order) {
+        return createErrorResponseWithMessage('رزرو یافت نشد.')
+      }
+
+
+      const transactions = [
+        prisma.orders.deleteMany({ where: { id: order.id } }),
+      ]
+
+      if (order.paymentId) {
+        transactions.unshift(
+            prisma.transaction.deleteMany({ where: { Payments: { some: { id: order.paymentId } } } }),
+            prisma.payments.deleteMany({ where: { id: order.paymentId } })
+        )
+      }
+
+      await prisma.$transaction(transactions)
+
+      // await prisma.$transaction([
+      //   prisma.transaction.deleteMany({ where: { Payments: { some: { id: order.paymentId } } } }),
+      //   prisma.payments.deleteMany({ where: {  id: order.paymentId  } }),
+      //   prisma.orders.deleteMany({ where: { id: order.id } }),
+      // ]);
+
+    }
+
+
 
     return createSuccessResponseWithMessage('رزرو حذف شد.')
   } catch (error) {

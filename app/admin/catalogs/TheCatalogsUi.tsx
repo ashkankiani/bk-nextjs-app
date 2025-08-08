@@ -1,7 +1,7 @@
 'use client'
 import Link from 'next/link'
 import { RiDeleteBin5Line } from 'react-icons/ri'
-import { bkToast } from '@/libs/utility'
+import {bkToast, textRuleType} from '@/libs/utility'
 import TheSpinner from '@/components/layout/TheSpinner'
 import { AiFillPlusCircle } from 'react-icons/ai'
 import Popup from 'reactjs-popup'
@@ -60,7 +60,7 @@ export default function TheCatalogsUi() {
                 dataCatalogs?.map((item, index) => (
                   <tr key={index}>
                     <td>{index + 1}</td>
-                    <td>{item.title}</td>
+                    <td>{textRuleType(item.title)}</td>
                     <td>
                       <div className="flex-center-center gap-3">
                         {!(item.id === 1 || item.id === 2) && permissions.editCatalogs && (

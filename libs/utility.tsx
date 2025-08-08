@@ -14,7 +14,6 @@ import {
   TypeToast,
 } from '@/types/typeConfig'
 import { SESSION } from '@/libs/constant'
-import React from 'react'
 import Qs from 'qs'
 import { TypeApiHoliday, TypeApiReservation, TypeApiTimeSheet } from '@/types/typeApiEntity'
 
@@ -57,10 +56,32 @@ export function AppHeader(): { headers: Headers } {
 /*<====================================>*/
 // تنها باید عدد وارد نماید
 /*<====================================>*/
-export function onlyTypeNumber(e: React.KeyboardEvent<HTMLInputElement>): void {
-  if (!/[0-9]/.test(e.key)) {
+export function OnlyTypeNumber(e) {
+  // اجازه تایپ فقط به اعداد انگلیسی داده می‌شود
+  if (
+    !/[0-9]/.test(e.key) &&
+    e.key !== 'Backspace' &&
+    e.key !== 'Delete' &&
+    e.key !== 'Tab' &&
+    e.key !== 'Enter'
+  ) {
+    // اجازه به کلیدهای کنترلی (مثلاً Ctrl+A)
+    if (!(e.ctrlKey || e.metaKey)) {
+      e.preventDefault()
+    }
+  }
+
+  // جلوگیری از تایپ اعداد فارسی در هر جایی از ورودی
+  if (/[\u0660-\u0669]/.test(e.key)) {
     e.preventDefault()
   }
+}
+
+/*<====================================>*/
+// ایجاد کلاس های شرطی
+/*<====================================>*/
+export function Cn(...classes: string[]) {
+  return classes.filter(Boolean).join(' ')
 }
 
 /*<====================================>*/
@@ -79,6 +100,47 @@ export function passwordStrength(val: string) {
     specialChar: val.match(atLeastOneSpecialChar),
     fiveCharsOrGreater: val.match(fiveCharsOrMore),
   }
+}
+
+/*<====================================>*/
+// تولید پسورد بر اساس معیارهای تابع passwordStrength
+/*<====================================>*/
+export function generateStrongPassword(length = 12) {
+  const uppercases: string = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+  const lowercases: string = 'abcdefghijklmnopqrstuvwxyz'
+  const numbers: string = '0123456789'
+  const specialChars: string = '#?!@$%^&*-'
+
+  if (length < 5) {
+    throw new Error('Password length must be at least 5 characters')
+  }
+
+  function getRandomChar(str: string) {
+    return str[Math.floor(Math.random() * str.length)]
+  }
+
+  // اطمینان از اینکه هر دسته حداقل یک کاراکتر دارد
+  const requiredChars = [
+    getRandomChar(uppercases),
+    getRandomChar(lowercases),
+    getRandomChar(numbers),
+    getRandomChar(specialChars),
+  ]
+
+  // باقی کاراکترها به طور تصادفی از همه دسته‌ها
+  const allChars = uppercases + lowercases + numbers + specialChars
+  const remainingLength = length - requiredChars.length
+  for (let i = 0; i < remainingLength; i++) {
+    requiredChars.push(getRandomChar(allChars))
+  }
+
+  // درهم‌ریختن (shuffle) کاراکترها
+  for (let i = requiredChars.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1))
+    ;[requiredChars[i], requiredChars[j]] = [requiredChars[j], requiredChars[i]]
+  }
+
+  return requiredChars.join('')
 }
 
 /*
@@ -230,11 +292,29 @@ export function textGenderType(value: TypeGender): string {
     case 'NONE':
       return 'نامشخص'
     case 'WOMAN':
-      return 'زن'
+      return 'خانم'
     case 'MAN':
-      return 'مرد'
+      return 'آقا'
     default:
       return 'تعریف نشده'
+  }
+}
+
+/*<====================================>*/
+// ترجمه سطح دسترسی
+/*<====================================>*/
+export function textRuleType(value: string): string {
+  switch (value) {
+    case 'User':
+      return 'کاربر'
+    case 'Super Admin':
+      return 'مدیر کل'
+    case 'Provider':
+      return 'ارائه دهنده'
+    case 'Executive':
+      return 'اجرایی'
+    default:
+      return value
   }
 }
 

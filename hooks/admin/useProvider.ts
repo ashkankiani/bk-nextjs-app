@@ -85,8 +85,7 @@ function useUpdateProvider(Optional?: object) {
   }
 }
 
-function useGetProvidersByServiceId(id: number | undefined | null, Optional?: object) {
-  if (!id) return false
+function useGetProvidersByServiceId(id: number , Optional?: object) {
   const { data, isLoading, isFetched } = useQuery({
     queryKey: ['GetProvidersByServiceId', id],
     queryFn: () => GetProvidersByServiceId({ id }),

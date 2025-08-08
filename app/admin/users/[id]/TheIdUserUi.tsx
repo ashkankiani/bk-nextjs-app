@@ -1,8 +1,8 @@
+'use client'
 import Link from 'next/link'
 import { MdOutlineKeyboardBackspace } from 'react-icons/md'
 import { AiOutlineSave } from 'react-icons/ai'
-import { useRouter } from 'next/router'
-import { bkToast, onlyTypeNumber, passwordStrength } from '@/libs/utility'
+import { bkToast, OnlyTypeNumber, passwordStrength, textRuleType } from '@/libs/utility'
 import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import TheSpinner from '@/components/layout/TheSpinner'
@@ -13,12 +13,13 @@ import { useParams } from 'next/navigation'
 import { useGetCatalogs } from '@/hooks/admin/useCatalog'
 import { useShowUser, useUpdateUser } from '@/hooks/admin/useUser'
 import { TypeApiUpdateUserReq } from '@/types/typeApiAdmin'
+import useHook from '@/hooks/controller/useHook'
 
 export default function TheIdUserUi() {
   const params = useParams()
-  const id = Number(params.id)
+  const id = params.id
 
-  const router = useRouter()
+  const { router } = useHook()
 
   const {
     data: dataCatalogs,
@@ -27,9 +28,9 @@ export default function TheIdUserUi() {
   } = useGetCatalogs()
   const {
     data: dataUser,
-    isLoading: isLoadingUser,
+    // isLoading: isLoadingUser,
     isFetched: isFetchedUser,
-  } = useShowUser(id, {
+  } = useShowUser(String(id), {
     enabled: isFetchedCatalogs,
   })
   const { mutateAsync: mutateAsyncUpdateUser, isPending: isPendingUpdateUser } = useUpdateUser()
@@ -37,6 +38,7 @@ export default function TheIdUserUi() {
   const [passwordShown, setPasswordShown] = useState(false)
 
   const items = [
+    'id',
     'catalogId',
     'codeMeli',
     'fullName',
@@ -46,7 +48,7 @@ export default function TheIdUserUi() {
     // "password",
   ]
 
-  const itemsBoolean = ['status']
+  const itemsBoolean = ['locked']
 
   const {
     register,
@@ -63,34 +65,36 @@ export default function TheIdUserUi() {
 
   const onSubmit = async (data: TypeApiUpdateUserReq) => {
     itemsBoolean.forEach(item => {
+      // @ts-expect-error ok!
       data[item] = data[item] === 'true'
     })
-    if (watch('password') && watch('password').length === 0) {
+
+    if (data.password && (data.password === "" || data.password.length === 0)) {
       delete data.password
     }
 
     await mutateAsyncUpdateUser(data)
       .then(res => {
         bkToast('success', res.Message)
+        router.push('/admin/users')
       })
       .catch(errors => {
         bkToast('error', errors.Reason)
       })
-      .finally(() => {
-        router.push('/admin/users')
-      })
   }
 
   const [meter, setMeter] = useState(false)
-  const checkPasswordStrength = passwordStrength(watch('password'))
+  const checkPasswordStrength = passwordStrength(watch('password') ?? '')
   const passwordStrengthLength = Object.values(checkPasswordStrength).filter(value => value).length
 
   useEffect(() => {
     if (isFetchedUser && dataUser) {
       items.forEach(item => {
+        // @ts-expect-error ok!
         setValue(item, dataUser[item])
       })
       itemsBoolean.forEach(item => {
+        // @ts-expect-error ok!
         setValue(item, dataUser[item].toString())
       })
     }
@@ -122,7 +126,7 @@ export default function TheIdUserUi() {
                   })}
                   className="bk-input"
                 >
-                  {isFetchedCatalogs ? (
+                  {isLoadingCatalogs ? (
                     <option value="" disabled>
                       در حال بارگزاری...
                     </option>
@@ -133,7 +137,7 @@ export default function TheIdUserUi() {
                       </option>
                       {dataCatalogs?.map((item, index) => (
                         <option key={index} value={item.id}>
-                          {item.title}
+                          {textRuleType(item.title)}
                         </option>
                       ))}
                     </>
@@ -166,7 +170,9 @@ export default function TheIdUserUi() {
                       message: 'کد ملی باید 10 کاراکتر باشد.',
                     },
                   })}
-                  onKeyPress={onlyTypeNumber}
+                  minLength={10}
+                  maxLength={10}
+                  onKeyDown={OnlyTypeNumber}
                   type="text"
                   className="bk-input"
                 />
@@ -176,8 +182,8 @@ export default function TheIdUserUi() {
                 <label>جنسیت</label>
                 <select {...register('gender')} className="bk-input">
                   <option value="NONE">نمیدانم</option>
-                  <option value="MAN">مرد</option>
-                  <option value="WOMAN">زن</option>
+                  <option value="MAN">آقا</option>
+                  <option value="WOMAN">خانم</option>
                 </select>
                 <FormErrorMessage errors={errors} name="gender" />
               </div>
@@ -224,11 +230,13 @@ export default function TheIdUserUi() {
                       message: 'شماره موبایل باید 11 کاراکتر باشد.',
                     },
                     maxLength: {
-                      value: 16,
-                      message: 'شماره موبایل باید نهایتا 16 کاراکتر باشد.',
+                      value: 11,
+                      message: 'شماره موبایل باید نهایتا 11 کاراکتر باشد.',
                     },
                   })}
-                  onKeyPress={onlyTypeNumber}
+                  minLength={11}
+                  maxLength={11}
+                  onKeyDown={OnlyTypeNumber}
                   type="text"
                   dir="ltr"
                   className="bk-input"
@@ -276,7 +284,11 @@ export default function TheIdUserUi() {
                         message: 'کلمه عبور مورد نیاز است.',
                       },
                       validate: () => {
-                        if (passwordStrengthLength !== 5 && watch('password').length !== 0) {
+                        if (
+                          passwordStrengthLength !== 5 &&
+                          watch('password') &&
+                          watch('password')?.length !== 0
+                        ) {
                           return 'کلمه عبور قوی نیست.'
                         }
                       },
@@ -329,9 +341,9 @@ export default function TheIdUserUi() {
                 <FormErrorMessage errors={errors} name="password" />
               </div>
               <div className="panel-col-33">
-                <label>وضعیت</label>
+                <label>قفل کاربر</label>
                 <select
-                  {...register('status', {
+                  {...register('locked', {
                     required: {
                       value: true,
                       message: 'پوسته ظاهری سایت ضروری است',
@@ -339,10 +351,10 @@ export default function TheIdUserUi() {
                   })}
                   className="bk-input"
                 >
-                  <option value="true">فعال</option>
-                  <option value="false">غیرفعال</option>
+                  <option value="true">بله</option>
+                  <option value="false">خیر</option>
                 </select>
-                <FormErrorMessage errors={errors} name="status" />
+                <FormErrorMessage errors={errors} name="locked" />
               </div>
               <div className="panel-col-100">
                 <button

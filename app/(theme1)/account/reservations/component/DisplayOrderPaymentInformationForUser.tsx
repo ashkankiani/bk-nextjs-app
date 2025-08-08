@@ -30,7 +30,7 @@ export default function DisplayOrderPaymentInformationForUser({ item, close }) {
         fullStringToDateObjectP(
           item.order.payment.transaction.createdAt,
           'YYYY-MM-DDTHH:MM:SS.SSSZ'
-        ).format('YYYY/MM/DD - HH:MM')
+        ).format('YYYY/MM/DD - HH:mm')
       ),
     ])
     if (item.order.discount) {
@@ -113,7 +113,7 @@ export default function DisplayOrderPaymentInformationForUser({ item, close }) {
                   fullStringToDateObjectP(
                     item.order.payment.transaction.createdAt,
                     'YYYY-MM-DDTHH:MM:SS.SSSZ'
-                  ).format('YYYY/MM/DD - HH:MM')
+                  ).format('YYYY/MM/DD - HH:mm')
                 )}
               </div>
             </div>

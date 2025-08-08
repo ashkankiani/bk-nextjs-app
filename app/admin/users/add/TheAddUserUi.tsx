@@ -1,10 +1,17 @@
+'use client'
+
 import Link from 'next/link'
 import { MdOutlineKeyboardBackspace } from 'react-icons/md'
 import { AiOutlineSave } from 'react-icons/ai'
-import { useRouter } from 'next/router'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { bkToast, onlyTypeNumber, passwordStrength } from '@/libs/utility'
+import {
+  bkToast,
+  generateStrongPassword,
+  OnlyTypeNumber,
+  passwordStrength,
+  textRuleType,
+} from '@/libs/utility'
 import TheSpinner from '@/components/layout/TheSpinner'
 import { FiEye, FiEyeOff } from 'react-icons/fi'
 import FormErrorMessage from '@/components/back-end/section/FormErrorMessage'
@@ -12,21 +19,24 @@ import HeaderPage from '@/components/back-end/section/HeaderPage'
 import { useGetCatalogs } from '@/hooks/admin/useCatalog'
 import { TypeApiAddUserReq } from '@/types/typeApiAdmin'
 import { useAddUser } from '@/hooks/admin/useUser'
+import useHook from '@/hooks/controller/useHook'
+import {TbPasswordFingerprint} from "react-icons/tb";
 
 export default function TheAddUserUi() {
-  const router = useRouter()
+  const { router } = useHook()
 
   const { data: dataCatalogs, isLoading: isLoadingCatalogs } = useGetCatalogs()
   const { mutateAsync: mutateAsyncAddUser, isPending: isPendingAddUser } = useAddUser()
 
   const [passwordShown, setPasswordShown] = useState(false)
 
-  const itemsBoolean = ['status']
+  const itemsBoolean = ['locked']
 
   const {
     register,
     watch,
     handleSubmit,
+    setValue,
     formState: { errors },
   } = useForm<TypeApiAddUserReq>({
     criteriaMode: 'all',
@@ -37,18 +47,17 @@ export default function TheAddUserUi() {
 
   const onSubmit = async (data: TypeApiAddUserReq) => {
     itemsBoolean.forEach(item => {
+      // @ts-expect-error ok!
       data[item] = data[item] === 'true'
     })
 
     await mutateAsyncAddUser(data)
       .then(res => {
         bkToast('success', res.Message)
+        router.push('/admin/users')
       })
       .catch(errors => {
         bkToast('error', errors.Reason)
-      })
-      .finally(() => {
-        router.push('/admin/users')
       })
   }
 
@@ -56,6 +65,11 @@ export default function TheAddUserUi() {
   const checkPasswordStrength = passwordStrength(watch('password'))
   const passwordStrengthLength = Object.values(checkPasswordStrength).filter(value => value).length
 
+  const generatePassword = () => {
+    const newPassword = generateStrongPassword()
+    setValue('password', newPassword)
+    setPasswordShown(true)
+  }
   return (
     <>
       <HeaderPage title="افزودن کاربر جدید" description="کاربر جدید اضافه نمایید.">
@@ -93,7 +107,7 @@ export default function TheAddUserUi() {
                     </option>
                     {dataCatalogs?.map((item, index) => (
                       <option key={index} value={item.id}>
-                        {item.title}
+                        {textRuleType(item.title)}
                       </option>
                     ))}
                   </>
@@ -126,7 +140,9 @@ export default function TheAddUserUi() {
                     message: 'کد ملی باید 10 کاراکتر باشد.',
                   },
                 })}
-                onKeyPress={onlyTypeNumber}
+                minLength={10}
+                maxLength={10}
+                onKeyDown={OnlyTypeNumber}
                 type="text"
                 className="bk-input"
               />
@@ -135,9 +151,9 @@ export default function TheAddUserUi() {
             <div className="panel-col-33">
               <label>جنسیت</label>
               <select {...register('gender')} defaultValue="NONE" className="bk-input">
-                <option value="NONE">نمیدانم</option>
-                <option value="MAN">مرد</option>
-                <option value="WOMAN">زن</option>
+                <option value="NONE">-</option>
+                <option value="MAN">آقا</option>
+                <option value="WOMAN">خانم</option>
               </select>
               <FormErrorMessage errors={errors} name="gender" />
             </div>
@@ -184,11 +200,13 @@ export default function TheAddUserUi() {
                     message: 'شماره موبایل باید 11 کاراکتر باشد.',
                   },
                   maxLength: {
-                    value: 16,
-                    message: 'شماره موبایل باید نهایتا 16 کاراکتر باشد.',
+                    value: 11,
+                    message: 'شماره موبایل باید نهایتا 11 کاراکتر باشد.',
                   },
                 })}
-                onKeyPress={onlyTypeNumber}
+                minLength={11}
+                maxLength={11}
+                onKeyDown={OnlyTypeNumber}
                 type="text"
                 dir="ltr"
                 className="bk-input"
@@ -254,6 +272,13 @@ export default function TheAddUserUi() {
                   placeholder="کلمه عبور"
                 />
 
+                <span className="absolute left-6 top-4 cursor-pointer leading-6 text-neutral-400">
+                  <TbPasswordFingerprint
+                      onClick={() => generatePassword()}
+                    className="ml-5 cursor-pointer leading-normal text-neutral-400"
+                    size="18px"
+                  />
+                </span>
                 <span className="absolute left-4 top-4 cursor-pointer leading-6 text-neutral-400">
                   {passwordShown ? (
                     <FiEye
@@ -289,21 +314,21 @@ export default function TheAddUserUi() {
               <FormErrorMessage errors={errors} name="password" />
             </div>
             <div className="panel-col-33">
-              <label>وضعیت</label>
+              <label>قفل کاربر</label>
               <select
-                {...register('status', {
+                {...register('locked', {
                   required: {
                     value: true,
                     message: 'پوسته ظاهری سایت ضروری است',
                   },
                 })}
-                defaultValue="true"
+                defaultValue="false"
                 className="bk-input"
               >
-                <option value="true">فعال</option>
-                <option value="false">غیرفعال</option>
+                <option value="true">بله</option>
+                <option value="false">خیر</option>
               </select>
-              <FormErrorMessage errors={errors} name="status" />
+              <FormErrorMessage errors={errors} name="locked" />
             </div>
             <div className="panel-col-100">
               <button

@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { bkToast, onlyTypeNumber } from '@/libs/utility'
+import { bkToast, OnlyTypeNumber } from '@/libs/utility'
 import TheSpinner from '@/components/layout/TheSpinner'
 import { FaSms } from 'react-icons/fa'
 import { MdEmail } from 'react-icons/md'
@@ -84,7 +84,7 @@ export default function ConnectionTest() {
                 onChange={e => setMobile(e.target.value)}
                 minLength={11}
                 maxLength={11}
-                onKeyPress={onlyTypeNumber}
+                onKeyDown={OnlyTypeNumber}
                 placeholder="شماره موبایل خود را وارد کنید."
                 type="text"
                 className="bk-input max-w-sm"

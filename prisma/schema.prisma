@@ -8,7 +8,8 @@ datasource db {
 }
 
 model Reservations {
-  id Int @id @default(autoincrement())
+  // id Int @id @default(autoincrement())
+  id String @id @default(uuid())
 
   order   Orders? @relation(fields: [orderId], references: [trackingCode], onUpdate: Cascade, onDelete: Cascade)
   orderId String? // nullable تا زمانی که سفارش تکمیل نشده
@@ -19,8 +20,8 @@ model Reservations {
   provider   Providers @relation(fields: [providerId], references: [id])
   providerId Int
 
-  user   Users @relation(fields: [userId], references: [id])
-  userId Int
+  user   Users  @relation(fields: [userId], references: [id])
+  userId String
 
   dateTimeStartEpoch BigInt
   dateTimeEndEpoch   BigInt
@@ -34,7 +35,7 @@ model Reservations {
 }
 
 model Orders {
-  id Int @id @default(autoincrement())
+  id String @id @default(uuid())
 
   trackingCode String @unique
 
@@ -44,13 +45,13 @@ model Orders {
 
   status OrdersStatus @default(PENDING)
 
-  user   Users @relation(fields: [userId], references: [id])
-  userId Int
+  user   Users  @relation(fields: [userId], references: [id])
+  userId String
 
   payment   Payments? @relation(fields: [paymentId], references: [id], onUpdate: Cascade, onDelete: Cascade)
   paymentId Int?
 
-  discount   Discounts? @relation(fields: [discountId], references: [id])
+  discount   Discounts? @relation(fields: [discountId], references: [id], onUpdate: SetNull, onDelete: SetNull)
   discountId Int?
 
   // discountCode  String?
@@ -72,8 +73,8 @@ model Payments {
 
   paymentType ReservationsPaymentType
 
-  user   Users @relation(fields: [userId], references: [id])
-  userId Int
+  user   Users  @relation(fields: [userId], references: [id])
+  userId String
 
   transaction   Transaction? @relation(fields: [transactionId], references: [id], onUpdate: Cascade, onDelete: Cascade)
   transactionId Int?
@@ -104,8 +105,8 @@ model Transaction {
 model Services {
   id Int @id @default(autoincrement())
 
-  user   Users @relation(fields: [userId], references: [id])
-  userId Int
+  user   Users  @relation(fields: [userId], references: [id])
+  userId String
 
   name       String
   periodTime Int
@@ -145,8 +146,8 @@ model Providers {
   service   Services @relation(fields: [serviceId], references: [id])
   serviceId Int
 
-  user   Users @relation(fields: [userId], references: [id])
-  userId Int
+  user   Users  @relation(fields: [userId], references: [id])
+  userId String
 
   slotTime Int
 
@@ -219,16 +220,20 @@ model Discounts {
 }
 
 model Users {
-  id      Int      @id @default(autoincrement())
+  // id Int @id @default(autoincrement())
+
+  id String @id @default(uuid())
+
   catalog Catalogs @relation(fields: [catalogId], references: [id])
 
-  catalogId Int     @default(1)
+  catalogId Int @default(1)
+
   // role      UsersRole @default(USER)
-  codeMeli  String  @unique
-  fullName  String
-  mobile    String  @unique
-  email     String? @unique
-  password  String
+  codeMeli String  @unique
+  fullName String
+  mobile   String  @unique
+  email    String? @unique
+  password String
 
   gender UsersGender @default(NONE)
 
@@ -312,7 +317,7 @@ model Sessions {
   id           Int    @id @default(autoincrement())
   sessionToken String @db.Text
   user         Users  @relation(fields: [userId], references: [id])
-  userId       Int    @unique
+  userId       String @unique
   expires      BigInt
 }
 
@@ -320,7 +325,7 @@ model Sessions {
 //   id Int @id @default(autoincrement())
 //
 //   user   Users @relation(fields: [userId], references: [id])
-//   userId Int
+//   userId String
 //
 //   gender   ProfileGender @default(UNKNOWN)
 //   avatar   String?

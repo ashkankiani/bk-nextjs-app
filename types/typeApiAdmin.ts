@@ -1,5 +1,4 @@
 import {
-  TypeBankName,
   TypeDiscountsType,
   TypeGender,
   TypePaymentType,
@@ -10,7 +9,6 @@ import {
   TypeApiCatalog,
   TypeApiConnection,
   TypeApiDiscount,
-  TypeApiDraft,
   TypeApiFaq,
   TypeApiHoliday,
   TypeApiOrder,
@@ -25,6 +23,7 @@ import {
   TypeApiUser,
 } from '@/types/typeApiEntity'
 import { DateObject } from 'react-multi-date-picker'
+import {TypeTimeSlotGenerator} from "@/libs/utility";
 
 export interface TypeCatalogs {
   id: number
@@ -37,7 +36,7 @@ export interface TypeCatalogs {
 export interface TypeSessions {
   id: number
   sessionToken: string
-  userId: number
+  userId: string
 
   expires: bigint // چون در پرایسما BigInt است، اینجا از bigint استفاده می‌کنیم
 }
@@ -270,7 +269,7 @@ export interface TypeApiAddUserReq {
   mobile: string
   email: string
   password: string
-  status: string
+  locked: string
 }
 
 export interface TypeApiAddUserRes {
@@ -278,7 +277,7 @@ export interface TypeApiAddUserRes {
 }
 
 export interface TypeApiDeleteUserReq {
-  id: number
+  id: string
 }
 
 export interface TypeApiDeleteUserRes {
@@ -290,12 +289,12 @@ export type TypeApiGetUsersRes = TypeApiUser & {
 }
 
 export type TypeApiShowUserReq = {
-  id: number
+  id: string
 }
 export type TypeApiShowUserRes = TypeApiUser
 
 export type TypeApiUpdateUserReq = {
-  id: number
+  id: string
   catalogId: number
   codeMeli: string
   gender: TypeGender
@@ -303,7 +302,7 @@ export type TypeApiUpdateUserReq = {
   mobile: string
   email: string
   password?: string
-  status: string
+  locked: string
 }
 
 export interface TypeApiUpdateUserRes {
@@ -332,7 +331,7 @@ export type TypeApiGetUsersByCatalogIdRes = TypeApiUser
 // Service
 /*<====================================>*/
 export interface TypeFormService {
-  userId: number
+  userId: string
 
   name: string
   periodTime: string
@@ -360,7 +359,7 @@ export interface TypeFormService {
 }
 
 export interface TypeApiAddServiceReq {
-  userId: number
+  userId: string
 
   name: string
   periodTime: number
@@ -408,7 +407,36 @@ export type TypeApiShowServiceReq = {
 }
 export type TypeApiShowServiceRes = TypeApiService
 
-export type TypeApiUpdateServiceReq = TypeApiService
+export type TypeApiUpdateServiceReq = {
+  id: number
+
+  userId: string
+
+  name: string
+  periodTime: number
+  price: number
+  capacity: number
+
+  startDate: string | null
+  endDate: string | null
+
+  gender: TypeGender
+
+  codPayment: boolean
+  onlinePayment: boolean
+
+  smsToAdminService: boolean
+  smsToAdminProvider: boolean
+  smsToUserService: boolean
+
+  emailToAdminService: boolean
+  emailToAdminProvider: boolean
+  emailToUserService: boolean
+
+  description: string | null
+  descriptionAfterPurchase: string | null
+
+}
 
 export interface TypeApiUpdateServiceRes {
   Message: string
@@ -421,7 +449,7 @@ export interface TypeApiUpdateServiceRes {
 export interface TypeFormProvider {
   serviceId: number
 
-  userId: number
+  userId: string
 
   slotTime: number
 
@@ -439,7 +467,7 @@ export interface TypeFormProvider {
 export interface TypeApiAddProviderReq {
   serviceId: number
 
-  userId: number
+  userId: string
 
   slotTime: number
 
@@ -479,7 +507,25 @@ export type TypeApiShowProviderRes = TypeApiProvider & {
   user: TypeApiUser
 }
 
-export type TypeApiUpdateProviderReq = TypeApiProvider
+export type TypeApiUpdateProviderReq = {
+  id: number
+
+  serviceId: number
+
+  userId: string
+
+  slotTime: number
+
+  startDate: string | null
+  endDate: string | null
+
+  startTime: string | null
+  endTime: string | null
+
+  status: boolean
+  workHolidays: boolean
+  description: string | null
+}
 
 export interface TypeApiUpdateProviderRes {
   Message: string
@@ -505,8 +551,8 @@ export interface TypeFormTimeSheet {
 
   dayName: string
   dayIndex: number
-  startTime: DateObject
-  endTime: DateObject
+  startTime: DateObject | null
+  endTime: DateObject | null
 }
 
 export interface TypeApiAddTimeSheetReq {
@@ -542,24 +588,17 @@ export type TypeApiShowTimeSheetRes = TypeApiTimeSheet
 /*<====================================>*/
 
 export type TypeApiGetOrdersRes = TypeApiOrder & {
-  service: TypeApiService
-  user: TypeApiUser
   discount: TypeApiDiscount
   payment: TypeApiPayment
-}
-
-/*<====================================>*/
-// Drafts
-/*<====================================>*/
-
-export type TypeApiGetDraftsRes = TypeApiDraft & {
-  service: TypeApiService
-  provider: TypeApiProvider
-  user: TypeApiUser
-}
-
-export interface TypeApiDeleteDraftsRes {
-  Message: string
+  Reservations: (TypeApiReservation &  {
+    user: TypeApiUser
+    service: TypeApiService &{
+      user: TypeApiUser
+    }
+    provider: TypeApiProvider &{
+      user: TypeApiUser
+    }
+  })[]
 }
 
 /*<====================================>*/
@@ -599,7 +638,7 @@ export interface TypeApiAddReservationRes {
 }
 
 export interface TypeApiDeleteReservationReq {
-  id: number
+  id: string
 }
 
 export interface TypeApiDeleteReservationRes {
@@ -611,19 +650,36 @@ export type TypeApiGetReservationsReq = {
   endEpoch: number
 }
 
-export type TypeApiGetReservationsRes = TypeApiReservation & {
+export type TypeApiGetReservationsRes = (TypeApiReservation & {
+  user: TypeApiUser
+  service: TypeApiService & {
+    user: TypeApiUser
+  }
+  provider: TypeApiProvider & {
+    user: TypeApiUser
+  }
   order: TypeApiOrder & {
     payment: TypeApiPayment & {
       transaction: TypeApiTransaction
     }
     discount: TypeApiDiscount
-    user: TypeApiUser
-    provider: TypeApiProvider & {
-      service: TypeApiService
-      user: TypeApiUser
-    }
   }
-}
+})
+
+//
+// export type TypeApiGetReservationsRes = TypeApiReservation & {
+//   order: TypeApiOrder & {
+//     payment: TypeApiPayment & {
+//       transaction: TypeApiTransaction
+//     }
+//     discount: TypeApiDiscount
+//     user: TypeApiUser
+//     provider: TypeApiProvider & {
+//       service: TypeApiService
+//       user: TypeApiUser
+//     }
+//   }
+// }
 
 export type TypeApiShowReservationReq = {
   id: number
@@ -649,15 +705,15 @@ export type TypeApiUpdateStatusReservationReq = {
   statusReserve: TypeStatusReserve
   status: TypeReservationsStatus
 
-  smsChangeStatusToAdminProvider: boolean
-  smsChangeStatusToUserService: boolean
-  emailChangeStatusToAdminProvider: boolean
-  emailChangeStatusToUserService: boolean
+  smsChangeStatusToAdminProvider?: boolean
+  smsChangeStatusToUserService?: boolean
+  emailChangeStatusToAdminProvider?: boolean
+  emailChangeStatusToUserService?: boolean
 
-  smsStatusDoneToAdminProvider: boolean
-  smsStatusDoneToUserService: boolean
-  emailStatusDoneToAdminProvider: boolean
-  emailStatusDoneToUserService: boolean
+  smsStatusDoneToAdminProvider?: boolean
+  smsStatusDoneToUserService?: boolean
+  emailStatusDoneToAdminProvider?: boolean
+  emailStatusDoneToUserService?: boolean
 }
 
 export interface TypeApiUpdateStatusReservationRes {
@@ -671,6 +727,7 @@ export interface TypeApiReminderReservationReq {
   emailReminderToAdminProvider: boolean
   emailReminderToUserService: boolean
 }
+
 export interface TypeApiReminderReservationRes {
   Message: string
 }
@@ -683,17 +740,43 @@ export interface TypeApiAppreciationReservationReq {
   emailAppreciationToAdminProvider: boolean
   emailAppreciationToUserService: boolean
 }
+
 export interface TypeApiAppreciationReservationRes {
   Message: string
 }
 
-export interface TypeApiGetReservationTimeSheetsInDateReq {
-  service: TypeApiService
-  provider: TypeApiProvider
+export type TypeApiAvailableTimesReq = {
+  userId?: string
+  serviceId: number
+  providerId: number
+  startDate: string
+  endDate: string
+  status: TypeReservationsStatus[]
+}
+
+export type TypeApiAvailableTimesRes = {
   date: string
+  dayIsHoliday: boolean
+  title: string
+  timeSheet: TypeTimeSlotGenerator
+  is: boolean
 }
-export interface TypeApiGetReservationTimeSheetsInDateRes {
-  Message: string
-  Message1: string
-  Message2: string
+
+export type TypeApiGetReservationsByUserIdReq = {
+  userId: string
 }
+export type TypeApiGetReservationsByUserIdRes = (TypeApiReservation & {
+  user: TypeApiUser
+  service: TypeApiService & {
+    user: TypeApiUser
+  }
+  provider: TypeApiProvider & {
+    user: TypeApiUser
+  }
+  order: TypeApiOrder & {
+    payment: TypeApiPayment & {
+      transaction: TypeApiTransaction
+    }
+    discount: TypeApiDiscount
+  }
+})

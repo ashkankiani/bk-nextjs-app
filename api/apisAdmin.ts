@@ -98,10 +98,10 @@ import {
   TypeApiReminderReservationRes,
   TypeApiAppreciationReservationReq,
   TypeApiAppreciationReservationRes,
-  TypeApiGetReservationTimeSheetsInDateReq,
-  TypeApiGetReservationTimeSheetsInDateRes,
+  TypeApiAvailableTimesReq,
+  TypeApiAvailableTimesRes,
   TypeApiAddReservationReq,
-  TypeApiAddReservationRes,
+  TypeApiAddReservationRes, TypeApiGetReservationsByUserIdReq, TypeApiGetReservationsByUserIdRes,
 } from '@/types/typeApiAdmin'
 import { ApiRoutesAdmin } from '@/api/apiRoutesAdmin'
 
@@ -287,8 +287,14 @@ export const AppreciationReservation = (params: TypeApiAppreciationReservationRe
     ApiRoutesAdmin.Reservation.AppreciationReservation,
     params
   )
-export const GetReservationTimeSheetsInDate = (params: TypeApiGetReservationTimeSheetsInDateReq) =>
-  postRequest<TypeApiGetReservationTimeSheetsInDateRes>(
-    ApiRoutesAdmin.Reservation.GetReservationTimeSheetsInDate,
+export const AvailableTimes = (params: TypeApiAvailableTimesReq) =>
+  getRequest<TypeApiAvailableTimesRes[]>(
+    ApiRoutesAdmin.Reservation.AvailableTimes,
     params
   )
+
+export const GetReservationsByUserId = (params: TypeApiGetReservationsByUserIdReq) =>
+    getRequest<TypeApiGetReservationsByUserIdRes[]>(
+        ApiRoutesAdmin.Reservation.GetReservationsByUserId,
+        params
+    )

@@ -8,8 +8,9 @@ import {
 import prisma from '@/prisma/client'
 import { encodeJwt } from '@/libs/authentication'
 import bcrypt from 'bcrypt'
-import { TypeApiProviders } from '@/types/typeApiAdmin'
 import { findPermissions, findUserByCodeMeli, upsertSession } from '@/app/api/_utils/helperPrisma'
+import {TypeGender} from "@/types/typeConfig";
+import {TypeApiProvider} from "@/types/typeApiEntity";
 
 const allowedMethods = ['POST']
 
@@ -60,12 +61,13 @@ export async function POST(request: Request) {
     const epoch = Date.now() + 86400000 // One Day
 
     type TypeUser = {
-      id: number
+      id: string
       catalogId: number
       codeMeli: string
       fullName: string
       mobile: string
       email: string | null
+      gender: TypeGender
       locked: boolean
       providerIds?: number[]
     }
@@ -77,12 +79,13 @@ export async function POST(request: Request) {
       fullName: hasUser.fullName,
       mobile: hasUser.mobile,
       email: hasUser.email,
+      gender: hasUser.gender,
       locked: hasUser.locked,
     }
 
     // اگر کاربر ما Provider باشد باید لیست ایدی هایی که اپراتور آن است را برگردانیم
     if (hasUser.catalogId === 3) {
-      const providers: TypeApiProviders[] = await prisma.providers.findMany({
+      const providers: TypeApiProvider[] = await prisma.providers.findMany({
         where: { userId: hasUser.id },
       })
       user.providerIds = providers.map(item => item.id)

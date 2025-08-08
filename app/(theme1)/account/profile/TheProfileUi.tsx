@@ -2,7 +2,7 @@
 import Link from 'next/link'
 import { useForm } from 'react-hook-form'
 import { useState } from 'react'
-import { bkToast, passwordStrength } from '@/libs/utility'
+import {bkToast, OnlyTypeNumber, passwordStrength} from '@/libs/utility'
 import { FiEye, FiEyeOff } from 'react-icons/fi'
 import imageLogo from '@/public/images/logo.png'
 import { setUser } from '@/store/slice/user'
@@ -10,7 +10,7 @@ import FormErrorMessage from '@/components/back-end/section/FormErrorMessage'
 import TheSpinner from '@/components/layout/TheSpinner'
 import useHook from '@/hooks/controller/useHook'
 import { TypeGender } from '@/types/typeConfig'
-import { TypeApiUpdateUserReq, TypeApiUser } from '@/types/typeApiAdmin'
+import { TypeApiUpdateUserReq } from '@/types/typeApiAdmin'
 import { useUpdateUser } from '@/hooks/user/useAuth'
 
 export default function TheProfileUi() {
@@ -49,7 +49,7 @@ export default function TheProfileUi() {
       password: '',
     },
   })
-
+console.log(user)
   const onSubmit = async (data: TypeFormTheProfileUi) => {
     const transformedData: TypeApiUpdateUserReq = {
       mobile: data.mobile,
@@ -61,17 +61,19 @@ export default function TheProfileUi() {
     }
     await mutateAsyncUpdateUser(transformedData)
       .then(res => {
-        handlerUpdateUser(res)
+        dispatch(setUser(data))
+        bkToast('success', res.Message)
+        // handlerUpdateUser(res)
       })
       .catch(errors => {
         bkToast('error', errors.Reason)
       })
   }
 
-  const handlerUpdateUser = async (data: TypeApiUser) => {
-    dispatch(setUser(data))
-    bkToast('success', 'بروزرسانی با موفقیت انجام شد.')
-  }
+  // const handlerUpdateUser = async (data: TypeApiUser) => {
+  //   dispatch(setUser(data))
+  //   bkToast('success', 'بروزرسانی با موفقیت انجام شد.')
+  // }
 
   const [meter, setMeter] = useState(false)
   const checkPasswordStrength = passwordStrength(watch('password'))
@@ -106,6 +108,9 @@ export default function TheProfileUi() {
                   message: 'کد ملی باید 10 کاراکتر باشد.',
                 },
               })}
+              minLength={10}
+              maxLength={10}
+              onKeyDown={OnlyTypeNumber}
               disabled={true}
               type="text"
               className="bk-input disable"
@@ -129,8 +134,8 @@ export default function TheProfileUi() {
               <option value="NONE" disabled hidden={user.gender !== 'NONE'}>
                 تعیین نشده
               </option>
-              <option value="MAN">مرد</option>
-              <option value="WOMAN">زن</option>
+              <option value="MAN">آقا</option>
+              <option value="WOMAN">خانم</option>
             </select>
             <FormErrorMessage errors={errors} name="gender" />
           </div>

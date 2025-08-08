@@ -4,9 +4,9 @@ import { MdOutlineKeyboardBackspace } from 'react-icons/md'
 import { AiOutlineSave } from 'react-icons/ai'
 import { useEffect, useRef, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
-import { bkToast, onlyTypeNumber, PNtoEN } from '@/libs/utility'
+import { bkToast, OnlyTypeNumber, PNtoEN } from '@/libs/utility'
 import TheSpinner from '@/components/layout/TheSpinner'
-import DatePicker, { DateObject } from 'react-multi-date-picker'
+import DatePicker, { DateObject, DatePickerRef } from 'react-multi-date-picker'
 import persian from 'react-date-object/calendars/persian'
 import persian_fa from 'react-date-object/locales/persian_fa'
 import FormErrorMessage from '@/components/back-end/section/FormErrorMessage'
@@ -23,15 +23,15 @@ export default function TheAddServiceUi() {
   const { data: dataUsers, isLoading: isLoadingUsers } = useGetUsersByCatalogId(3) // ایدی 3 برای کاربران ارائه دهنده است.
   const { mutateAsync: mutateAsyncAddService, isPending: isPendingAddService } = useAddService()
 
-  const refStartDate = useRef(null)
-  const refEndDate = useRef(null)
+  const refStartDate = useRef<DatePickerRef>(null)
+  const refEndDate = useRef<DatePickerRef>(null)
 
   const [statusRequiredStartDate, setStatusRequiredStartDate] = useState<boolean>(false)
   const [statusRequiredEndDate, setStatusRequiredEndDate] = useState<boolean>(false)
   const [minDate, setMinDate] = useState<DateObject>(dateNowP())
   const [maxDate, setMaxDate] = useState<DateObject>(dateNowP().add(1, 'year'))
 
-  const itemsInteger = ['periodTime', 'price', 'capacity']
+  // const itemsInteger = ['periodTime', 'price', 'capacity']
 
   const {
     control,
@@ -45,17 +45,18 @@ export default function TheAddServiceUi() {
   })
 
   const onSubmit = async (data: TypeFormService) => {
-    itemsInteger.forEach(item => {
-      data[item] = parseInt(data[item])
-    })
+    // itemsInteger.forEach(item => {
+    //   // @ts-expect-error ok!
+    //   data[item] = parseInt(data[item])
+    // })
 
     const transformedData: TypeApiAddServiceReq = {
       userId: data.userId,
 
       name: data.name,
-      periodTime: data.periodTime,
-      price: data.price,
-      capacity: data.capacity,
+      periodTime: parseInt(data.periodTime),
+      price: parseInt(data.price),
+      capacity: parseInt(data.capacity),
 
       startDate: data.startDate ? PNtoEN(data.startDate.format('YYYY/MM/DD')) : null,
       endDate: data.endDate ? PNtoEN(data.endDate.format('YYYY/MM/DD')) : null,
@@ -83,12 +84,10 @@ export default function TheAddServiceUi() {
     await mutateAsyncAddService(transformedData)
       .then(res => {
         bkToast('success', res.Message)
+        router.push('/admin/services')
       })
       .catch(errors => {
         bkToast('error', errors.Reason)
-      })
-      .finally(() => {
-        router.push('/admin/services')
       })
   }
 
@@ -141,7 +140,6 @@ export default function TheAddServiceUi() {
               </label>
               <select
                 {...register('userId', {
-                  valueAsNumber: true,
                   required: {
                     value: true,
                     message: 'مدیر خدمت ضروری است',
@@ -195,7 +193,7 @@ export default function TheAddServiceUi() {
                     message: 'یک عدد صحیح وارد کنید.',
                   },
                 })}
-                onKeyPress={onlyTypeNumber}
+                onKeyDown={OnlyTypeNumber}
                 placeholder="هر رزرو چند دقیقه طول می کشد."
                 type="text"
                 className="bk-input"
@@ -221,7 +219,7 @@ export default function TheAddServiceUi() {
                     message: 'یک عدد صحیح وارد کنید.',
                   },
                 })}
-                onKeyPress={onlyTypeNumber}
+                onKeyDown={OnlyTypeNumber}
                 placeholder="تومان وارد شود."
                 type="text"
                 className="bk-input"
@@ -247,7 +245,7 @@ export default function TheAddServiceUi() {
                     message: 'یک عدد صحیح وارد کنید.',
                   },
                 })}
-                onKeyPress={onlyTypeNumber}
+                onKeyDown={OnlyTypeNumber}
                 placeholder="چند نفر میتوانند هر نوبت رزرو را بخرند."
                 type="text"
                 className="bk-input"
@@ -258,8 +256,8 @@ export default function TheAddServiceUi() {
               <label>جنسیت رزرو کننده</label>
               <select {...register('gender')} defaultValue="NONE" className="bk-input">
                 <option value="NONE">فرقی نمی کند</option>
-                <option value="MAN">مرد</option>
-                <option value="WOMAN">زن</option>
+                <option value="MAN">آقا</option>
+                <option value="WOMAN">خانم</option>
               </select>
               <FormErrorMessage errors={errors} name="gender" />
             </div>
@@ -276,8 +274,6 @@ export default function TheAddServiceUi() {
                 }}
                 render={({
                   field: { onChange, value },
-                  // fieldState: {invalid, isDirty}, //optional
-                  // formState: {errors}, //optional, but necessary if you want to show an error message
                 }) => (
                   <>
                     <DatePicker
@@ -305,7 +301,9 @@ export default function TheAddServiceUi() {
                         <div
                           className="panel-date-picker-reset"
                           onClick={() => {
-                            ;(setValue('startDate', null), refStartDate.current.closeCalendar())
+                            setValue('startDate', null)
+                            setMinDate(dateNowP())
+                            if (refStartDate.current) refStartDate.current.closeCalendar()
                           }}
                         >
                           ریست
@@ -330,8 +328,6 @@ export default function TheAddServiceUi() {
                 }}
                 render={({
                   field: { onChange, value },
-                  // fieldState: {invalid, isDirty}, //optional
-                  // formState: {errors}, //optional, but necessary if you want to show an error message
                 }) => (
                   <>
                     <DatePicker
@@ -357,7 +353,9 @@ export default function TheAddServiceUi() {
                         <div
                           className="panel-date-picker-reset"
                           onClick={() => {
-                            ;(setValue('endDate', null), refEndDate.current.closeCalendar())
+                            setValue('endDate', null)
+                            setMaxDate(dateNowP().add(1, 'year'))
+                            if (refEndDate.current) refEndDate.current.closeCalendar()
                           }}
                         >
                           ریست

@@ -21,7 +21,7 @@ export async function DELETE(request: Request) {
 
   try {
     // حذف همه در حال رزروها
-    await prisma.drafts.deleteMany()
+    // await prisma.drafts.deleteMany()
 
     return createSuccessResponseWithMessage('در حال رزروها حذف شدند.')
   } catch (error) {

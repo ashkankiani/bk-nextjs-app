@@ -4,8 +4,8 @@ import { MdOutlineKeyboardBackspace } from 'react-icons/md'
 import { AiOutlineSave } from 'react-icons/ai'
 import { useEffect, useRef, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
-import { bkToast, onlyTypeNumber, PNtoEN } from '@/libs/utility'
-import DatePicker from 'react-multi-date-picker'
+import { bkToast, OnlyTypeNumber, PNtoEN } from '@/libs/utility'
+import DatePicker, {DatePickerRef} from 'react-multi-date-picker'
 import persian from 'react-date-object/calendars/persian'
 import persian_fa from 'react-date-object/locales/persian_fa'
 import TimePicker from 'react-multi-date-picker/plugins/time_picker'
@@ -33,7 +33,7 @@ export default function TheIdProviderUi() {
 
   const {
     data: dataProvider,
-    isLoading: isLoadingProvider,
+    // isLoading: isLoadingProvider,
     isFetched: isFetchedProvider,
   } = useShowProvider(id, {
     enabled: isLoadingUsers,
@@ -42,11 +42,11 @@ export default function TheIdProviderUi() {
   const { mutateAsync: mutateAsyncUpdateProvider, isPending: isPendingUpdateProvider } =
     useUpdateProvider()
 
-  const refStartDate = useRef()
-  const refEndDate = useRef()
+  const refStartDate = useRef<DatePickerRef>(null)
+  const refEndDate = useRef<DatePickerRef>(null)
 
-  const refStartTime = useRef()
-  const refEndTime = useRef()
+  const refStartTime = useRef<DatePickerRef>(null)
+  const refEndTime = useRef<DatePickerRef>(null)
 
   const [statusRequiredStartDate, setStatusRequiredStartDate] = useState(false)
   const [statusRequiredEndDate, setStatusRequiredEndDate] = useState(false)
@@ -75,16 +75,17 @@ export default function TheIdProviderUi() {
   })
 
   const onSubmit = async (data: TypeFormProvider) => {
-    itemsBoolean.forEach(item => {
-      data[item] = data[item] === 'true'
-    })
-    itemsInteger.forEach(item => {
-      data[item] = parseInt(data[item])
-    })
+    // itemsBoolean.forEach(item => {
+    //   // @ts-expect-error ok!
+    //   data[item] = data[item] === 'true'
+    // })
+    // itemsInteger.forEach(item => {
+    //   // @ts-expect-error ok!
+    //   data[item] = parseInt(data[item])
+    // })
 
     const transformedData: TypeApiUpdateProviderReq = {
       id: dataProvider!.id,
-      serviceId: data.serviceId,
       serviceId: data.serviceId,
       userId: data.userId,
       slotTime: data.slotTime,
@@ -92,32 +93,33 @@ export default function TheIdProviderUi() {
       endDate: data.endDate ? PNtoEN(data.endDate.format('YYYY/MM/DD')) : null,
       startTime: data.startTime ? PNtoEN(data.startTime.format('HH:mm')) : null,
       endTime: data.endTime ? PNtoEN(data.endTime.format('HH:mm')) : null,
-      status: data.status,
-      workHolidays: data.workHolidays,
+      status: data.status === 'true',
+      workHolidays: data.workHolidays === 'true',
       description: data.description,
     }
 
     await mutateAsyncUpdateProvider(transformedData)
       .then(res => {
         bkToast('success', res.Message)
+        router.push('/admin/providers')
       })
       .catch(errors => {
         bkToast('error', errors.Reason)
-      })
-      .finally(() => {
-        router.push('/admin/providers')
       })
   }
 
   useEffect(() => {
     if (isFetchedProvider && dataProvider) {
       items.forEach(item => {
+        // @ts-expect-error ok!
         setValue(item, dataProvider[item])
       })
       itemsBoolean.forEach(item => {
+        // @ts-expect-error ok!
         setValue(item, dataProvider[item].toString())
       })
       itemsInteger.forEach(item => {
+        // @ts-expect-error ok!
         setValue(item, parseInt(dataProvider[item]))
       })
 
@@ -132,49 +134,71 @@ export default function TheIdProviderUi() {
 
       if (dataProvider.startTime !== null && dataProvider.startTime !== undefined) {
         const arrayStartTime = dataProvider.startTime.split(':')
-        setValue('startTime', dateNowP().setHour(arrayStartTime[0]).setMinute(arrayStartTime[1]))
+        setValue('startTime', dateNowP().setHour(Number(arrayStartTime[0])).setMinute(Number(arrayStartTime[1])))
       }
       if (dataProvider.endTime !== null && dataProvider.endTime !== undefined) {
         const arrayEndTime = dataProvider.endTime.split(':')
-        setValue('endTime', dateNowP().setHour(arrayEndTime[0]).setMinute(arrayEndTime[1]))
+        setValue('endTime', dateNowP().setHour(Number(arrayEndTime[0])).setMinute(Number(arrayEndTime[1])))
       }
     }
   }, [isFetchedProvider])
 
+  // useEffect(() => {
+  //   if (
+  //     (watch('startDate') === undefined && watch('endDate') === undefined) ||
+  //     (watch('startDate') === null && watch('endDate') === null)
+  //   ) {
+  //     setStatusRequiredStartDate(false)
+  //     setStatusRequiredEndDate(false)
+  //   } else {
+  //     setStatusRequiredStartDate(true)
+  //     setStatusRequiredEndDate(true)
+  //   }
+  // })
+
   useEffect(() => {
-    if (
-      (watch('startDate') === undefined && watch('endDate') === undefined) ||
-      (watch('startDate') === null && watch('endDate') === null)
-    ) {
-      setStatusRequiredStartDate(false)
-      setStatusRequiredEndDate(false)
-    } else {
+    const startTime = watch('startTime')
+    const endTime = watch('endTime')
+
+    if (startTime && endTime) {
+      compareTime(startTime.format('HH:mm'), endTime.format('HH:mm'))
+      setStatusRequiredStartTime(true)
+      setStatusRequiredEndTime(true)
+
       setStatusRequiredStartDate(true)
       setStatusRequiredEndDate(true)
-    }
-  })
-
-  useEffect(() => {
-    if (watch('startTime') !== undefined && watch('endTime') !== undefined) {
-      if (watch('startTime') !== null && watch('endTime') !== null) {
-        compareTime(watch('startTime').format('HH:mm'), watch('endTime').format('HH:mm'))
-      }
-    }
-
-    if (
-      (watch('startTime') === undefined && watch('endTime') === undefined) ||
-      (watch('startTime') === null && watch('endTime') === null)
-    ) {
+    }else{
       setStatusRequiredStartTime(false)
       setStatusRequiredEndTime(false)
       setErrorPeriodTime(false)
-    } else {
-      setStatusRequiredStartTime(true)
-      setStatusRequiredEndTime(true)
-    }
-  })
 
-  function compareTime(time1, time2) {
+      setStatusRequiredStartDate(false)
+      setStatusRequiredEndDate(false)
+    }
+  }, [watch('startTime'), watch('endTime')])
+
+  // useEffect(() => {
+  //   if (watch('startTime') !== undefined && watch('endTime') !== undefined) {
+  //     if (watch('startTime') !== null && watch('endTime') !== null) {
+  //       compareTime(watch('startTime').format('HH:mm'), watch('endTime').format('HH:mm'))
+  //     }
+  //   }
+  //
+  //   if (
+  //     (watch('startTime') === undefined && watch('endTime') === undefined) ||
+  //     (watch('startTime') === null && watch('endTime') === null)
+  //   ) {
+  //     setStatusRequiredStartTime(false)
+  //     setStatusRequiredEndTime(false)
+  //     setErrorPeriodTime(false)
+  //   } else {
+  //     setStatusRequiredStartTime(true)
+  //     setStatusRequiredEndTime(true)
+  //   }
+  // })
+
+  // hint: ino 2 bar daram
+  function compareTime(time1: string, time2: string) {
     const [hour1, minute1] = time1.split(':')
     const [hour2, minute2] = time2.split(':')
     return hour1 > hour2 || (hour1 === hour2 && minute1 > minute2)
@@ -238,7 +262,6 @@ export default function TheIdProviderUi() {
               </label>
               <select
                 {...register('userId', {
-                  valueAsNumber: true,
                   required: {
                     value: true,
                     message: 'ارائه دهنده ضروری است',
@@ -291,7 +314,7 @@ export default function TheIdProviderUi() {
                     message: 'یک عدد صحیح وارد کنید.',
                   },
                 })}
-                onKeyPress={onlyTypeNumber}
+                onKeyDown={OnlyTypeNumber}
                 placeholder="بین یک رزرو تا رزرو دیگر چند دقیقه فاصله باشد."
                 type="text"
                 className="bk-input"
@@ -316,8 +339,6 @@ export default function TheIdProviderUi() {
                 }}
                 render={({
                   field: { onChange, value },
-                  // fieldState: {invalid, isDirty}, //optional
-                  // formState: {errors}, //optional, but necessary if you want to show an error message
                 }) => (
                   <>
                     <DatePicker
@@ -343,7 +364,9 @@ export default function TheIdProviderUi() {
                         <div
                           className="panel-date-picker-reset"
                           onClick={() => {
-                            ;(setValue('startDate', null), refStartDate.current.closeCalendar())
+                            setValue('startDate', null)
+                            setMinDate(dateNowP())
+                            if (refStartDate.current) refStartDate.current?.closeCalendar()
                           }}
                         >
                           ریست
@@ -368,8 +391,6 @@ export default function TheIdProviderUi() {
                 }}
                 render={({
                   field: { onChange, value },
-                  // fieldState: {invalid, isDirty}, //optional
-                  // formState: {errors}, //optional, but necessary if you want to show an error message
                 }) => (
                   <>
                     <DatePicker
@@ -377,8 +398,10 @@ export default function TheIdProviderUi() {
                       editable={false}
                       value={value}
                       onChange={date => {
-                        onChange(date?.isValid ? date : undefined)
-                        date?.isValid && setMaxDate(date)
+                        if (date?.isValid) {
+                          onChange(date)
+                          setMaxDate(date)
+                        }
                       }}
                       containerClassName="w-full"
                       className={'green ' + (theme !== 'light' ? 'bg-dark' : '')}
@@ -393,7 +416,9 @@ export default function TheIdProviderUi() {
                         <div
                           className="panel-date-picker-reset"
                           onClick={() => {
-                            ;(setValue('endDate', null), refEndDate.current.closeCalendar())
+                            setValue('endDate', null)
+                            setMaxDate(dateNowP().add(1, 'year'))
+                            if (refEndDate.current) refEndDate.current.closeCalendar()
                           }}
                         >
                           ریست
@@ -419,12 +444,10 @@ export default function TheIdProviderUi() {
                     message: 'شروع استراحت ثابت ضروری است',
                   },
                   validate: () =>
-                    errorPeriodTime !== true || 'ساعت شروع باید کوچکتر از ساعت پایان باشد.',
+                    !errorPeriodTime || 'ساعت شروع باید کوچکتر از ساعت پایان باشد.',
                 }}
                 render={({
                   field: { onChange, value },
-                  // fieldState: {invalid, isDirty}, //optional
-                  // formState: {errors}, //optional, but necessary if you want to show an error message
                 }) => (
                   <>
                     <DatePicker
@@ -451,7 +474,9 @@ export default function TheIdProviderUi() {
                         <div
                           className="panel-date-picker-reset"
                           onClick={() => {
-                            ;(setValue('startTime', null), refStartTime.current.closeCalendar())
+                            setValue('startTime', null)
+                            setMinDate(dateNowP())
+                            if (refStartTime.current) refStartTime.current.closeCalendar()
                           }}
                         >
                           ریست
@@ -476,8 +501,6 @@ export default function TheIdProviderUi() {
                 }}
                 render={({
                   field: { onChange, value },
-                  // fieldState: {invalid, isDirty}, //optional
-                  // formState: {errors}, //optional, but necessary if you want to show an error message
                 }) => (
                   <>
                     <DatePicker
@@ -504,7 +527,9 @@ export default function TheIdProviderUi() {
                         <div
                           className="panel-date-picker-reset"
                           onClick={() => {
-                            ;(setValue('endTime', null), refEndTime.current.closeCalendar())
+                            setValue('endTime', null)
+                            setMaxDate(dateNowP().add(1, 'year'))
+                            if (refEndTime.current) refEndTime.current.closeCalendar()
                           }}
                         >
                           ریست

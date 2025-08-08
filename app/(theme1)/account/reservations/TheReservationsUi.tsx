@@ -129,7 +129,7 @@ export default function TheReservationsUi() {
                 <th>تاریخ رزرو</th>
                 <th>پرداخت</th>
                 <th>وضعیت</th>
-                {showColumnStatus && <th width={100}>عملیات</th>}
+                {showColumnStatus && <th className="w-[100px]">عملیات</th>}
               </tr>
             </thead>
             <tbody className="fa-regular-18px bg-white dark:bg-darkNavy2">

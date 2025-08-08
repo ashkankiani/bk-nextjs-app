@@ -2,7 +2,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { DeleteDrafts, GetDrafts } from '@/api/apisAdmin'
 
 function useGetDrafts(Optional?: object) {
-  const { data, isLoading, isFetched } = useQuery({
+  const { data, isLoading, isFetched , refetch} = useQuery({
     queryKey: ['GetDrafts'],
     queryFn: () => GetDrafts(),
     ...Optional,
@@ -11,6 +11,7 @@ function useGetDrafts(Optional?: object) {
     data,
     isLoading,
     isFetched,
+    refetch,
   }
 }
 

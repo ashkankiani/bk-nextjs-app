@@ -1,10 +1,9 @@
 import Link from 'next/link'
-import { useRouter } from 'next/router'
 import useMenu from '@/hooks/controller/useMenu'
 import React from 'react'
 import { TypeMenu } from '@/types/typeConfig'
-import useHook from '@/hooks/controller/useHook'
 import { usePathname } from 'next/navigation'
+import { Cn } from '@/libs/utility'
 
 type TypeItemMenuSidebarProps = {
   toggleSidebar: boolean
@@ -31,16 +30,19 @@ export default function ItemMenuSidebar({
       <Link
         key={key}
         href={`/admin/${item.name}`}
-        className={`fa-sbold-18px my-2 p-2 ${
-          toggleSidebar ? 'flex-center-start gap-2' : 'flex-center-center'
-        }${currentPath === item.name ? 'rounded-xl bg-primary-500 dark:bg-slate-800' : ''}`}
+        className={Cn(
+          toggleSidebar ? 'flex-center-start gap-2' : 'flex-center-center',
+          currentPath === item.name ? 'rounded-xl bg-primary-500 dark:bg-slate-800' : '',
+          'fa-sbold-18px my-2 p-2'
+        )}
         onClick={() => setMenuInMobile(!menuInMobile)}
       >
         {item.icon}
         <div
-          className={`overflow-auto whitespace-nowrap transition-all ${
-            toggleSidebar ? '' : 'hidden'
-          }`}
+          className={Cn(
+            toggleSidebar ? '' : 'hidden',
+            'overflow-auto whitespace-nowrap transition-all'
+          )}
         >
           {item.title}
         </div>

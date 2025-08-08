@@ -16,16 +16,15 @@ import {
   hookGetReservationWhere,
   hookIsReservation,
 } from '@/hooks/admin/hookReservation'
-import { useRouter } from 'next/router'
 import FormErrorMessage from '@/components/back-end/section/FormErrorMessage'
 import { hookListServices } from '@/hooks/admin/hookService'
 import HeaderPage from '@/components/back-end/section/HeaderPage'
 import { fullStringToDateObjectP } from '@/libs/convertor'
+import useHook from "../../../hooks/controller/useHook";
 
 export default function EditReservation({ id }) {
-  const router = useRouter()
+  const { router, theme } = useHook()
 
-  const theme = useSelector(state => state.app.initTheme)
 
   const [loading, setLoading] = useState(false)
   const [loadingServices, setLoadingServices] = useState(false)
@@ -428,7 +427,6 @@ export default function EditReservation({ id }) {
               </label>
               <select
                 {...register('userId', {
-                  valueAsNumber: true,
                   required: {
                     value: true,
                     message: 'ارائه دهنده ضروری است',
@@ -480,8 +478,6 @@ export default function EditReservation({ id }) {
                 }}
                 render={({
                   field: { onChange, value },
-                  // fieldState: {invalid, isDirty}, //optional
-                  // formState: {errors}, //optional, but necessary if you want to show an error message
                 }) => (
                   <>
                     <DatePicker

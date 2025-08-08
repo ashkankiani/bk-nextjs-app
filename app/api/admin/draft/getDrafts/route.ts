@@ -2,7 +2,7 @@ import prisma from '@/prisma/client'
 import {
   createSuccessResponseWithData,
   handlerRequestError,
-  checkMethodAllowed,
+  checkMethodAllowed, serializeBigIntToNumber,
 } from '@/app/api/_utils/handleRequest'
 
 const allowedMethods = ['GET']
@@ -21,15 +21,39 @@ export async function GET(request: Request) {
 
   try {
     // دریافت لیست در حال رزروها
-    const drafts = await prisma.drafts.findMany({
+    const reservations = await prisma.reservations.findMany({
+      where: {
+        status: {
+          in: ['PENDING'],
+        },
+      },
       include: {
-        service: true,
-        provider: true,
         user: true,
+        service: {
+          include: {
+            user: true
+          }
+        },
+        provider: {
+          include: {
+            user: true
+          }
+        },
+        order: {
+          include: {
+            payment: {
+              include: {
+                transaction: true
+              }
+            },
+            discount: true
+          },
+        },
       },
     })
 
-    return createSuccessResponseWithData(drafts)
+
+    return createSuccessResponseWithData(serializeBigIntToNumber(reservations))
   } catch (error) {
     return handlerRequestError(error)
   }

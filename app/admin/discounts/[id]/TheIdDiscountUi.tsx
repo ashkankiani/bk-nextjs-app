@@ -2,11 +2,11 @@
 import Link from 'next/link'
 import { MdOutlineKeyboardBackspace } from 'react-icons/md'
 import { AiOutlineSave } from 'react-icons/ai'
-import { bkToast, onlyTypeNumber, PNtoEN } from '@/libs/utility'
+import { bkToast, OnlyTypeNumber, PNtoEN } from '@/libs/utility'
 import { useEffect, useRef, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import TheSpinner from '@/components/layout/TheSpinner'
-import DatePicker, { DateObject } from 'react-multi-date-picker'
+import DatePicker, { DateObject, DatePickerRef } from 'react-multi-date-picker'
 import persian from 'react-date-object/calendars/persian'
 import persian_fa from 'react-date-object/locales/persian_fa'
 import { dateNowP, fullStringToDateObjectP } from '@/libs/convertor'
@@ -32,11 +32,12 @@ export default function TheIdDiscountUi() {
   const { mutateAsync: mutateAsyncUpdateDiscount, isPending: isPendingUpdateDiscount } =
     useUpdateDiscount()
 
-  const refStartDate = useRef()
-  const refEndDate = useRef()
+  const refStartDate = useRef<DatePickerRef>(null)
+  const refEndDate = useRef<DatePickerRef>(null)
 
   const [statusRequiredStartDate, setStatusRequiredStartDate] = useState(false)
   const [statusRequiredEndDate, setStatusRequiredEndDate] = useState(false)
+
   const [minDate, setMinDate] = useState(dateNowP())
   const [maxDate, setMaxDate] = useState(dateNowP().add(1, 'year'))
 
@@ -75,12 +76,10 @@ export default function TheIdDiscountUi() {
     await mutateAsyncUpdateDiscount(transformedData)
       .then(res => {
         bkToast('success', res.Message)
+        router.push('/admin/discounts')
       })
       .catch(errors => {
         bkToast('error', errors.Reason)
-      })
-      .finally(() => {
-        router.push('/admin/discounts')
       })
   }
 
@@ -210,8 +209,6 @@ export default function TheIdDiscountUi() {
                   }}
                   render={({
                     field: { onChange, value },
-                    // fieldState: {invalid, isDirty}, //optional
-                    // formState: {errors}, //optional, but necessary if you want to show an error message
                   }) => (
                     <>
                       <DatePicker
@@ -238,7 +235,9 @@ export default function TheIdDiscountUi() {
                           <div
                             className="panel-date-picker-reset"
                             onClick={() => {
-                              ;(setValue('startDate', null), refStartDate.current.closeCalendar())
+                              setValue('startDate', null)
+                              setMinDate(dateNowP())
+                              if (refStartDate.current) refStartDate.current.closeCalendar()
                             }}
                           >
                             ریست
@@ -263,8 +262,6 @@ export default function TheIdDiscountUi() {
                   }}
                   render={({
                     field: { onChange, value },
-                    // fieldState: {invalid, isDirty}, //optional
-                    // formState: {errors}, //optional, but necessary if you want to show an error message
                   }) => (
                     <>
                       <DatePicker
@@ -290,7 +287,9 @@ export default function TheIdDiscountUi() {
                           <div
                             className="panel-date-picker-reset"
                             onClick={() => {
-                              ;(setValue('endDate', null), refEndDate.current.closeCalendar())
+                              setValue('endDate', null)
+                              setMaxDate(dateNowP().add(1, 'year'))
+                              if (refEndDate.current) refEndDate.current.closeCalendar()
                             }}
                           >
                             ریست
@@ -350,7 +349,7 @@ export default function TheIdDiscountUi() {
                       message: 'یک عدد صحیح وارد کنید.',
                     },
                   })}
-                  onKeyPress={onlyTypeNumber}
+                  onKeyDown={OnlyTypeNumber}
                   placeholder="[تخفیف ثابت: مبلغ به تومان] [درصد تخفیف: عدد 1 تا 100]"
                   type="text"
                   className="bk-input"

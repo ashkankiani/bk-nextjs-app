@@ -25,14 +25,15 @@ export async function PUT(request: Request) {
   // دریافت اطلاعات داخل درخواست
   const body = await request.json()
 
-  const { id, codeMeli, email, mobile } = body
+  const { id, codeMeli, catalogId, mobile, fullName ,email} = body
 
   // بررسی وجود داده های ورودی مورد نیاز
   const errorMessage = checkRequiredFields({
     id,
     codeMeli,
-    email,
+    catalogId,
     mobile,
+    fullName,
   })
 
   if (errorMessage) {

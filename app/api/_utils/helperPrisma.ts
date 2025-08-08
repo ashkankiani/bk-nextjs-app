@@ -16,7 +16,7 @@ export async function findPermissions(catalogId: number) {
 }
 
 // آپدیت کردن توکن یک کاربر
-export async function upsertSession(userId: number, session: string, epoch: number) {
+export async function upsertSession(userId: string, session: string, epoch: number) {
   return await prisma.sessions.upsert({
     where: { userId },
     update: { sessionToken: session, expires: epoch },

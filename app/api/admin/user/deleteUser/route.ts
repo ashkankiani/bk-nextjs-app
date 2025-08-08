@@ -30,9 +30,17 @@ export async function DELETE(request: Request) {
   }
 
   try {
+
+    await prisma.$transaction([
+      prisma.transaction.deleteMany({ where: { Payments: { some: { userId: id } } } }),
+      prisma.payments.deleteMany({ where: { userId: id } }),
+      prisma.orders.deleteMany({ where: { userId: id } }),
+      prisma.sessions.deleteMany({ where: { userId: id } }),
+    ]);
+
     // حذف کاربر
     await prisma.users.delete({
-      where: { id: parseInt(id) },
+      where: { id: id },
     })
 
     return createSuccessResponseWithMessage('کاربر حذف شد.')

@@ -5,12 +5,11 @@ import Link from 'next/link'
 import { RiDeleteBin5Line, RiFileExcel2Fill } from 'react-icons/ri'
 import { FiEdit } from 'react-icons/fi'
 import { useEffect, useState } from 'react'
-import { bkToast, textGenderType } from '@/libs/utility'
+import { bkToast, textGenderType, textRuleType } from '@/libs/utility'
 import TheSpinner from '@/components/layout/TheSpinner'
 import TheExport from '@/components/layout/TheExport'
 import Popup from 'reactjs-popup'
 import { IoClose } from 'react-icons/io5'
-import { hookDeleteAllReservationUser } from '@/hooks/admin/hookReservation'
 import HeaderPage from '@/components/back-end/section/HeaderPage'
 import { useGetUsers } from '@/hooks/admin/useUser'
 import useHook from '@/hooks/controller/useHook'
@@ -20,7 +19,6 @@ import { TypeApiGetUsersRes } from '@/types/typeApiAdmin'
 export default function TheUsersUi() {
   const { permissions } = useHook()
 
-  const [loadingDeleteReserve, setLoadingDeleteReserve] = useState(false)
   const [dataExport, setDataExport] = useState<string[][]>([])
 
   const { data: dataUsers, isLoading: isLoadingUsers, isFetched: isFetchedUsers } = useGetUsers()
@@ -32,7 +30,7 @@ export default function TheUsersUi() {
     }
   }, [isFetchedUsers])
 
-  const handlerDeleteUser = async (id: number, close: () => void) => {
+  const handlerDeleteUser = async (id: string, close: () => void) => {
     await mutateAsyncDeleteUser({ id })
       .then(res => {
         bkToast('success', res.Message)
@@ -41,19 +39,6 @@ export default function TheUsersUi() {
       .catch(errors => {
         bkToast('error', errors.Reason)
       })
-  }
-
-  const handlerDeleteAllReservationUser = async id => {
-    setLoadingDeleteReserve(true)
-    await hookDeleteAllReservationUser(id, (response, message) => {
-      setLoadingDeleteReserve(false)
-      if (response) {
-        bkToast('success', message)
-        handlerListUsers()
-      } else {
-        bkToast('error', message)
-      }
-    })
   }
 
   const createObjExportForUsers = (OBJ: TypeApiGetUsersRes[]) => {
@@ -65,8 +50,8 @@ export default function TheUsersUi() {
         item.mobile,
         item.email ? item.email : '-',
         textGenderType(item.gender),
-        item.catalog.title,
-        item.locked ? 'فعال' : 'غیرفعال',
+        textRuleType(item.catalog.title),
+        item.locked ? 'بله' : 'خیر',
       ])
     })
     setDataExport(sameExport)
@@ -86,14 +71,12 @@ export default function TheUsersUi() {
             title="برون بری کاربر"
             loading={isLoadingUsers}
             dataExport={dataExport}
-            keys="کدملی,نام و نام خانوادگی,موبایل,ایمیل,جنسیت,دسترسی,وضعیت"
-            heading={[
-              ['کدملی', 'نام و نام خانوادگی', 'موبایل', 'ایمیل', 'جنسیت', 'دسترسی', 'وضعیت'],
-            ]}
+            keys="کدملی,نام و نام خانوادگی,موبایل,ایمیل,جنسیت,دسترسی,قفل"
+            heading={[['کدملی', 'نام و نام خانوادگی', 'موبایل', 'ایمیل', 'جنسیت', 'دسترسی', 'قفل']]}
           />
         )}
         {permissions.addUsers && (
-          <Link href="/admin/users/add/TheAddUserUi" className="action">
+          <Link href="/admin/users/add" className="action">
             <AiFillPlusCircle size="24px" className="ml-2 inline-flex align-middle" />
             <span>کاربر جدید</span>
           </Link>
@@ -119,20 +102,20 @@ export default function TheUsersUi() {
             <tbody>
               {isLoadingUsers ? (
                 <tr>
-                  <td colSpan={3}>
+                  <td colSpan={9}>
                     <TheSpinner />
                   </td>
                 </tr>
               ) : dataUsers && dataUsers.length > 0 ? (
                 dataUsers.map((item, index) => (
                   <tr key={index}>
-                    <td className={item.locked ? '' : 'bg-red-500 text-white'}>{index + 1}</td>
+                    <td className={item.locked ? 'bg-red-500 text-white' : ''}>{index + 1}</td>
                     <td>{item.codeMeli}</td>
                     <td>{item.fullName}</td>
                     <td dir="ltr">{item.mobile}</td>
                     <td dir="ltr">{item.email}</td>
                     <td>{textGenderType(item.gender)}</td>
-                    <td>{item.catalog.title}</td>
+                    <td>{textRuleType(item.catalog.title)}</td>
                     <td>
                       {permissions.viewReservation && (
                         <Link
@@ -146,11 +129,11 @@ export default function TheUsersUi() {
                     <td>
                       <div className="flex-center-center gap-3">
                         {permissions.editUsers && (
-                          <Link href={'/admin/users/' + item.codeMeli}>
+                          <Link href={'/admin/users/' + item.id}>
                             <FiEdit size="26px" />
                           </Link>
                         )}
-                        {permissions.deleteUsers && item.id !== 1 && (
+                        {permissions.deleteUsers && (
                           <Popup
                             className="bg-modal"
                             contentStyle={{ width: '100%' }}
@@ -196,11 +179,11 @@ export default function TheUsersUi() {
                                   <div
                                     className={
                                       'panel-modal-confirm-delete ' +
-                                      (loadingDeleteReserve ? 'disable-action' : 'cursor-pointer')
+                                      (isPendingDeleteUser ? 'disable-action' : 'cursor-pointer')
                                     }
-                                    onClick={() => handlerDeleteAllReservationUser(item.id)}
+                                    onClick={() => handlerDeleteUser(item.id, close)}
                                   >
-                                    {loadingDeleteReserve ? (
+                                    {isPendingDeleteUser ? (
                                       <TheSpinner />
                                     ) : (
                                       'مطمنم، همه رزروهای این کاربر را حذف کن'
@@ -235,7 +218,7 @@ export default function TheUsersUi() {
                 ))
               ) : (
                 <tr>
-                  <td colSpan={3}>کاربری برای نمایش وجود ندارد.</td>
+                  <td colSpan={9}>کاربری برای نمایش وجود ندارد.</td>
                 </tr>
               )}
             </tbody>

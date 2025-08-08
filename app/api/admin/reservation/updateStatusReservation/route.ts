@@ -131,13 +131,13 @@ export async function PUT(request: Request) {
 
     const sendNotifications = async () => {
       if (body.smsChangeStatusToAdminProvider || body.smsStatusDoneToAdminProvider) {
-        await callInternalApi('/admin/sms/sendSms', {
+        await callInternalApi('api/admin/sms/sendSms', {
           method: 'POST',
           body: { ...paramsSms, mobile: body.reserve.order.provider.user.mobile },
         })
       }
       if (body.smsChangeStatusToUserService || body.smsStatusDoneToUserService) {
-        await callInternalApi('/admin/sms/sendSms', {
+        await callInternalApi('api/admin/sms/sendSms', {
           method: 'POST',
           body: { ...paramsSms, mobile: body.reserve.order.user.mobile },
         })

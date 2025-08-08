@@ -3,7 +3,7 @@ import { ReactNode } from 'react'
 type TypeHeaderPageProps = {
   title: string
   description: string
-  children: ReactNode
+  children?: ReactNode
 }
 export default function HeaderPage({ title, description, children }: TypeHeaderPageProps) {
   return (

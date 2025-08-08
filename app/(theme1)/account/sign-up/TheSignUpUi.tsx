@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { useForm } from 'react-hook-form'
 import { useEffect, useState } from 'react'
-import { bkToast, generateCode, passwordStrength } from '@/libs/utility'
+import {bkToast, generateCode, OnlyTypeNumber, passwordStrength} from '@/libs/utility'
 import { FiEye, FiEyeOff } from 'react-icons/fi'
 import imageLogo from '@/public/images/logo.png'
 import FormErrorMessage from '@/components/back-end/section/FormErrorMessage'
@@ -177,6 +177,9 @@ export default function TheSignUpUi() {
                   message: 'کد ملی باید 10 کاراکتر باشد.',
                 },
               })}
+              minLength={10}
+              maxLength={10}
+              onKeyDown={OnlyTypeNumber}
               type="text"
               className="bk-input"
               placeholder="کد ملی"
@@ -250,10 +253,12 @@ export default function TheSignUpUi() {
                   message: 'شماره موبایل باید 11 کاراکتر باشد.',
                 },
                 maxLength: {
-                  value: 16,
-                  message: 'شماره موبایل باید نهایتا 16 کاراکتر باشد.',
+                  value: 11,
+                  message: 'شماره موبایل باید نهایتا 11 کاراکتر باشد.',
                 },
               })}
+              minLength={11}
+              maxLength={11}
               type="text"
               dir="ltr"
               className="bk-input"

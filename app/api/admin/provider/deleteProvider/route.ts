@@ -30,12 +30,19 @@ export async function DELETE(request: Request) {
   }
 
   try {
-    // حذف ارائه دهنده
-    await prisma.providers.delete({
-      where: { id: parseInt(id) },
+    const reservations = await prisma.reservations.count({
+      where: { providerId: parseInt(id) },
     })
 
-    return createSuccessResponseWithMessage('ارائه دهنده حذف شد.')
+    if (reservations > 0) {
+      return createErrorResponseWithMessage('ابتدا رزروهای ارائه شده را حذف نمایید.')
+    } else {
+      // حذف ارائه دهنده
+      await prisma.providers.delete({
+        where: { id: parseInt(id) },
+      })
+      return createSuccessResponseWithMessage('ارائه دهنده حذف شد.')
+    }
   } catch (error) {
     return handlerRequestError(error)
   }

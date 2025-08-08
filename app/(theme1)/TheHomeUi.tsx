@@ -203,8 +203,6 @@ export default function TheHomeUi() {
                 }}
                 render={({
                   field: { onChange, value },
-                  // fieldState: {invalid, isDirty}, //optional
-                  // formState: {errors}, //optional, but necessary if you want to show an error message
                 }) => (
                   <>
                     <DatePicker
@@ -239,8 +237,6 @@ export default function TheHomeUi() {
                 }}
                 render={({
                   field: { onChange, value },
-                  // fieldState: {invalid, isDirty}, //optional
-                  // formState: {errors}, //optional, but necessary if you want to show an error message
                 }) => (
                   <>
                     <DatePicker

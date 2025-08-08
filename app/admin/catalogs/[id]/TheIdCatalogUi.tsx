@@ -41,12 +41,10 @@ export default function TheIdCatalogUi() {
     await mutateAsyncUpdatePermission(data)
       .then(res => {
         bkToast('success', res.Message)
+        router.push('/admin/catalogs')
       })
       .catch(errors => {
         bkToast('error', errors.Reason)
-      })
-      .finally(() => {
-        router.push('/admin/catalogs')
       })
   }
 

@@ -1,8 +1,8 @@
 import { IoClose } from 'react-icons/io5'
 import { PNtoEN, textDiscountsType, textPaymentType, textBankName } from '@/libs/utility'
 import { fullStringToDateObjectP, numberWithCommas } from '@/libs/convertor'
-import { AiOutlineDollarCircle } from 'react-icons/ai'
-import GeneratePdf from '@/components/layout/GeneratePdf'
+// import { AiOutlineDollarCircle } from 'react-icons/ai'
+// import GeneratePdf from '@/components/layout/GeneratePdf'
 import { TypeApiGetReservationsRes } from '@/types/typeApiAdmin'
 
 export default function DisplayOrderPaymentInformationForAdmin({
@@ -22,15 +22,15 @@ export default function DisplayOrderPaymentInformationForAdmin({
       numberWithCommas(item.order.payment.transaction.amount),
     ])
     dataExport.push(['شماره کارت', item.order.payment.transaction.cardNumber])
-    dataExport.push(['شماره تراکنش', item.order.payment.transaction.trackId])
+    // dataExport.push(['شماره تراکنش', item.order.payment.transaction.authority])
     dataExport.push(['شناسه ارجاع', item.order.payment.transaction.authority])
     dataExport.push([
       'تاریخ واریز',
       PNtoEN(
         fullStringToDateObjectP(
-          item.order.payment.transaction.createdAt,
+          item.order.payment.transaction.createdAt.toString(),
           'YYYY-MM-DDTHH:MM:SS.SSSZ'
-        ).format('YYYY/MM/DD - HH:MM')
+        ).format('YYYY/MM/DD - HH:mm')
       ),
     ])
     if (item.order.discount && item.order.discountPrice) {
@@ -108,10 +108,10 @@ export default function DisplayOrderPaymentInformationForAdmin({
               <div>شماره کارت</div>
               <div dir="ltr">{item.order.payment.transaction.cardNumber}</div>
             </div>
-            <div className="flex-center-between mb-4 flex-wrap gap-2">
-              <div>شماره تراکنش</div>
-              <div>{item.order.payment.transaction.trackId}</div>
-            </div>
+            {/*<div className="flex-center-between mb-4 flex-wrap gap-2">*/}
+            {/*  <div>شماره تراکنش</div>*/}
+            {/*  <div>{item.order.payment.transaction.trackId}</div>*/}
+            {/*</div>*/}
             <div className="flex-center-between mb-4 flex-wrap gap-2">
               <div>شناسه ارجاع</div>
               <div dir="ltr">{item.order.payment.transaction.authority}</div>
@@ -121,9 +121,9 @@ export default function DisplayOrderPaymentInformationForAdmin({
               <div dir="ltr">
                 {PNtoEN(
                   fullStringToDateObjectP(
-                    item.order.payment.transaction.createdAt,
+                    item.order.payment.transaction.createdAt.toString(),
                     'YYYY-MM-DDTHH:MM:SS.SSSZ'
-                  ).format('YYYY/MM/DD - HH:MM')
+                  ).format('YYYY/MM/DD - HH:mm')
                 )}
               </div>
             </div>
@@ -183,7 +183,7 @@ export default function DisplayOrderPaymentInformationForAdmin({
         )}
       </div>
       <div className="panel-modal-footer">
-        <div className="panel-modal-confirm flex-center-center gap-2">
+{/*        <div className="panel-modal-confirm flex-center-center gap-2">
           <AiOutlineDollarCircle size="22px" />
           <GeneratePdf
             type="FACTOR"
@@ -191,7 +191,7 @@ export default function DisplayOrderPaymentInformationForAdmin({
             orientation="portrait"
             title="پرینت فاکتور"
           />
-        </div>
+        </div>*/}
         <div className="panel-modal-close" onClick={close}>
           بستن
         </div>

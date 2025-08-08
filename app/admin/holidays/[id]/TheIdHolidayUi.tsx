@@ -44,12 +44,10 @@ export default function TheIdHolidayUi() {
     await mutateAsyncUpdateHoliday(data)
       .then(res => {
         bkToast('success', res.Message)
+        router.push('/admin/holidays')
       })
       .catch(errors => {
         bkToast('error', errors.Reason)
-      })
-      .finally(() => {
-        router.push('/admin/holidays')
       })
   }
 
@@ -90,8 +88,6 @@ export default function TheIdHolidayUi() {
                   }}
                   render={({
                     field: { onChange, value },
-                    // fieldState: {invalid, isDirty}, //optional
-                    // formState: {errors}, //optional, but necessary if you want to show an error message
                   }) => (
                     <>
                       <DatePicker

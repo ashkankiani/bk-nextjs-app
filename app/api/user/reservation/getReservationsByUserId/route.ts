@@ -61,7 +61,7 @@ export async function GET(request: Request) {
     const reservations = await prisma.reservations.findMany({
       where: {
         AND: [
-          { userId: parseInt(userId) },
+          { userId: userId },
           {
             status: {
               in: ['REVIEW', 'COMPLETED', 'DONE'],

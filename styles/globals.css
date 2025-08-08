@@ -7,19 +7,15 @@
 @layer base {
   html,
   body {
-    height: 100%;
-    @apply fa-regular-14px font-yekanBakh text-neutral-800 dark:text-white;
-    scroll-behavior: smooth;
+    @apply fa-regular-14px font-yekanBakh text-neutral-800 dark:text-white h-full scroll-smooth;
   }
 
   body {
-    overflow-x: hidden;
+    @apply overflow-x-hidden
   }
 
   #__next {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
+    @apply flex flex-col h-full
   }
 
   header,
@@ -34,7 +30,7 @@
   .password-strength-meter {
     position: absolute;
     width: 100%;
-    bottom: 0px;
+    bottom: 0;
     right: 0;
     height: 5px;
   }
@@ -166,7 +162,8 @@
   }
 
   .bk-table {
-    @apply relative mb-8 overflow-x-auto;
+    @apply  mb-8 overflow-x-auto;
+    /*relative*/
   }
 
   .bk-table table {

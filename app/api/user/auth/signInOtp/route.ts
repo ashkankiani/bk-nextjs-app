@@ -8,7 +8,7 @@ import {
 import prisma from '@/prisma/client'
 import { encodeJwt } from '@/libs/authentication'
 import { findPermissions, findUserByMobile, upsertSession } from '@/app/api/_utils/helperPrisma'
-import { TypeApiProviders } from '@/types/typeApiAdmin'
+import {TypeApiProvider} from "@/types/typeApiEntity";
 
 const allowedMethods = ['POST']
 
@@ -55,7 +55,7 @@ export async function POST(request: Request) {
 
     // ساخت داده خروجی کاربر
     const user: {
-      id: number
+      id: string
       catalogId: number
       codeMeli: string
       fullName: string
@@ -73,7 +73,7 @@ export async function POST(request: Request) {
 
     // اگر کاربر ما Provider باشد باید لیست ایدی هایی که اپراتور آن است را برگردانیم
     if (hasUser.catalogId === 3) {
-      const providers: TypeApiProviders[] = await prisma.providers.findMany({
+      const providers: TypeApiProvider[] = await prisma.providers.findMany({
         where: { userId: hasUser.id },
       })
       user.providerIds = providers.map(item => item.id)

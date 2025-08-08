@@ -27,7 +27,7 @@ function useAvailableTimes(query: TypeApiAvailableTimesReq, Optional?: object) {
 
 function useGetReservationsByUserId(query: TypeApiGetReservationsByUserIdReq, Optional?: object) {
   const { data, isLoading, isFetched } = useQuery({
-    queryKey: ['AvailableTimes', query.userId],
+    queryKey: ['GetReservationsByUserId', query.userId],
     queryFn: () => GetReservationsByUserId(query),
     ...Optional,
   })

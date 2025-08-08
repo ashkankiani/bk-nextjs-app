@@ -169,7 +169,7 @@ export interface TypeApiSetting {
   updatedAt: Date
 }
 export interface TypeApiUser {
-  id: number
+  id: string
   catalogId: number
   codeMeli: string
   fullName: string
@@ -184,7 +184,7 @@ export interface TypeApiUser {
 export interface TypeApiService {
   id: number
 
-  userId: number
+  userId: string
 
   name: string
   periodTime: number
@@ -218,7 +218,7 @@ export interface TypeApiProvider {
 
   serviceId: number
 
-  userId: number
+  userId: string
 
   slotTime: number
 
@@ -251,7 +251,7 @@ export interface TypeApiTimeSheet {
   updatedAt: Date
 }
 export interface TypeApiOrder {
-  id: number
+  id: string
   trackingCode: string
 
   method: TypeOrderMethod
@@ -260,7 +260,7 @@ export interface TypeApiOrder {
 
   status: TypeOrderStatus
 
-  userId: number
+  userId: string
 
   serviceId: number
 
@@ -284,7 +284,7 @@ export interface TypeApiPayment {
 
   paymentType: TypePaymentType
 
-  userId: number
+  userId: string
 
   transactionId: number | null
 
@@ -297,7 +297,7 @@ export interface TypeApiPayment {
   updatedAt: Date
 }
 export interface TypeApiReservation {
-  id: number
+  id: string
 
   orderId: string | null
 
@@ -305,7 +305,7 @@ export interface TypeApiReservation {
 
   providerId: number
 
-  userId: number
+  userId: string
 
   dateTimeStartEpoch: bigint
   dateTimeEndEpoch: bigint
@@ -317,6 +317,7 @@ export interface TypeApiReservation {
   createdAt: Date
   updatedAt: Date
 }
+/*
 export interface TypeApiDraft {
   createEpoch: bigint
 
@@ -334,6 +335,7 @@ export interface TypeApiDraft {
   createdAt: Date
   updatedAt: Date
 }
+*/
 export interface TypeApiTransaction {
   id: number
 

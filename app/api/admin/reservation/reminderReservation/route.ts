@@ -53,8 +53,8 @@ export async function POST(request: Request) {
       dateName: fullStringToDateObjectP(body.reserve.date).weekDay.name,
       date: body.reserve.date,
       time: body.reserve.time.replace('-', ' تا '),
-      service: body.reserve.order.provider.service.name,
-      provider: body.reserve.order.provider.user.fullName,
+      service: body.reserve.service.name,
+      provider: body.reserve.provider.user.fullName,
     }
 
     // ساخت پارامترهای ایمیل
@@ -66,28 +66,28 @@ export async function POST(request: Request) {
     }
 
     const sendNotifications = async () => {
-      if (body.smsReminderToAdminProvider) {
-        await callInternalApi('/admin/sms/sendSms', {
+      if (body.smsReminderToAdminProvider && body.reserve.provider.user.mobile) {
+        await callInternalApi('api/admin/sms/sendSms', {
           method: 'POST',
-          body: { ...paramsSms, mobile: body.reserve.order.provider.user.mobile },
+          body: { ...paramsSms, mobile: body.reserve.provider.user.mobile },
         })
       }
-      if (body.smsReminderToUserService) {
-        await callInternalApi('/admin/sms/sendSms', {
+      if (body.smsReminderToUserService && body.reserve.user.mobile) {
+        await callInternalApi('api/admin/sms/sendSms', {
           method: 'POST',
-          body: { ...paramsSms, mobile: body.reserve.order.user.mobile },
+          body: { ...paramsSms, mobile: body.reserve.user.mobile },
         })
       }
-      if (body.emailReminderToAdminProvider) {
+      if (body.emailReminderToAdminProvider && body.reserve.provider.user.email) {
         await callInternalApi('/admin/email/sendEmail', {
-          ...paramsEmail,
-          email: body.reserve.order.provider.user.email,
+          method: 'POST',
+          body: {...paramsEmail, email: body.reserve.provider.user.email}
         })
       }
-      if (body.emailReminderToUserService && body.reserve.order.user.email) {
+      if (body.emailReminderToUserService && body.reserve.user.email) {
         await callInternalApi('/admin/email/sendEmail', {
-          ...paramsEmail,
-          email: body.reserve.order.user.email,
+          method: 'POST',
+          body: {...paramsEmail, email: body.reserve.user.email}
         })
       }
     }

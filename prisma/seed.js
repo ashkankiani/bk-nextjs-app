@@ -84,8 +84,6 @@ async function main() {
       addCatalogs: false,
       editCatalogs: false,
       deleteCatalogs: false,
-      getSms: true,
-      getEmail: true,
     },
   })
   const createPermissionsAdmin = await prisma.permissions.upsert({
@@ -139,8 +137,6 @@ async function main() {
       addCatalogs: true,
       editCatalogs: true,
       deleteCatalogs: true,
-      getSms: true,
-      getEmail: true,
     },
   })
   const createPermissionsProvider = await prisma.permissions.upsert({
@@ -194,8 +190,6 @@ async function main() {
       addCatalogs: false,
       editCatalogs: false,
       deleteCatalogs: false,
-      getSms: true,
-      getEmail: true,
     },
   })
   const createPermissionsExecutive = await prisma.permissions.upsert({
@@ -249,8 +243,6 @@ async function main() {
       addCatalogs: false,
       editCatalogs: false,
       deleteCatalogs: false,
-      getSms: true,
-      getEmail: true,
     },
   })
 
@@ -325,7 +317,7 @@ async function main() {
     update: {},
     create: {
       name: 'خدمت یک',
-      userId: 4,
+      userId: createUser3.id,
       periodTime: 60,
       price: 1000,
       capacity: 1,
@@ -341,7 +333,7 @@ async function main() {
     update: {},
     create: {
       name: 'خدمت دو',
-      userId: 5,
+      userId: createUser4.id,
       periodTime: 20,
       price: 100000,
       capacity: 1,
@@ -353,7 +345,7 @@ async function main() {
     update: {},
     create: {
       serviceId: 1,
-      userId: 4,
+      userId: createUser3.id,
       slotTime: 0,
     },
   })
@@ -362,7 +354,7 @@ async function main() {
     update: {},
     create: {
       serviceId: 2,
-      userId: 5,
+      userId: createUser4.id,
       slotTime: 30,
     },
   })

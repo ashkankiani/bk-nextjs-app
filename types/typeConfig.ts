@@ -38,6 +38,7 @@ export type TypeApiRoutesAdmin = {
   TimeSheet: EndpointApiRoutes
   Order: EndpointApiRoutes
   Reservation: EndpointApiRoutes
+  Draft: EndpointApiRoutes
 }
 
 export type TypeApiRoutesUser = {
@@ -143,7 +144,7 @@ export type TypePermissionKeys =
   | 'editCatalogs'
   | 'deleteCatalogs'
 
-export type TypeSession = { userId: number; catalogId: number }
+export type TypeSession = { userId: string; catalogId: number }
 
 export type MenuItem = {
   title: string

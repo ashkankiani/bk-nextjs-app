@@ -4,8 +4,8 @@ import { MdOutlineKeyboardBackspace } from 'react-icons/md'
 import { AiOutlineSave } from 'react-icons/ai'
 import { useEffect, useRef, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
-import { bkToast, onlyTypeNumber, PNtoEN } from '@/libs/utility'
-import DatePicker from 'react-multi-date-picker'
+import { bkToast, OnlyTypeNumber, PNtoEN } from '@/libs/utility'
+import DatePicker, {DatePickerRef} from 'react-multi-date-picker'
 import persian from 'react-date-object/calendars/persian'
 import persian_fa from 'react-date-object/locales/persian_fa'
 import TimePicker from 'react-multi-date-picker/plugins/time_picker'
@@ -29,11 +29,11 @@ export default function TheAddProviderUi() {
 
   const { mutateAsync: mutateAsyncAddProvider, isPending: isPendingAddProvider } = useAddProvider()
 
-  const refStartDate = useRef()
-  const refEndDate = useRef()
+  const refStartDate = useRef<DatePickerRef>(null)
+  const refEndDate = useRef<DatePickerRef>(null)
 
-  const refStartTime = useRef()
-  const refEndTime = useRef()
+  const refStartTime = useRef<DatePickerRef>(null)
+  const refEndTime = useRef<DatePickerRef>(null)
 
   const [statusRequiredStartDate, setStatusRequiredStartDate] = useState(false)
   const [statusRequiredEndDate, setStatusRequiredEndDate] = useState(false)
@@ -46,8 +46,8 @@ export default function TheAddProviderUi() {
 
   const [errorPeriodTime, setErrorPeriodTime] = useState(false)
 
-  const itemsBoolean = ['status', 'workHolidays']
-  const itemsInteger = ['slotTime']
+  // const itemsBoolean = ['status', 'workHolidays']
+  // const itemsInteger = ['slotTime']
 
   const {
     control,
@@ -61,12 +61,12 @@ export default function TheAddProviderUi() {
   })
 
   const onSubmit = async (data: TypeFormProvider) => {
-    itemsBoolean.forEach(item => {
-      data[item] = data[item] === 'true'
-    })
-    itemsInteger.forEach(item => {
-      data[item] = parseInt(data[item])
-    })
+    // itemsBoolean.forEach(item => {
+    //   data[item] = data[item] === 'true'
+    // })
+    // itemsInteger.forEach(item => {
+    //   data[item] = parseInt(data[item])
+    // })
 
     const transformedData: TypeApiAddProviderReq = {
       serviceId: data.serviceId,
@@ -76,57 +76,76 @@ export default function TheAddProviderUi() {
       endDate: data.endDate ? PNtoEN(data.endDate.format('YYYY/MM/DD')) : null,
       startTime: data.startTime ? PNtoEN(data.startTime.format('HH:mm')) : null,
       endTime: data.endTime ? PNtoEN(data.endTime.format('HH:mm')) : null,
-      status: data.status,
-      workHolidays: data.workHolidays,
+      status: data.status === 'true',
+      workHolidays: data.workHolidays === 'true',
       description: data.description,
     }
 
     await mutateAsyncAddProvider(transformedData)
       .then(res => {
         bkToast('success', res.Message)
+        router.push('/admin/providers')
       })
       .catch(errors => {
         bkToast('error', errors.Reason)
       })
-      .finally(() => {
-        router.push('/admin/providers')
-      })
   }
 
+  // useEffect(() => {
+  //   if (
+  //     (watch('startDate') === undefined && watch('endDate') === undefined) ||
+  //     (watch('startDate') === null && watch('endDate') === null)
+  //   ) {
+  //     setStatusRequiredStartDate(false)
+  //     setStatusRequiredEndDate(false)
+  //   } else {
+  //     setStatusRequiredStartDate(true)
+  //     setStatusRequiredEndDate(true)
+  //   }
+  // })
+  //
+  // useEffect(() => {
+  //   if (watch('startTime') !== undefined && watch('endTime') !== undefined) {
+  //     if (watch('startTime') !== null && watch('endTime') !== null) {
+  //       compareTime(watch('startTime').format('HH:mm'), watch('endTime').format('HH:mm'))
+  //     }
+  //   }
+  //
+  //   if (
+  //     (watch('startTime') === undefined && watch('endTime') === undefined) ||
+  //     (watch('startTime') === null && watch('endTime') === null)
+  //   ) {
+  //     setStatusRequiredStartTime(false)
+  //     setStatusRequiredEndTime(false)
+  //     setErrorPeriodTime(false)
+  //   } else {
+  //     setStatusRequiredStartTime(true)
+  //     setStatusRequiredEndTime(true)
+  //   }
+  // })
+
   useEffect(() => {
-    if (
-      (watch('startDate') === undefined && watch('endDate') === undefined) ||
-      (watch('startDate') === null && watch('endDate') === null)
-    ) {
-      setStatusRequiredStartDate(false)
-      setStatusRequiredEndDate(false)
-    } else {
+    const startTime = watch('startTime')
+    const endTime = watch('endTime')
+
+    if (startTime && endTime) {
+      compareTime(startTime.format('HH:mm'), endTime.format('HH:mm'))
+      setStatusRequiredStartTime(true)
+      setStatusRequiredEndTime(true)
+
       setStatusRequiredStartDate(true)
       setStatusRequiredEndDate(true)
-    }
-  })
-
-  useEffect(() => {
-    if (watch('startTime') !== undefined && watch('endTime') !== undefined) {
-      if (watch('startTime') !== null && watch('endTime') !== null) {
-        compareTime(watch('startTime').format('HH:mm'), watch('endTime').format('HH:mm'))
-      }
-    }
-
-    if (
-      (watch('startTime') === undefined && watch('endTime') === undefined) ||
-      (watch('startTime') === null && watch('endTime') === null)
-    ) {
+    }else{
       setStatusRequiredStartTime(false)
       setStatusRequiredEndTime(false)
       setErrorPeriodTime(false)
-    } else {
-      setStatusRequiredStartTime(true)
-      setStatusRequiredEndTime(true)
-    }
-  })
 
-  function compareTime(time1, time2) {
+      setStatusRequiredStartDate(false)
+      setStatusRequiredEndDate(false)
+    }
+  }, [watch('startTime'), watch('endTime')])
+
+  function compareTime(time1: string, time2: string) {
     const [hour1, minute1] = time1.split(':')
     const [hour2, minute2] = time2.split(':')
     return hour1 > hour2 || (hour1 === hour2 && minute1 > minute2)
@@ -187,7 +206,6 @@ export default function TheAddProviderUi() {
               </label>
               <select
                 {...register('userId', {
-                  valueAsNumber: true,
                   required: {
                     value: true,
                     message: 'ارائه دهنده ضروری است',
@@ -240,7 +258,7 @@ export default function TheAddProviderUi() {
                     message: 'یک عدد صحیح وارد کنید.',
                   },
                 })}
-                onKeyPress={onlyTypeNumber}
+                onKeyDown={OnlyTypeNumber}
                 placeholder="بین یک رزرو تا رزرو دیگر چند دقیقه فاصله باشد."
                 type="text"
                 className="bk-input"
@@ -265,8 +283,6 @@ export default function TheAddProviderUi() {
                 }}
                 render={({
                   field: { onChange, value },
-                  // fieldState: {invalid, isDirty}, //optional
-                  // formState: {errors}, //optional, but necessary if you want to show an error message
                 }) => (
                   <>
                     <DatePicker
@@ -293,7 +309,9 @@ export default function TheAddProviderUi() {
                         <div
                           className="panel-date-picker-reset"
                           onClick={() => {
-                            ;(setValue('startDate', null), refStartDate.current.closeCalendar())
+                            setValue('startDate', null)
+                            setMinDate(dateNowP())
+                            if (refStartDate.current) refStartDate.current.closeCalendar()
                           }}
                         >
                           ریست
@@ -318,8 +336,6 @@ export default function TheAddProviderUi() {
                 }}
                 render={({
                   field: { onChange, value },
-                  // fieldState: {invalid, isDirty}, //optional
-                  // formState: {errors}, //optional, but necessary if you want to show an error message
                 }) => (
                   <>
                     <DatePicker
@@ -345,7 +361,9 @@ export default function TheAddProviderUi() {
                         <div
                           className="panel-date-picker-reset"
                           onClick={() => {
-                            ;(setValue('endDate', null), refEndDate.current.closeCalendar())
+                            setValue('endDate', null)
+                            setMaxDate(dateNowP().add(1, 'year'))
+                            if (refEndDate.current) refEndDate.current.closeCalendar()
                           }}
                         >
                           ریست
@@ -371,12 +389,10 @@ export default function TheAddProviderUi() {
                     message: 'شروع استراحت ثابت ضروری است',
                   },
                   validate: () =>
-                    errorPeriodTime !== true || 'ساعت شروع باید کوچکتر از ساعت پایان باشد.',
+                    !errorPeriodTime || 'ساعت شروع باید کوچکتر از ساعت پایان باشد.',
                 }}
                 render={({
                   field: { onChange, value },
-                  // fieldState: {invalid, isDirty}, //optional
-                  // formState: {errors}, //optional, but necessary if you want to show an error message
                 }) => (
                   <>
                     <DatePicker
@@ -405,7 +421,9 @@ export default function TheAddProviderUi() {
                         <div
                           className="panel-date-picker-reset"
                           onClick={() => {
-                            ;(setValue('startTime', null), refStartTime.current.closeCalendar())
+                            setValue('startTime', null)
+                            setMinDate(dateNowP())
+                            if (refStartTime.current) refStartTime.current.closeCalendar()
                           }}
                         >
                           ریست
@@ -430,8 +448,6 @@ export default function TheAddProviderUi() {
                 }}
                 render={({
                   field: { onChange, value },
-                  // fieldState: {invalid, isDirty}, //optional
-                  // formState: {errors}, //optional, but necessary if you want to show an error message
                 }) => (
                   <>
                     <DatePicker
@@ -460,7 +476,9 @@ export default function TheAddProviderUi() {
                         <div
                           className="panel-date-picker-reset"
                           onClick={() => {
-                            ;(setValue('endTime', null), refEndTime.current.closeCalendar())
+                            setValue('endTime', null)
+                            setMaxDate(dateNowP().add(1, 'year'))
+                            if (refEndTime.current) refEndTime.current.closeCalendar()
                           }}
                         >
                           ریست

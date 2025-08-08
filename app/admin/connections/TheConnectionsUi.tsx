@@ -1,7 +1,7 @@
 'use client'
 import { AiOutlineSave, AiOutlineSetting } from 'react-icons/ai'
 import React, { useEffect } from 'react'
-import { bkToast, onlyTypeNumber } from '@/libs/utility'
+import { bkToast, OnlyTypeNumber } from '@/libs/utility'
 import { useForm } from 'react-hook-form'
 import TheSpinner from '@/components/layout/TheSpinner'
 import FormErrorMessage from '@/components/back-end/section/FormErrorMessage'
@@ -11,7 +11,7 @@ import useHook from '@/hooks/controller/useHook'
 import { useGetConnections, useUpdateConnection } from '@/hooks/admin/useConnection'
 import DocumentWebServiceSms from '@/app/admin/connections/components/DocumentWebServiceSms'
 import ConnectionTest from '@/app/admin/connections/components/ConnectionTest'
-import {TypeApiConnection} from "@/types/typeApiEntity";
+import { TypeApiConnection } from '@/types/typeApiEntity'
 
 export default function TheConnectionsUi() {
   const { permissions } = useHook()
@@ -51,14 +51,13 @@ export default function TheConnectionsUi() {
   useEffect(() => {
     if (isFetchedConnections && dataConnections && dataConnections[0]) {
       items.forEach(item => {
+        // @ts-expect-error ok!
         setValue(item, dataConnections[0][item])
       })
       itemsInteger.forEach(item => {
+        // @ts-expect-error ok!
         setValue(item, parseInt(dataConnections[0][item]))
       })
-
-      // setValue('id', dataPermission.id)
-      // setValue('catalogId', dataPermission.catalogId)
     }
   }, [isFetchedConnections])
 
@@ -73,6 +72,7 @@ export default function TheConnectionsUi() {
 
   const onSubmit = async (data: TypeApiConnection) => {
     itemsInteger.forEach(item => {
+      // @ts-expect-error ok!
       data[item] = parseInt(data[item])
     })
 
@@ -293,7 +293,7 @@ export default function TheConnectionsUi() {
                         message: 'یک عدد صحیح وارد کنید.',
                       },
                     })}
-                    onKeyPress={onlyTypeNumber}
+                    onKeyDown={OnlyTypeNumber}
                     type="text"
                     className="bk-input"
                   />

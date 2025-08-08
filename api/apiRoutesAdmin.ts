@@ -1,4 +1,5 @@
 import { TypeApiRoutesAdmin } from '@/types/typeConfig'
+import {AvailableTimes} from "@/api/apisAdmin";
 
 export const ApiRoutesAdmin: TypeApiRoutesAdmin = {
   Faq: {
@@ -89,6 +90,11 @@ export const ApiRoutesAdmin: TypeApiRoutesAdmin = {
     UpdateStatusReservation: '/admin/reservation/updateStatusReservation',
     ReminderReservation: '/admin/reservation/reminderReservation',
     AppreciationReservation: '/admin/reservation/appreciationReservation',
-    GetReservationTimeSheetsInDate: '/admin/reservation/getReservationTimeSheetsInDate',
+    AvailableTimes: '/admin/reservation/availableTimes?',
+    GetReservationsByUserId: '/admin/reservation/getReservationsByUserId?',
+  },
+  Draft: {
+    GetDrafts: '/admin/draft/getDrafts',
+    DeleteDrafts: '/admin/draft/deleteDrafts', // all drafts
   },
 }

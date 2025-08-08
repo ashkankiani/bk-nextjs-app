@@ -111,7 +111,7 @@ export type TypeApiGetProvidersByServiceIdRes = TypeApiProvider & {
 // Reservation
 /*<====================================>*/
 export type TypeApiAvailableTimesReq = {
-  userId?: number
+  userId?: string
   serviceId: number
   providerId: number
   startDate: string
@@ -128,7 +128,7 @@ export type TypeApiAvailableTimesRes = {
 }
 
 export type TypeApiGetReservationsByUserIdReq = {
-  userId: number
+  userId: string
 }
 export type TypeApiGetReservationsByUserIdRes = TypeApiReservation
 
@@ -136,7 +136,7 @@ export type TypeApiAddReservationsReq = {
   orderId: string
   serviceId: number
   providerId: number
-  userId: number
+  userId: string
   dateTimeStartEpoch?: number // bigint
   dateTimeEndEpoch?: number // bigint
   date: string
@@ -147,7 +147,7 @@ export type TypeApiAddReservationsRes = {
   results: {
     serviceId: number
     providerId: number
-    userId: number
+    userId: string
     dateTimeStartEpoch: number
     dateTimeEndEpoch: number
     date: number
@@ -190,7 +190,7 @@ export type TypeApiCreateAuthorityReq = {
   type: 'OnlinePayment' | 'UnknownPayment'
   gateway: TypeBankName | 'COD'
   price: number
-  userId: number
+  userId: string
   orderId: string
 }
 export type TypeApiCreateAuthorityRes = {
@@ -202,7 +202,7 @@ export type TypeApiVerifyPaymentReq = {
   trackingCode: string
   method: TypeOrderMethod
   price: number
-  userId: number
+  userId: string
 }
 export type TypeApiVerifyPaymentRes = {
   order: TypeApiOrder
@@ -224,7 +224,7 @@ export type TypeApiVerifyPaymentRes = {
 // Order
 /*<====================================>*/
 export type TypeApiAddOrderReq = {
-  userId: number
+  userId: string
   // serviceId: number,
   // providerId: number,
   discountId: number | null

@@ -28,7 +28,7 @@ function useGetUsers(Optional?: object) {
   }
 }
 
-function useShowUser(id: number, Optional?: object) {
+function useShowUser(id: string, Optional?: object) {
   const { data, isLoading, isFetched } = useQuery({
     queryKey: ['ShowUser', id],
     queryFn: () => ShowUser({ id }),

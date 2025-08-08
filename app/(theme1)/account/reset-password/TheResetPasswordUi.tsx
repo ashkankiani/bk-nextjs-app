@@ -135,10 +135,12 @@ export default function TheResetPasswordUi() {
                   message: 'شماره موبایل باید 11 کاراکتر باشد.',
                 },
                 maxLength: {
-                  value: 16,
-                  message: 'شماره موبایل باید نهایتا 16 کاراکتر باشد.',
+                  value: 11,
+                  message: 'شماره موبایل باید نهایتا 11 کاراکتر باشد.',
                 },
               })}
+              minLength={11}
+              maxLength={11}
               type="text"
               dir="ltr"
               className="bk-input"

@@ -24,13 +24,15 @@ export async function POST(request: Request) {
 
   // دریافت اطلاعات داخل درخواست
   const body = await request.json()
-  const { codeMeli, email, mobile } = body
+  const { codeMeli, catalogId, mobile, fullName , password, email } = body
 
   // بررسی وجود داده های ورودی مورد نیاز
   const errorMessage = checkRequiredFields({
     codeMeli,
-    email,
+    catalogId,
     mobile,
+    fullName,
+    password,
   })
 
   if (errorMessage) {

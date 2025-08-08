@@ -2,7 +2,7 @@
 import Link from 'next/link'
 import { MdOutlineKeyboardBackspace } from 'react-icons/md'
 import { AiOutlineSave } from 'react-icons/ai'
-import { Fragment, useState } from 'react'
+import {Fragment, useEffect, useState} from 'react'
 import { bkToast, generateTrackingCodeWithDate, PNtoEN, textGenderType } from '@/libs/utility'
 import { Controller, useForm } from 'react-hook-form'
 import DatePicker, { DateObject } from 'react-multi-date-picker'
@@ -16,34 +16,37 @@ import { useGetServices } from '@/hooks/admin/useService'
 import { useGetUsersByCatalogId } from '@/hooks/admin/useUser'
 import { useGetProvidersByServiceId } from '@/hooks/admin/useProvider'
 import {
-  TypeApiAddReservationReq,
   TypeApiGetProvidersByServiceIdRes,
   TypeApiGetServicesRes,
 } from '@/types/typeApiAdmin'
-import { TypePaymentType, TypeReservationsStatus } from '@/types/typeConfig'
-import { TypeApiProvider, TypeApiService, TypeApiUser } from '@/types/typeApiEntity'
-import { useAddReservation, useGetReservationTimeSheetsInDate } from '@/hooks/admin/useReservation'
+import {TypeGender, TypePaymentType, TypeReservationsStatus} from '@/types/typeConfig'
+import {  TypeApiUser } from '@/types/typeApiEntity'
+import { useAddReservation, useAvailableTimes } from '@/hooks/admin/useReservation'
 
 export default function TheAddReservationsUi() {
   const { router, theme } = useHook()
 
-  // const [loadingReservedTimes, setLoadingReservedTimes] = useState(false)
 
-  // const [services, setServices] = useState([]);
-  // const [providers, setProviders] = useState([]);
-  // const [users, setUsers] = useState([])
-  const [reservedTimes, setReservedTimes] = useState([])
+  // const [reservedTimes, setReservedTimes] = useState([])
 
-  // const [dateSelected, setDateSelected] = useState(false)
   const [timeSelected, setTimeSelected] = useState(null)
 
-  // const [serviceGender, setServiceGender] = useState(null)
-
   const [activeService, setActiveService] = useState<TypeApiGetServicesRes | null>(null)
-  const [activeProvider, setActiveProvider] = useState<TypeApiGetProvidersByServiceIdRes | null>(
-    null
-  )
+  const [activeProvider, setActiveProvider] = useState<TypeApiGetProvidersByServiceIdRes | null>(null)
   const [activeUser, setActiveUser] = useState<TypeApiUser | null>(null)
+  const [activeDate, setActiveDate] = useState<DateObject | null>(null)
+
+
+  const {
+    control,
+    register,
+    setValue,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<TypeTheAddReservationsUi>({
+    criteriaMode: 'all',
+  })
+
 
   const { data: dataServices, isLoading: isLoadingServices } = useGetServices()
   const { data: dataUsers, isLoading: isLoadingUsers } = useGetUsersByCatalogId(1, {
@@ -51,16 +54,28 @@ export default function TheAddReservationsUi() {
   }) // ایدی 1 برای کاربران معمولی است.
 
   const { data: dataProviders, isLoading: isLoadingProviders } = useGetProvidersByServiceId(
-    activeService?.id,
+    activeService?.id ?? 0,
     {
-      enabled: isLoadingServices && activeService !== null,
+      enabled: !!activeService,
+      // enabled: isLoadingServices && activeService !== null,
     }
   )
 
-  const {
-    mutateAsync: mutateAsyncReservationTimeSheetsInDate,
-    isPending: isPendingReservationTimeSheetsInDate,
-  } = useGetReservationTimeSheetsInDate()
+  const { data: dataAvailableTimes, isLoading: isLoadingAvailableTimes , refetch: refetchAvailableTimes } = useAvailableTimes({
+    userId: activeUser?.id  ?? "0",
+    serviceId: activeService?.id ?? 0,
+    providerId: activeProvider?.id ?? 0,
+    startDate: activeDate ? PNtoEN(activeDate.format()) : '',
+    endDate: activeDate ? PNtoEN(activeDate.format()) : '',
+    status: ['REVIEW', 'COMPLETED', 'DONE', 'PENDING'],
+  }, {
+    enabled: false
+  })
+
+  // const {
+  //   mutateAsync: mutateAsyncReservationTimeSheetsInDate,
+  //   isPending: isPendingReservationTimeSheetsInDate,
+  // } = useAvailableTimes()
 
   const { mutateAsync: mutateAsyncAddReservation, isPending: isPendingAddReservation } =
     useAddReservation()
@@ -70,8 +85,8 @@ export default function TheAddReservationsUi() {
     providerId: number
     userId: number
     totalPrice: number
-    date: DateObject
-    time: string
+    date: DateObject | null
+    time: string | null
     paymentType: TypePaymentType
     status: TypeReservationsStatus
     description: string
@@ -83,50 +98,39 @@ export default function TheAddReservationsUi() {
     emailToUserService: boolean
   }
 
-  const {
-    control,
-    register,
-    setValue,
-    watch,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<TypeTheAddReservationsUi>({
-    criteriaMode: 'all',
-  })
 
   const onSubmit = async (data: TypeTheAddReservationsUi) => {
-    const transformedData: TypeApiAddReservationReq = {
-      shouldExecuteTransaction: false,
-      trackingCode: generateTrackingCodeWithDate(),
-      paymentType: data.paymentType,
-      status: data.status,
-
-      service: activeService,
-      provider: activeProvider,
-      user: activeUser,
-
-      price: activeService?.price,
-      totalPrice: activeService?.price,
-
-      date: PNtoEN(data.date.format()),
-      time: timeSelected,
-    }
-
-    await mutateAsyncAddReservation(data)
-      .then(async res => {
-        bkToast('success', res.Message)
-        router.push('/admin/reservation')
-      })
-      .catch(errors => {
-        bkToast('error', errors.Reason)
-      })
+    console.log(data)
+    // const transformedData: TypeApiAddReservationReq = {
+    //   shouldExecuteTransaction: false,
+    //   trackingCode: generateTrackingCodeWithDate(),
+    //   paymentType: data.paymentType,
+    //   status: data.status,
+    //
+    //   service: activeService,
+    //   provider: activeProvider,
+    //   user: activeUser,
+    //
+    //   price: activeService?.price,
+    //   totalPrice: activeService?.price,
+    //
+    //   date: PNtoEN(data.date.format()),
+    //   time: timeSelected,
+    // }
+    //
+    // await mutateAsyncAddReservation(data)
+    //   .then(async res => {
+    //     bkToast('success', res.Message)
+    //     router.push('/admin/reservation')
+    //   })
+    //   .catch(errors => {
+    //     bkToast('error', errors.Reason)
+    //   })
   }
 
   const handlerSetService = async (id: number) => {
     const service = dataServices!.filter(item => item.id === id)[0]
     setActiveService(service)
-    // await handlerGetProvidersWhere(IdService)
-    // setServiceGender(services.filter(item => item.id === IdService)[0].gender)
     setValue('smsToAdminService', service.smsToAdminService)
     setValue('smsToAdminProvider', service.smsToAdminProvider)
     setValue('smsToUserService', service.smsToUserService)
@@ -141,52 +145,47 @@ export default function TheAddReservationsUi() {
     setValue('totalPrice', provider.service.price)
     setValue('date', null)
     setValue('time', null)
-    // setDateSelected(false)
-    setReservedTimes([])
+    // setReservedTimes([])
   }
 
-  const handlerSetUser = async (id: number) => {
+  const handlerSetUser = async (id: string) => {
+    const user = dataUsers!.filter(item => item.id === id)[0]
     if (activeService && activeService?.gender !== 'NONE') {
-      const user = dataUsers!.filter(item => item.id === id)[0]
-      setActiveUser(user)
-
-      if (activeService.gender !== user.gender) {
-        bkToast('error', 'این نوبت مخصوص ' + textGenderType(activeService.gender) + ' می باشد.')
-        // setValue("userId", "")
+      if (user.gender === 'NONE') {
+        bkToast('error', 'لطفا ابتدا در پروفایل خود جنسیت کاربر را انتخاب کنید.')
+      } else if (user.gender !== activeService?.gender) {
+        bkToast(
+            'error',
+            'این نوبت مخصوص ' +
+            textGenderType(activeService?.gender as TypeGender) +
+            ' میباشد.'
+        )
       }
+      return
     }
+    setActiveUser(user)
   }
 
   const handlerSetTime = async index => {
-    if (!isNaN(index)) {
-      let time = reservedTimes[0].timeSheet[index]
-      setTimeSelected(time[0] + '-' + time[1])
-    }
+    console.log(index)
+    // if (!isNaN(index)) {
+    //   let time = reservedTimes[0].timeSheet[index]
+    //   setTimeSelected(time[0] + '-' + time[1])
+    // }
   }
 
   const handlerGetReservationTimeSheetsInDate = async (date: DateObject) => {
     if (!activeService && !activeProvider) {
       bkToast('error', 'خدمت و ارائه دهنده را انتخاب کنید.')
       return true
-    } else {
-      // setDateSelected(true)
-      // setLoadingReservedTimes(false)
-
-      const params = {
-        service: activeService as TypeApiService,
-        provider: activeProvider as TypeApiProvider,
-        date: PNtoEN(date.format()),
-      }
-
-      await mutateAsyncReservationTimeSheetsInDate(params)
-        .then(res => {
-          setReservedTimes(res)
-        })
-        .catch(errors => {
-          bkToast('error', errors.Reason)
-        })
     }
+    setActiveDate(date)
+
   }
+
+  useEffect(() => {
+    refetchAvailableTimes()
+  },[activeDate])
 
   return (
     <>
@@ -254,7 +253,7 @@ export default function TheAddReservationsUi() {
               >
                 {isLoadingProviders ? (
                   <option value="" disabled>
-                    ابتدا خدمت را انتخاب کنید.
+                    ارائه دهنده ای برای نمایش وجود ندارد.
                   </option>
                 ) : dataProviders && dataProviders.length > 0 ? (
                   <>
@@ -268,7 +267,7 @@ export default function TheAddReservationsUi() {
                     ))}
                   </>
                 ) : (
-                  <option>ارائه دهنده ای برای نمایش وجود ندارد.</option>
+                  <option>ابتدا خدمت را انتخاب کنید.</option>
                 )}
               </select>
               <FormErrorMessage errors={errors} name="providerId" />
@@ -295,15 +294,14 @@ export default function TheAddReservationsUi() {
               </label>
               <select
                 {...register('userId', {
-                  valueAsNumber: true,
                   required: {
                     value: true,
-                    message: 'ارائه دهنده ضروری است',
+                    message: 'کاربر ضروری است',
                   },
                 })}
                 defaultValue=""
                 className="bk-input"
-                onChange={e => handlerSetUser(parseInt(e.target.value))}
+                onChange={e => handlerSetUser(e.target.value)}
               >
                 {
                   isLoadingUsers ? (
@@ -349,8 +347,6 @@ export default function TheAddReservationsUi() {
                 }}
                 render={({
                   field: { onChange, value },
-                  // fieldState: {invalid, isDirty}, //optional
-                  // formState: {errors}, //optional, but necessary if you want to show an error message
                 }) => (
                   <>
                     <DatePicker
@@ -397,16 +393,16 @@ export default function TheAddReservationsUi() {
                 onChange={e => handlerSetTime(parseInt(e.target.value))}
                 disabled={!!activeUser?.id}
               >
-                {watch('date') ? (
-                  isPendingReservationTimeSheetsInDate ? (
+                {activeDate ? (
+                  isLoadingAvailableTimes ? (
                     <option value="" disabled>
                       در حال بارگزاری...
                     </option>
-                  ) : reservedTimes.length > 0 ? (
-                    reservedTimes?.map((dataTime, index) =>
-                      dataTime.dayIsHoliday === true ? (
+                  ) : dataAvailableTimes && dataAvailableTimes.length > 0 ? (
+                      dataAvailableTimes?.map((dataTime, index) =>
+                      dataTime.dayIsHoliday ? (
                         <option key={index} selected>
-                          تعطیل رسمی: {dataTime.textHoliday}
+                          تعطیل رسمی: {dataTime.title}
                         </option>
                       ) : dataTime.timeSheet.length > 0 ? (
                         <Fragment key={index}>
@@ -415,7 +411,7 @@ export default function TheAddReservationsUi() {
                             <option
                               key={indexTime}
                               value={indexTime}
-                              disabled={time[2]}
+                              disabled={time[2] as boolean}
                               // checked={time[2]}
                             >
                               {time[0]} تا {time[1]} {time[2] && time[3]}
@@ -441,6 +437,7 @@ export default function TheAddReservationsUi() {
             </div>
 
             <div className="panel-col-33 max-md:hidden"></div>
+
             <div className="panel-col-33">
               <label>
                 نوع پرداخت<span>*</span>
@@ -475,7 +472,7 @@ export default function TheAddReservationsUi() {
                 {...register('status', {
                   required: {
                     value: true,
-                    message: 'نوع پرداخت ضروری است',
+                    message: 'وضعیت ضروری است',
                   },
                 })}
                 defaultValue=""

@@ -72,13 +72,13 @@ export async function POST(request: Request) {
 
     const sendNotifications = async () => {
       if (body.smsAppreciationToAdminProvider) {
-        await callInternalApi('/admin/sms/sendSms', {
+        await callInternalApi('api/admin/sms/sendSms', {
           method: 'POST',
           body: { ...params, mobile: body.reserve.order.provider.user.mobile },
         })
       }
       if (body.smsAppreciationToUserService) {
-        await callInternalApi('/admin/sms/sendSms', {
+        await callInternalApi('api/admin/sms/sendSms', {
           method: 'POST',
           body: { ...params, mobile: body.reserve.order.user.mobile },
         })

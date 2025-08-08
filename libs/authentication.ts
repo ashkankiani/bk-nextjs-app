@@ -66,7 +66,7 @@ export const isAuthenticated = async (token: string) => {
   }
 }
 
-async function validateSession(userId: number, token: string) {
+async function validateSession(userId: string, token: string) {
   // eslint-disable-next-line no-undef
   return new Promise(resolve => {
     hookGetSession(userId, (response, message) => {

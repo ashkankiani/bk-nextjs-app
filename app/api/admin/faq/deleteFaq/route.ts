@@ -30,12 +30,12 @@ export async function DELETE(request: Request) {
   }
 
   try {
-    // حذف تعطیلی
-    await prisma.holidays.delete({
+    // حذف سوال متداول
+    await prisma.faqs.delete({
       where: { id: parseInt(id) },
     })
 
-    return createSuccessResponseWithMessage('تعطیلی حذف شد.')
+    return createSuccessResponseWithMessage('سوال متداول حذف شد.')
   } catch (error) {
     return handlerRequestError(error)
   }

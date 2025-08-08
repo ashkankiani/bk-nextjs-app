@@ -1,8 +1,6 @@
 import Highcharts from 'highcharts'
-import HighchartsExporting from 'highcharts/modules/exporting'
 import HighchartsReact from 'highcharts-react-official'
 import dynamic from 'next/dynamic'
-import { numberWithCommas } from '@/libs/convertor'
 import React from 'react'
 import useHook from '@/hooks/controller/useHook'
 
@@ -19,8 +17,9 @@ const TheSpinner = dynamic(() => import('@/components/layout/TheSpinner'), {
 type TypeChartAreaSplineProps<T> = {
   loading: boolean
   data: T[] | undefined
-  series: T[]
-  category: T[]
+  series: []
+  category: []
+  tooltip?: {}
   reference: React.Ref<any>
 }
 
@@ -29,6 +28,7 @@ export default function ChartAreaSpline<T>({
   data,
   series,
   category,
+  tooltip,
   reference,
 }: TypeChartAreaSplineProps<T>) {
   const { theme } = useHook()
@@ -130,24 +130,25 @@ export default function ChartAreaSpline<T>({
         style: {
           fontSize: '15px',
         },
-        formatter: function () {
-          let time = this.x
-          let yName1 = this.points[0].series.name
-          let yVal1 = this.points[0].y
-          return (
-            '<div class="font-bold">' +
-            '<div class="fill-hblue-500">' +
-            yName1 +
-            ': ' +
-            numberWithCommas(yVal1) +
-            ' تومان' +
-            '</div><br><br>' +
-            '<div class="fill-hdove-800">تاریخ: ' +
-            time +
-            '</div>' +
-            '</div>'
-          )
-        },
+        ...tooltip
+        // formatter: function () {
+        //   let time = this.x
+        //   let yName1 = this.points[0].series.name
+        //   let yVal1 = this.points[0].y
+        //   return (
+        //     '<div class="font-bold">' +
+        //     '<div class="fill-hblue-500">' +
+        //     yName1 +
+        //     ': ' +
+        //     numberWithCommas(yVal1) +
+        //     ' تومان' +
+        //     '</div><br><br>' +
+        //     '<div class="fill-hdove-800">تاریخ: ' +
+        //     time +
+        //     '</div>' +
+        //     '</div>'
+        //   )
+        // },
       },
       plotOptions: {
         series: {

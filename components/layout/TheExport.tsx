@@ -1,22 +1,24 @@
 import { utils, writeFileXLSX } from 'xlsx'
 import GeneratePdf from '@/components/layout/GeneratePdf'
-import { useDetectClickOutside } from 'react-detect-click-outside'
-import { useState } from 'react'
 import { RiSave3Line } from 'react-icons/ri'
 import TheSpinner from '@/components/layout/TheSpinner'
+import { useDropdown } from '@/use/useDropdown'
 
-export default function TheExport({ title, heading, loading, dataExport, keys }) {
-  const [dropDownMenu, setDropDownMenu] = useState(false)
-
-  const toggleDropDownMenu = () => {
-    setDropDownMenu(current => !current)
-  }
-  const closeToggleDropDownMenu = () => {
-    setDropDownMenu(false)
-  }
-  const refCloseToggleDropDownMenu = useDetectClickOutside({
-    onTriggered: closeToggleDropDownMenu,
-  })
+type TypeTheExportProps<T> = {
+  title: string
+  loading: boolean
+  dataExport: T[]
+  keys: string
+  heading: [string[]]
+}
+export default function TheExport<T>({
+  title,
+  loading,
+  dataExport,
+  keys,
+  heading,
+}: TypeTheExportProps<T>) {
+  const { isOpen, toggleDropdown, closeDropdown, dropdownRef } = useDropdown()
 
   if (loading) {
     return (
@@ -41,13 +43,12 @@ export default function TheExport({ title, heading, loading, dataExport, keys })
 
     return (
       dataExport.length !== 0 && (
-        <div className="relative flex grow" ref={refCloseToggleDropDownMenu}>
-          <div className="export" onClick={toggleDropDownMenu}>
+        <div className="relative z-20 flex grow" ref={dropdownRef}>
+          <div className="export" onClick={toggleDropdown}>
             <RiSave3Line className="ml-2 inline-flex align-middle" size="24px" />
-            {/*<span className="hidden sm:inline-flex">ذخیره خروجی</span>*/}
             <span>{title}</span>
           </div>
-          {dropDownMenu && (
+          {isOpen && (
             <div className="absolute right-0 top-14 z-20 w-full bg-primary-100 text-left">
               <div
                 className="cursor-pointer p-4 hover:bg-primary-200"

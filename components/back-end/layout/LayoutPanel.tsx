@@ -7,6 +7,7 @@ import TheFooter from '@/components/back-end/layout/TheFooter'
 import Link from 'next/link'
 import imageLogo from '@/public/images/logo.png'
 import { IoMdClose } from 'react-icons/io'
+import { Cn } from '@/libs/utility'
 
 export default function LayoutPanel({ children }: { children: ReactNode }) {
   const { user, permissions, router } = useHook()
@@ -29,10 +30,10 @@ export default function LayoutPanel({ children }: { children: ReactNode }) {
         setMenuInMobile={setMenuInMobile}
       />
       <div
-        className={
-          'panel-container ' +
-          (toggleSidebar ? 'panel-container-100-300' : 'panel-container-100-80')
-        }
+        className={Cn(
+          toggleSidebar ? 'panel-container-100-300' : 'panel-container-100-80',
+          'panel-container'
+        )}
       >
         <div className="flex-center-between bg-primary-400 p-4 text-black dark:bg-darkNavy1 dark:text-gray-50 md:hidden">
           <Link href="/">

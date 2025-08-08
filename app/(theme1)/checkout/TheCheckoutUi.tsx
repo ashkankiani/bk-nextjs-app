@@ -98,7 +98,7 @@ export default function TheCheckoutUi() {
               ' میباشد.'
           )
         }
-        return false
+        return
       }
       await addOrder()
     } else {

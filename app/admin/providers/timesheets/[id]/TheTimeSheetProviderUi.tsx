@@ -7,7 +7,7 @@ import { useEffect, useRef, useState } from 'react'
 import { bkToast, dayNameByIndex, PNtoEN } from '@/libs/utility'
 import TheSpinner from '@/components/layout/TheSpinner'
 import { Controller, useForm } from 'react-hook-form'
-import DatePicker from 'react-multi-date-picker'
+import DatePicker, { DatePickerRef } from 'react-multi-date-picker'
 import TimePicker from 'react-multi-date-picker/plugins/time_picker'
 import persian from 'react-date-object/calendars/persian'
 import persian_fa from 'react-date-object/locales/persian_fa'
@@ -24,7 +24,7 @@ export default function TheTimeSheetProviderUi() {
   const params = useParams()
   const id = Number(params.id)
 
-  const { theme, router, permissions } = useHook()
+  const { theme, permissions } = useHook()
 
   const { data: dataProvider, isLoading: isLoadingProvider } = useShowProvider(id) // ایدی 3 برای کاربران ارائه دهنده است.
   const {
@@ -48,11 +48,11 @@ export default function TheTimeSheetProviderUi() {
   }
 
   /* -----------------------------------------------
-                        Section Add
-       ----------------------------------------------- */
+                            Section Add
+           ----------------------------------------------- */
 
-  const refStartTime = useRef()
-  const refEndTime = useRef()
+  const refStartTime = useRef<DatePickerRef>(null)
+  const refEndTime = useRef<DatePickerRef>(null)
   const [errorPeriodTime, setErrorPeriodTime] = useState(false)
 
   const {
@@ -67,7 +67,11 @@ export default function TheTimeSheetProviderUi() {
   })
 
   const onSubmit = async (data: TypeFormTimeSheet) => {
-    const transformedData: TypeApiAddTimeSheetReq = {
+    if (!data.startTime || !data.endTime) {
+      bkToast('error', 'تاریخ شروع و پایان انتخاب نشده است.')
+      return
+    }
+    const transformedData: Partial<TypeApiAddTimeSheetReq> = {
       serviceId: dataProvider!.serviceId,
 
       providerId: dataProvider!.id,
@@ -79,36 +83,36 @@ export default function TheTimeSheetProviderUi() {
     }
 
     if (data.dayName === '1,2,3,4,5,6,7') {
-      let array = [1, 2, 3, 4, 5, 6, 7]
+      const array = [1, 2, 3, 4, 5, 6, 7]
       await createTime(array, transformedData)
     } else if (data.dayName === '1,2,3,4,5,6') {
-      let array = [1, 2, 3, 4, 5, 6]
+      const array = [1, 2, 3, 4, 5, 6]
       await createTime(array, transformedData)
     } else if (data.dayName === '1,3,5') {
-      let array = [1, 3, 5]
+      const array = [1, 3, 5]
       await createTime(array, transformedData)
     } else if (data.dayName === '2,4,6') {
-      let array = [2, 4, 6]
+      const array = [2, 4, 6]
       await createTime(array, transformedData)
     } else {
-      transformedData['dayIndex'] = parseInt(transformedData.dayName)
-      transformedData.dayName = dayNameByIndex(parseInt(transformedData.dayName) - 1)
-      await addTimeSheet(transformedData)
+      transformedData.dayIndex = parseInt(data.dayName)
+      transformedData.dayName = dayNameByIndex(parseInt(data.dayName) - 1)
+      await addTimeSheet(transformedData as TypeApiAddTimeSheetReq)
     }
   }
 
-  const createTime = async (array, transformedData) => {
+  const createTime = async (array: number[], transformedData: Partial<TypeApiAddTimeSheetReq>) => {
     for (let i = 0; i < array.length; i++) {
-      transformedData['dayIndex'] = parseInt(array[i])
-      transformedData.dayName = dayNameByIndex(parseInt(array[i]) - 1)
-      await addTimeSheet(transformedData)
+      transformedData.dayIndex = array[i]
+      transformedData.dayName = dayNameByIndex(array[i] - 1)
+      await addTimeSheet(transformedData as TypeApiAddTimeSheetReq)
     }
   }
 
   const { mutateAsync: mutateAsyncAddTimeSheet, isPending: isPendingAddTimeSheet } =
     useAddTimeSheet()
 
-  const addTimeSheet = async data => {
+  const addTimeSheet = async (data: TypeApiAddTimeSheetReq) => {
     await mutateAsyncAddTimeSheet(data)
       .then(async res => {
         bkToast('success', res.Message)
@@ -119,15 +123,24 @@ export default function TheTimeSheetProviderUi() {
       })
   }
 
-  useEffect(() => {
-    if (watch('startTime') !== undefined && watch('endTime') !== undefined) {
-      if (watch('startTime') !== null && watch('endTime') !== null) {
-        compareTime(watch('startTime').format('HH:mm'), watch('endTime').format('HH:mm'))
-      }
-    }
-  })
+  // useEffect(() => {
+  //   if (watch('startTime') !== undefined && watch('endTime') !== undefined) {
+  //     if (watch('startTime') !== null && watch('endTime') !== null) {
+  //       compareTime(watch('startTime').format('HH:mm'), watch('endTime').format('HH:mm'))
+  //     }
+  //   }
+  // })
 
-  function compareTime(time1, time2) {
+  useEffect(() => {
+    const startTime = watch('startTime')
+    const endTime = watch('endTime')
+
+    if (startTime && endTime) {
+      compareTime(startTime.format('HH:mm'), endTime.format('HH:mm'))
+    }
+  }, [watch('startTime'), watch('endTime')])
+
+  function compareTime(time1: string, time2: string) {
     const [hour1, minute1] = time1.split(':')
     const [hour2, minute2] = time2.split(':')
     return hour1 > hour2 || (hour1 === hour2 && minute1 > minute2)
@@ -206,13 +219,10 @@ export default function TheTimeSheetProviderUi() {
                         value: true,
                         message: 'ساعت شروع ضروری است',
                       },
-                      validate: () =>
-                        errorPeriodTime !== true || 'ساعت شروع باید کوچکتر از ساعت پایان باشد.',
+                      validate: () => !errorPeriodTime || 'ساعت شروع باید کوچکتر از ساعت پایان باشد.',
                     }}
                     render={({
                       field: { onChange, value },
-                      // fieldState: {invalid, isDirty}, //optional
-                      // formState: {errors}, //optional, but necessary if you want to show an error message
                     }) => (
                       <>
                         <DatePicker
@@ -239,7 +249,8 @@ export default function TheTimeSheetProviderUi() {
                             <div
                               className="panel-date-picker-reset"
                               onClick={() => {
-                                ;(setValue('startTime', null), refStartTime.current.closeCalendar())
+                                setValue('startTime', null)
+                                if (refStartTime.current) refStartTime.current?.closeCalendar()
                               }}
                             >
                               ریست
@@ -266,8 +277,6 @@ export default function TheTimeSheetProviderUi() {
                     }}
                     render={({
                       field: { onChange, value },
-                      // fieldState: {invalid, isDirty}, //optional
-                      // formState: {errors}, //optional, but necessary if you want to show an error message
                     }) => (
                       <>
                         <DatePicker
@@ -294,7 +303,8 @@ export default function TheTimeSheetProviderUi() {
                             <div
                               className="panel-date-picker-reset"
                               onClick={() => {
-                                ;(setValue('endTime', null), refEndTime.current.closeCalendar())
+                                setValue('endTime', null)
+                                if (refEndTime.current) refEndTime.current?.closeCalendar()
                               }}
                             >
                               ریست

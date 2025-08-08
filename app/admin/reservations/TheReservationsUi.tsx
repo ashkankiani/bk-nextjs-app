@@ -197,29 +197,23 @@ export default function TheReservationsUi() {
   // }
   //
 
-  const { mutateAsync: mutateAsyncDeleteReservation, isPending: isPendingDeleteReservation } =
-    useDeleteReservation()
-  const handlerDeleteReservation = async (id: number, close: () => void) => {
+  const { mutateAsync: mutateAsyncDeleteReservation, isPending: isPendingDeleteReservation } = useDeleteReservation()
+
+  const handlerDeleteReservation = async (id: string, close: () => void) => {
     await mutateAsyncDeleteReservation({ id })
-      .then(async res => {
-        bkToast('success', res.Message)
-        await refetchReservations()
-        close()
-      })
-      .catch(errors => {
-        bkToast('error', errors.Reason)
-      })
+        .then(async res => {
+          bkToast('success', res.Message)
+          await refetchReservations()
+          close()
+        })
+        .catch(errors => {
+          bkToast('error', errors.Reason)
+        })
   }
 
-  const {
-    mutateAsync: mutateAsyncUpdateStatusReservation,
-    isPending: isPendingUpdateStatusReservation,
-  } = useUpdateStatusReservation()
-  const handlerChangeReservation = async (
-    item: TypeApiReservation,
-    status: TypeReservationsStatus,
-    close: () => void
-  ) => {
+  const {mutateAsync: mutateAsyncUpdateStatusReservation, isPending: isPendingUpdateStatusReservation,} = useUpdateStatusReservation()
+
+  const handlerChangeReservation = async (item: TypeApiReservation, status: TypeReservationsStatus, close: () => void) => {
     const data: TypeApiUpdateStatusReservationReq = {
       reserve: item,
       statusReserve: statusReserve as TypeStatusReserve,
@@ -250,8 +244,8 @@ export default function TheReservationsUi() {
       })
   }
 
-  const { mutateAsync: mutateAsyncReminderReservation, isPending: isPendingReminderReservation } =
-    useReminderReservation()
+  const { mutateAsync: mutateAsyncReminderReservation, isPending: isPendingReminderReservation } = useReminderReservation()
+
   const handlerReminderReservation = async (item: TypeApiReservation, close: () => void) => {
     if (
       smsReminderToAdminProvider ||
@@ -323,15 +317,15 @@ export default function TheReservationsUi() {
       sameExport.push([
         item.order.trackingCode,
         PNtoEN(
-          fullStringToDateObjectP(item.createdAt, 'YYYY-MM-DDTHH:MM:SS.SSSZ').format(
-            'YYYY/MM/DD - HH:MM'
+          fullStringToDateObjectP(String(item.createdAt), 'YYYY-MM-DDTHH:MM:SS.SSSZ').format(
+            'YYYY/MM/DD - HH:mm'
           )
         ),
-        item.order.user.fullName,
-        item.order.user.mobile,
-        item.order.user.codeMeli,
-        item.order.provider.service.name,
-        item.order.provider.user.fullName,
+        item.user.fullName,
+        item.user.mobile,
+        item.user.codeMeli,
+        item.service.name,
+        item.provider.user.fullName,
         item.date,
         item.time,
         fullStringToDateObjectP(item.date).weekDay.name,
@@ -455,20 +449,20 @@ export default function TheReservationsUi() {
                       <div dir="ltr">
                         {PNtoEN(
                           fullStringToDateObjectP(
-                            item.createdAt,
+                            String(item.createdAt),
                             'YYYY-MM-DDTHH:MM:SS.SSSZ'
-                          ).format('YYYY/MM/DD - HH:MM')
+                          ).format('YYYY/MM/DD - HH:mm')
                         )}
                       </div>
                     </td>
                     <td>
-                      <div>{item.order.user.fullName}</div>
-                      <div>{item.order.user.mobile}</div>
-                      <div>{item.order.user.codeMeli}</div>
+                      <div>{item.user.fullName}</div>
+                      <div>{item.user.mobile}</div>
+                      <div>{item.user.codeMeli}</div>
                     </td>
                     <td>
-                      <div>{item.order.provider.service.name}</div>
-                      <div>{item.order.provider.user.fullName}</div>
+                      <div>{item.service.name}</div>
+                      <div>{item.provider.user.fullName}</div>
                     </td>
                     <td>
                       <div>{item.date}</div>

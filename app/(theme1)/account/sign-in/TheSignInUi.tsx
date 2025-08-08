@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { bkToast, generateCode, onlyTypeNumber } from '@/libs/utility'
+import { bkToast, generateCode, OnlyTypeNumber } from '@/libs/utility'
 import { FiEye, FiEyeOff } from 'react-icons/fi'
 import FormErrorMessage from '@/components/back-end/section/FormErrorMessage'
 import TheSpinner from '@/components/layout/TheSpinner'
@@ -91,7 +91,8 @@ export default function TheSignInUi() {
   }
 
   const handlerSignIn = (data: TypeApiSignInRes) => {
-    if (data.lock) {
+    console.log(data)
+    if (data.locked) {
       bkToast('error', data.fullName + ' حساب کاربری شما توسط مدیر غیرفعال شده است.')
     } else {
       const { permissions, ...dataWithoutPermissions } = data
@@ -162,10 +163,12 @@ export default function TheSignInUi() {
                       message: 'شماره موبایل باید 11 کاراکتر باشد.',
                     },
                     maxLength: {
-                      value: 16,
-                      message: 'شماره موبایل باید نهایتا 16 کاراکتر باشد.',
+                      value: 11,
+                      message: 'شماره موبایل باید نهایتا 11 کاراکتر باشد.',
                     },
                   })}
+                  minLength={11}
+                  maxLength={11}
                   type="text"
                   dir="ltr"
                   className="bk-input"
@@ -256,6 +259,9 @@ export default function TheSignInUi() {
                       message: 'کد ملی باید 10 کاراکتر باشد.',
                     },
                   })}
+                  minLength={10}
+                  maxLength={10}
+                  onKeyDown={OnlyTypeNumber}
                   type="text"
                   className="bk-input"
                   placeholder="کد ملی"
@@ -318,7 +324,7 @@ export default function TheSignInUi() {
                   message: 'کپچا نباید بیش از 6 کاراکتر باشد.',
                 },
               })}
-              onKeyPress={onlyTypeNumber}
+              onKeyDown={OnlyTypeNumber}
               className="bk-input"
               placeholder="عدد روبرو"
             />

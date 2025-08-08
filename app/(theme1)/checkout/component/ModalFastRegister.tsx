@@ -1,6 +1,6 @@
 import { IoClose } from 'react-icons/io5'
 import { useForm } from 'react-hook-form'
-import { bkToast } from '@/libs/utility'
+import {bkToast, OnlyTypeNumber} from '@/libs/utility'
 import { hookLogin, hookRegister } from '@/hooks/user/hookAuth'
 import FormErrorMessage from '@/components/back-end/section/FormErrorMessage'
 import TheSpinner from '@/components/layout/TheSpinner'
@@ -98,6 +98,9 @@ export default function ModalFastRegister({ checkDraft, close }) {
                   message: 'کد ملی باید 10 کاراکتر باشد.',
                 },
               })}
+              minLength={10}
+              maxLength={10}
+              onKeyDown={OnlyTypeNumber}
               type="text"
               className="bk-input"
               placeholder="کد ملی"
@@ -120,10 +123,12 @@ export default function ModalFastRegister({ checkDraft, close }) {
                   message: 'شماره موبایل باید 11 کاراکتر باشد.',
                 },
                 maxLength: {
-                  value: 16,
-                  message: 'شماره موبایل باید نهایتا 16 کاراکتر باشد.',
+                  value: 11,
+                  message: 'شماره موبایل باید نهایتا 11 کاراکتر باشد.',
                 },
               })}
+              minLength={11}
+              maxLength={11}
               type="text"
               dir="ltr"
               className="bk-input"

@@ -1,13 +1,13 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQuery } from '@tanstack/react-query'
 import {
   AddReservation,
   AppreciationReservation,
   DeleteReservation,
-  GetReservations,
-  GetReservationTimeSheetsInDate,
+  GetReservations, GetReservationsByUserId,
+  AvailableTimes,
   ReminderReservation,
-  ShowReservation,
-  UpdateReservation,
+  // ShowReservation,
+  // UpdateReservation,
   UpdateStatusReservation,
 } from '@/api/apisAdmin'
 import {
@@ -15,9 +15,8 @@ import {
   TypeApiAppreciationReservationReq,
   TypeApiDeleteReservationReq,
   TypeApiGetReservationsReq,
-  TypeApiGetReservationTimeSheetsInDateReq,
+  TypeApiAvailableTimesReq,
   TypeApiReminderReservationReq,
-  TypeApiUpdateReservationReq,
   TypeApiUpdateStatusReservationReq,
 } from '@/types/typeApiAdmin'
 
@@ -35,21 +34,21 @@ function useGetReservations(filter: TypeApiGetReservationsReq, Optional?: object
   }
 }
 
-function useShowReservation(id: number, Optional?: object) {
-  const { data, isLoading, isFetched } = useQuery({
-    queryKey: ['ShowReservation', id],
-    queryFn: () => ShowReservation({ id }),
-    ...Optional,
-  })
-  return {
-    data,
-    isLoading,
-    isFetched,
-  }
-}
+// function useShowReservation(id: number, Optional?: object) {
+//   const { data, isLoading, isFetched } = useQuery({
+//     queryKey: ['ShowReservation', id],
+//     queryFn: () => ShowReservation({ id }),
+//     ...Optional,
+//   })
+//   return {
+//     data,
+//     isLoading,
+//     isFetched,
+//   }
+// }
 
 function useAddReservation(Optional?: object) {
-  const client = useQueryClient()
+  // const client = useQueryClient()
   const { mutateAsync, isPending } = useMutation({
     mutationFn: (data: TypeApiAddReservationReq) => AddReservation(data),
     onSuccess: () => {
@@ -78,20 +77,20 @@ function useDeleteReservation(Optional?: object) {
   }
 }
 
-function useUpdateReservation(Optional?: object) {
-  const client = useQueryClient()
-  const { mutateAsync, isPending } = useMutation({
-    mutationFn: (data: TypeApiUpdateReservationReq) => UpdateReservation(data),
-    onSuccess: (data, variables, context) => {
-      client.invalidateQueries({ queryKey: ['ShowReservation', variables.id] })
-    },
-    ...Optional,
-  })
-  return {
-    mutateAsync,
-    isPending,
-  }
-}
+// function useUpdateReservation(Optional?: object) {
+//   const client = useQueryClient()
+//   const { mutateAsync, isPending } = useMutation({
+//     mutationFn: (data: TypeApiUpdateReservationReq) => UpdateReservation(data),
+//     onSuccess: (data, variables, context) => {
+//       client.invalidateQueries({ queryKey: ['ShowReservation', variables.id] })
+//     },
+//     ...Optional,
+//   })
+//   return {
+//     mutateAsync,
+//     isPending,
+//   }
+// }
 
 function useUpdateStatusReservation(Optional?: object) {
   // const client = useQueryClient()
@@ -136,30 +135,52 @@ function useAppreciationReservation(Optional?: object) {
     isPending,
   }
 }
-function useGetReservationTimeSheetsInDate(Optional?: object) {
-  // const client = useQueryClient()
-  const { mutateAsync, isPending } = useMutation({
-    mutationFn: (data: TypeApiGetReservationTimeSheetsInDateReq) =>
-      GetReservationTimeSheetsInDate(data),
-    onSuccess: () => {
-      // client.invalidateQueries({queryKey: ['GetReservations']})
-    },
+
+
+function useAvailableTimes(query: TypeApiAvailableTimesReq, Optional?: object) {
+  const { data, isLoading, isFetched , refetch} = useQuery({
+    queryKey: [
+      'AvailableTimes',
+      query.serviceId,
+      query.providerId,
+      query.startDate,
+      query.providerId,
+    ],
+    queryFn: () => AvailableTimes(query),
     ...Optional,
   })
   return {
-    mutateAsync,
-    isPending,
+    data,
+    isLoading,
+    isFetched,
+    refetch,
+  }
+}
+
+
+function useGetReservationsByUserId(userId: string, Optional?: object) {
+  const { data, isLoading, isFetched , refetch} = useQuery({
+    queryKey: ['GetReservationsByUserId', userId],
+    queryFn: () => GetReservationsByUserId({ userId }),
+    ...Optional,
+  })
+  return {
+    data,
+    isLoading,
+    isFetched,
+    refetch,
   }
 }
 
 export {
   useGetReservations,
-  useShowReservation,
+  // useShowReservation,
   useAddReservation,
   useDeleteReservation,
-  useUpdateReservation,
+  // useUpdateReservation,
   useUpdateStatusReservation,
   useReminderReservation,
   useAppreciationReservation,
-  useGetReservationTimeSheetsInDate,
+  useAvailableTimes,
+  useGetReservationsByUserId,
 }

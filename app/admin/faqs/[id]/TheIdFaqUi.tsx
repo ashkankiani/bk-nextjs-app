@@ -35,12 +35,10 @@ export default function TheIdFaqUi() {
     await mutateAsyncUpdateFaq(data)
       .then(res => {
         bkToast('success', res.Message)
+        router.push('/admin/faqs')
       })
       .catch(errors => {
         bkToast('error', errors.Reason)
-      })
-      .finally(() => {
-        router.push('/admin/faqs')
       })
   }
 

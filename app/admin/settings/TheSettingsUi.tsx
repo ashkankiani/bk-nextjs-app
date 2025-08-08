@@ -1,7 +1,7 @@
 'use client'
 import { AiOutlineSave } from 'react-icons/ai'
 import { useEffect } from 'react'
-import { bkToast, onlyTypeNumber } from '@/libs/utility'
+import { bkToast, OnlyTypeNumber } from '@/libs/utility'
 import { useForm } from 'react-hook-form'
 import TheSpinner from '@/components/layout/TheSpinner'
 import FormErrorMessage from '@/components/back-end/section/FormErrorMessage'
@@ -10,8 +10,8 @@ import Link from 'next/link'
 import { TbPlugConnected } from 'react-icons/tb'
 import useHook from '@/hooks/controller/useHook'
 import { useGetSettings, useUpdateSetting } from '@/hooks/admin/useSetting'
-import { TypeApiSetting } from '@/types/typeApiAdmin'
 import LicenceManagement from '@/app/admin/settings/components/LicenceManagement'
+import { TypeApiSetting } from '@/types/typeApiEntity'
 
 export default function TheSettingsUi() {
   const { permissions } = useHook()
@@ -62,12 +62,15 @@ export default function TheSettingsUi() {
   useEffect(() => {
     if (isFetchedSettings && dataSettings && dataSettings[0]) {
       items.forEach(item => {
+        // @ts-expect-error ok!
         setValue(item, dataSettings[0][item])
       })
       itemsBoolean.forEach(item => {
+        // @ts-expect-error ok!
         setValue(item, dataSettings[0][item].toString())
       })
       itemsInteger.forEach(item => {
+        // @ts-expect-error ok!
         setValue(item, parseInt(dataSettings[0][item]))
       })
 
@@ -88,9 +91,11 @@ export default function TheSettingsUi() {
 
   const onSubmit = async (data: TypeApiSetting) => {
     itemsBoolean.forEach(item => {
+      // @ts-expect-error ok!
       data[item] = data[item] === 'true'
     })
     itemsInteger.forEach(item => {
+      // @ts-expect-error ok!
       data[item] = parseInt(data[item])
     })
 
@@ -153,7 +158,7 @@ export default function TheSettingsUi() {
                 <label>شماره تماس</label>
                 <input
                   {...register('phone')}
-                  onKeyPress={onlyTypeNumber}
+                  onKeyDown={OnlyTypeNumber}
                   type="text"
                   className="bk-input"
                 />
@@ -202,7 +207,7 @@ export default function TheSettingsUi() {
                       message: 'یک عدد صحیح وارد کنید.',
                     },
                   })}
-                  onKeyPress={onlyTypeNumber}
+                  onKeyDown={OnlyTypeNumber}
                   placeholder="از زمان حال تا چند روز آینده میتواند رزرو کند."
                   type="text"
                   className="bk-input"
@@ -236,7 +241,7 @@ export default function TheSettingsUi() {
                       message: 'یک عدد صحیح وارد کنید.',
                     },
                   })}
-                  onKeyPress={onlyTypeNumber}
+                  onKeyDown={OnlyTypeNumber}
                   placeholder="از زمان حال تا چند روز آینده میتواند رزرو کند."
                   type="text"
                   className="bk-input"
@@ -266,7 +271,7 @@ export default function TheSettingsUi() {
                       message: 'یک عدد صحیح وارد کنید.',
                     },
                   })}
-                  onKeyPress={onlyTypeNumber}
+                  onKeyDown={OnlyTypeNumber}
                   placeholder="چند دقیقه قبل از شروع اولین رزرو میتواند رزرو کند."
                   type="text"
                   className="bk-input"
@@ -406,7 +411,7 @@ export default function TheSettingsUi() {
                       message: 'یک عدد صحیح وارد کنید.',
                     },
                   })}
-                  onKeyPress={onlyTypeNumber}
+                  onKeyDown={OnlyTypeNumber}
                   type="text"
                   className="bk-input"
                   placeholder="چند دقیقه مانده به شروع رزرو میتوان رزرو را حذف یا لغو کرد."
@@ -476,7 +481,7 @@ export default function TheSettingsUi() {
                       message: 'یک عدد صحیح وارد کنید.',
                     },
                   })}
-                  onKeyPress={onlyTypeNumber}
+                  onKeyDown={OnlyTypeNumber}
                   placeholder="هر رزرو یک رزرو حساب می شود."
                   type="text"
                   className="bk-input"
@@ -503,7 +508,7 @@ export default function TheSettingsUi() {
                       message: 'یک عدد صحیح وارد کنید.',
                     },
                   })}
-                  onKeyPress={onlyTypeNumber}
+                  onKeyDown={OnlyTypeNumber}
                   placeholder="در یک ماه میتواند چند نوبت رزرو کند."
                   type="text"
                   className="bk-input"
@@ -639,7 +644,7 @@ export default function TheSettingsUi() {
                       message: 'یک عدد صحیح وارد کنید.',
                     },
                   })}
-                  onKeyPress={onlyTypeNumber}
+                  onKeyDown={OnlyTypeNumber}
                   type="text"
                   className="bk-input"
                   placeholder="نوبت رزرو شده کاربر تا چند دقیقه تا تایید پرداخت بانک باید قفل شود."

@@ -28,12 +28,10 @@ export default function TheAddFaqUi() {
     await mutateAsyncAddFaq(data)
       .then(res => {
         bkToast('success', res.Message)
+        router.push('/admin/faqs')
       })
       .catch(errors => {
         bkToast('error', errors.Reason)
-      })
-      .finally(() => {
-        router.push('/admin/faqs')
       })
   }
 

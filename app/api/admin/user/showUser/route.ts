@@ -32,7 +32,7 @@ export async function GET(request: Request) {
   try {
     // دریافت کاربر
     const user = await prisma.users.findUnique({
-      where: { id: parseInt(id) },
+      where: { id: id },
     })
 
     return createSuccessResponseWithData(user)

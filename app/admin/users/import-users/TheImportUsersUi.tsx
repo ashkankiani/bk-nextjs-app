@@ -10,12 +10,12 @@ import * as XLSX from 'xlsx'
 import { bkToast } from '@/libs/utility'
 import { LuImport } from 'react-icons/lu'
 import HeaderPage from '@/components/back-end/section/HeaderPage'
-import { useRouter } from 'next/router'
 import { useImportUsers } from '@/hooks/admin/useUser'
 import { TypeApiImportUsersReq } from '@/types/typeApiAdmin'
+import useHook from "@/hooks/controller/useHook";
 
 export default function TheImportUsersUi() {
-  const router = useRouter()
+  const { router } = useHook()
 
   const { mutateAsync: mutateAsyncImportUsers, isPending: isPendingImportUsers } = useImportUsers()
 

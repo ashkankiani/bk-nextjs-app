@@ -5,24 +5,41 @@ import { fullStringToDateObjectP } from '@/libs/convertor'
 import HeaderPage from '@/components/back-end/section/HeaderPage'
 import { RiDeleteBin5Line } from 'react-icons/ri'
 import useHook from '@/hooks/controller/useHook'
-import { useDeleteDrafts, useGetDrafts } from '@/hooks/admin/useDraft'
+import { useGetDrafts } from '@/hooks/admin/useDraft'
+import {useDeleteReservation} from "@/hooks/admin/useReservation";
+import Popup from "reactjs-popup";
+import {IoClose} from "react-icons/io5";
 
 export default function TheDraftsUi() {
   const { permissions } = useHook()
 
-  const { data: dataDrafts, isLoading: isLoadingDrafts } = useGetDrafts()
+  const { data: dataDrafts, isLoading: isLoadingDrafts , refetch: refetchDrafts} = useGetDrafts()
 
-  const { mutateAsync: mutateAsyncDeleteDrafts, isPending: isPendingDeleteDrafts } =
-    useDeleteDrafts()
+  // const { mutateAsync: mutateAsyncDeleteDrafts, isPending: isPendingDeleteDrafts } =
+  //   useDeleteDrafts()
+  //
+  // const handlerDeleteDrafts = async () => {
+  //   await mutateAsyncDeleteDrafts()
+  //     .then(res => {
+  //       bkToast('success', res.Message)
+  //     })
+  //     .catch(errors => {
+  //       bkToast('error', errors.Reason)
+  //     })
+  // }
 
-  const handlerDeleteDrafts = async () => {
-    await mutateAsyncDeleteDrafts()
-      .then(res => {
-        bkToast('success', res.Message)
-      })
-      .catch(errors => {
-        bkToast('error', errors.Reason)
-      })
+  const { mutateAsync: mutateAsyncDeleteReservation, isPending: isPendingDeleteReservation } = useDeleteReservation()
+
+  const handlerDeleteReservation = async (id: string, close: () => void) => {
+    await mutateAsyncDeleteReservation({ id })
+        .then(async res => {
+          bkToast('success', res.Message)
+          await refetchDrafts()
+          close()
+        })
+        .catch(errors => {
+          bkToast('error', errors.Reason)
+        })
   }
 
   return (
@@ -30,14 +47,14 @@ export default function TheDraftsUi() {
       <HeaderPage
         title="در حال رزرو"
         description="در اینجا لیست نوبت هایی که در حال رزرو و پرداخت نهایی هستند را مشاهده کنید."
-      >
-        {permissions.deleteDraft && (
-          <button className="delete" onClick={() => handlerDeleteDrafts()}>
-            <RiDeleteBin5Line size="24px" className="ml-2 inline-flex align-middle" />
-            <span>{isPendingDeleteDrafts ? 'صبر کنید...' : 'حذف همه'}</span>
-          </button>
-        )}
-      </HeaderPage>
+      />
+        {/*{permissions.deleteDraft && (*/}
+        {/*  <button className="delete" onClick={() => handlerDeleteDrafts()}>*/}
+        {/*    <RiDeleteBin5Line size="24px" className="ml-2 inline-flex align-middle" />*/}
+        {/*    <span>{isPendingDeleteDrafts ? 'صبر کنید...' : 'حذف همه'}</span>*/}
+        {/*  </button>*/}
+        {/*)}*/}
+      {/*</HeaderPage>*/}
 
       <div className="panel-main">
         <p className="mb-4">
@@ -54,12 +71,13 @@ export default function TheDraftsUi() {
                 <th>رزرو برای</th>
                 <th>خریدار</th>
                 <th>تاریخ رزرو</th>
+                <th className="w-[100px]">عملیات</th>
               </tr>
             </thead>
             <tbody>
               {isLoadingDrafts ? (
                 <tr>
-                  <td colSpan={5}>
+                  <td colSpan={6}>
                     <TheSpinner />
                   </td>
                 </tr>
@@ -88,11 +106,62 @@ export default function TheDraftsUi() {
                       <div>{item.time.replace('-', ' تا ')}</div>
                       <div>{fullStringToDateObjectP(item.date).weekDay.name}</div>
                     </td>
+                    <td>
+                      <div className="flex-center-center gap-3">
+
+                        {permissions.deleteReservation && (
+                            <Popup
+                                className="bg-modal"
+                                contentStyle={{ width: '100%' }}
+                                trigger={
+                                  <div>
+                                    <RiDeleteBin5Line
+                                        className="cursor-pointer text-red-500"
+                                        size="28px"
+                                    />
+                                  </div>
+                                }
+                                modal
+                                nested
+                            >
+                              {(close: () => void) => (
+                                  <div className="panel-wrapper-modal max-w-[500px]">
+                                    <IoClose
+                                        size="32px"
+                                        onClick={close}
+                                        className="absolute left-4 top-4 cursor-pointer"
+                                    />
+                                    <div className="panel-modal-title">
+                                      حذف رزرو ({item.order.trackingCode})
+                                    </div>
+                                    <div className="panel-modal-content">
+                                      <p>آیا از حذف رزرو مطمن هستید؟</p>
+                                    </div>
+                                    <div className="panel-modal-footer">
+                                      <div
+                                          className={
+                                              'panel-modal-confirm-delete ' +
+                                              (isPendingDeleteReservation ? 'disable-action' : 'cursor-pointer')
+                                          }
+                                          onClick={() => handlerDeleteReservation(item.id , close)}
+                                      >
+                                        {isPendingDeleteReservation ? <TheSpinner /> : 'مطمنم، رزرو را حذف کن'}
+                                      </div>
+                                      <div className="panel-modal-close" onClick={close}>
+                                        بیخیال شو
+                                      </div>
+                                    </div>
+                                  </div>
+                              )}
+                            </Popup>
+                        )}
+                      </div>
+                    </td>
                   </tr>
                 ))
               ) : (
                 <tr>
-                  <td colSpan={5}>در حال رزروی برای نمایش وجود ندارد.</td>
+                  <td colSpan={6}>در حال رزروی برای نمایش وجود ندارد.</td>
                 </tr>
               )}
             </tbody>

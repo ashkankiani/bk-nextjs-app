@@ -143,7 +143,7 @@ export async function POST(request: Request) {
 
     if (body.status === 'COMPLETED') {
       const sendSmsNotifications = async (mobile: string) => {
-        await callInternalApi('/admin/sms/sendSms', {
+        await callInternalApi('api/admin/sms/sendSms', {
           method: 'POST',
           body: { ...params, mobile },
         })
