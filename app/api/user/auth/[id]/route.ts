@@ -80,7 +80,7 @@ async function findPermissions(catalogId: number) {
   return await prisma.permissions.findUnique({ where: { catalogId } })
 }
 
-async function upsertSession(userId: number, session: string, epoch: number) {
+async function upsertSession(userId: string, session: string, epoch: number) {
   return await prisma.sessions.upsert({
     where: { userId },
     update: { sessionToken: session, expires: epoch },
@@ -122,7 +122,7 @@ async function handleLoginOTP(mobile: string) {
     await upsertSession(hasUser.id, session, epoch)
 
     const response = { ...hasUser, permissions }
-    return createSuccessResponseWithData(response, 200, {
+    return createSuccessResponseWithData(response, {
       'Set-Cookie': `bk-session=${session}; HttpOnly; Path=/; Max-Age=86400`,
     })
   } catch (error) {
@@ -170,7 +170,7 @@ async function handleLogin(codeMeli: string, password: string) {
     await upsertSession(hasUser.id, session, epoch)
 
     const response = { ...hasUser, permissions }
-    return createSuccessResponseWithData(response, 200, {
+    return createSuccessResponseWithData(response, {
       'Set-Cookie': `bk-session=${session}; HttpOnly; Path=/; Max-Age=86400`,
     })
   } catch (error) {

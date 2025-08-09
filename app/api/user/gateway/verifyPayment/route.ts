@@ -189,7 +189,6 @@ export async function POST(request: Request) {
     }
 
     if (method === 'ZIBAL') {
-      console.log(111111111)
       const params = {
         merchant: merchant,
         trackId: parseInt(authority),
@@ -342,92 +341,12 @@ export async function POST(request: Request) {
   }
 }
 
-// تابع کمکی برای آپدیت سفارش
-async function sendSms(trackingCode: string) {
-  // دریافت اطلاعات رزروهای نهایی
-  const reservations = await prisma.reservations.findMany({
-    where: {
-      orderId: trackingCode,
-    },
-    include: {
-      service: {
-        include: {
-          user: true,
-        },
-      },
-      provider: {
-        include: {
-          user: true,
-        },
-      },
-      user: true,
-    },
-  })
-
-  const sendSmsNotifications = async (paramsSms: object, mobile: string) => {
-    await callInternalApi('api/admin/sms/sendSms', {
-      method: 'POST',
-      body: { ...paramsSms, mobile },
-    })
-  }
-  const sendEmailNotifications = async (paramsEmail: object, email: string) => {
-    await callInternalApi('/admin/email/sendEmail', {
-      method: 'POST',
-      body: { ...paramsEmail, email },
-    })
-  }
-
-  for (const reservation of reservations) {
-    // ساخت پارامترهای پایه
-    const paramsSms = {
-      type: 'confirmReservation',
-      trackingCode: trackingCode,
-      dateName: fullStringToDateObjectP(reservation.date).weekDay.name,
-      date: reservation.date,
-      time: reservation.time.replace('-', ' تا '),
-      service: reservation.service.name,
-      provider: reservation.provider.user.fullName,
-    }
-    const paramsEmail = {
-      ...paramsSms,
-      title: 'تبریک! رزرو شما با موفقیت ثبت شد.',
-      subject: `رزرو جدید ${trackingCode}`,
-      text: 'تبریک! یک سفارش جدید ثبت شد.',
-    }
-
-    if (reservation.service.smsToAdminService) {
-      await sendSmsNotifications(paramsSms, reservation.service.user.mobile)
-    }
-    if (reservation.service.smsToAdminProvider) {
-      await sendSmsNotifications(paramsSms, reservation.provider.user.mobile)
-    }
-    if (reservation.service.smsToUserService) {
-      await sendSmsNotifications(paramsSms, reservation.user.mobile)
-    }
-
-    if (reservation.service.emailToAdminService) {
-      if (reservation.service.user.email) {
-        await sendEmailNotifications(paramsEmail, reservation.service.user.email)
-      }
-    }
-    if (reservation.service.emailToAdminProvider) {
-      if (reservation.provider.user.email) {
-        await sendEmailNotifications(paramsEmail, reservation.provider.user.email)
-      }
-    }
-    if (reservation.service.emailToUserService) {
-      if (reservation.user.email) {
-        await sendEmailNotifications(paramsEmail, reservation.user.email)
-      }
-    }
-  }
-}
-
+// تابع کمکی آپدیت رزرو و سفارش
 async function updateOrder(
   setting: TypeApiSetting,
   status: TypeReservationsStatus,
   trackingCode: string,
-  userId: number,
+  userId: string,
   method: TypeOrderMethod,
   authority: string,
   price: number,
@@ -510,9 +429,9 @@ async function updateOrder(
     },
   })
 
-  // ارسال sms
+  //  ارسال پیامک و ایمیل
   if (status === 'COMPLETED') {
-    await sendSms(trackingCode)
+    await sendSmsAndEmail(trackingCode)
   }
 
   return createSuccessResponseWithData({
@@ -520,4 +439,87 @@ async function updateOrder(
     reservations: serializeBigIntToNumber(reservations),
     automaticConfirmation: setting.automaticConfirmation,
   })
+}
+
+
+
+// تابع کمکی برای آپدیت سفارش
+async function sendSmsAndEmail(trackingCode: string) {
+  // دریافت اطلاعات رزروهای نهایی
+  const reservations = await prisma.reservations.findMany({
+    where: {
+      orderId: trackingCode,
+    },
+    include: {
+      service: {
+        include: {
+          user: true,
+        },
+      },
+      provider: {
+        include: {
+          user: true,
+        },
+      },
+      user: true,
+    },
+  })
+
+  const sendSmsNotifications = async (paramsSms: object, mobile: string) => {
+    await callInternalApi('api/admin/sms/sendSms', {
+      method: 'POST',
+      body: { ...paramsSms, mobile },
+    })
+  }
+  const sendEmailNotifications = async (paramsEmail: object, email: string) => {
+    await callInternalApi('/admin/email/sendEmail', {
+      method: 'POST',
+      body: { ...paramsEmail, email },
+    })
+  }
+
+  for (const reservation of reservations) {
+    // ساخت پارامترهای پایه
+    const paramsSms = {
+      type: 'confirmReservation',
+      trackingCode: trackingCode,
+      dateName: fullStringToDateObjectP(reservation.date).weekDay.name,
+      date: reservation.date,
+      time: reservation.time.replace('-', ' تا '),
+      service: reservation.service.name,
+      provider: reservation.provider.user.fullName,
+    }
+    const paramsEmail = {
+      ...paramsSms,
+      title: 'تبریک! رزرو شما با موفقیت ثبت شد.',
+      subject: `رزرو جدید ${trackingCode}`,
+      text: 'تبریک! یک سفارش جدید ثبت شد.',
+    }
+
+    if (reservation.service.smsToAdminService) {
+      await sendSmsNotifications(paramsSms, reservation.service.user.mobile)
+    }
+    if (reservation.service.smsToAdminProvider) {
+      await sendSmsNotifications(paramsSms, reservation.provider.user.mobile)
+    }
+    if (reservation.service.smsToUserService) {
+      await sendSmsNotifications(paramsSms, reservation.user.mobile)
+    }
+
+    if (reservation.service.emailToAdminService) {
+      if (reservation.service.user.email) {
+        await sendEmailNotifications(paramsEmail, reservation.service.user.email)
+      }
+    }
+    if (reservation.service.emailToAdminProvider) {
+      if (reservation.provider.user.email) {
+        await sendEmailNotifications(paramsEmail, reservation.provider.user.email)
+      }
+    }
+    if (reservation.service.emailToUserService) {
+      if (reservation.user.email) {
+        await sendEmailNotifications(paramsEmail, reservation.user.email)
+      }
+    }
+  }
 }

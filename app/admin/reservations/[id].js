@@ -302,7 +302,7 @@ export default function EditReservation({ id }) {
       setLoading(false)
       if (response) {
         bkToast('success', 'رزرو با موفقیت ویرایش شد.')
-        router.push('/admin/reservation')
+        router.push('/admin/reservations')
       } else {
         bkToast('error', message)
       }
@@ -345,7 +345,7 @@ export default function EditReservation({ id }) {
                 {loadingServices ? (
                   services.length > 0 ? (
                     <>
-                      <option value="" disabled selected>
+                      <option value="" disabled>
                         انتخاب کنید
                       </option>
                       {services?.map((item, index) => (

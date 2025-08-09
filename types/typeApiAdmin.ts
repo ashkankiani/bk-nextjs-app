@@ -610,12 +610,14 @@ export interface TypeApiAddReservationReq {
   serviceId: number
   providerId: number
   userId: string
-  dateTimeStartEpoch?: number // bigint
-  dateTimeEndEpoch?: number // bigint
+  // dateTimeStartEpoch?: number // bigint
+  // dateTimeEndEpoch?: number // bigint
   date: string
   time: string[]
-  paymentType: TypePaymentType
   status: TypeReservationsStatus
+  paymentType: TypePaymentType
+  price:number
+  description: string | null
   smsToAdminService: boolean
   smsToAdminProvider: boolean
   smsToUserService: boolean

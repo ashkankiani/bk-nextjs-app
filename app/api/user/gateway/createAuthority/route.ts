@@ -39,7 +39,7 @@ export async function POST(request: Request) {
     type: 'OnlinePayment' | 'UnknownPayment'
     gateway: TypeOrderMethod
     price: number
-    userId: number
+    userId: string
     orderId: string
   } = body
 
